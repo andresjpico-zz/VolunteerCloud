@@ -51,8 +51,8 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                             <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
 
                                                 <h:outputText style="font-weight: bold; font-size: 20px" value="#{opportunity.title}" />
-                                                <h:outputText style="font-size: 20px" value="#Organization Name Here" />
-                                                <h:outputText style="font-size: 20px" value="Volunteering Area Here" />
+                                                <h:outputText style="font-size: 20px" value="#{opportunity.organizationName}" />
+                                                <h:outputText style="font-size: 20px" value="#{opportunity.getVolunteeringArea()}" />
                                                 
                                                 <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
                                                     <h:outputText style="font-size: 20px" value="Address" />
@@ -80,20 +80,53 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     <br/><br/>
                                     
                                     <h:outputText style="font-size: 18px; font-weight: bold" value="Opportunity Participants" />
-                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
+<!--                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
                                         <h:outputText style="font-size: 18px" value="To be done.." />
-                                    </h:panelGrid>
-<!--                                    <p:dataGrid id="volunteeringActivities" var="opportunity" value="#{volunteer.getVolunteeringActivities()}" 
-                                        columns="3" layout="grid" rows="12" paginator="false" rowsPerPageTemplate="6,12,16">
+                                    </h:panelGrid>-->
+                                    <div id="divID">
+                                        <p:dataTable id="datalist" value="#{OpportunityController.participants}" var="volunteer"
+                                                         selectionMode="single" selection="#{VolunteerController.selectedParticipant}"
+                                                         paginator="false"
+                                                         rowKey="#{volunteer.userID}"
+                                                         rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight"
+                                                         >
 
-                                        <p:panel header="#{cast.actorName}" style="text-align:center; background: white">
-                                            <h:panelGrid columns="1" style="width:100%; font-size: 15px; color: #09242C">
-                                                <h:graphicImage url="#{cast.posterPath}"/>
-                                                <h:outputText value="#{cast.characterName}" style="padding-top: 30px" />
-                                            </h:panelGrid>
-                                        </p:panel>
+<!--                                            <p:ajax event="rowSelect" listener="#{VolunteerController.showVolunteerInfo()}"/>
+                                            <p:ajax event="rowUnselect" listener="#{VolunteerController.showVolunteerInfo()}"/> -->
 
-                                    </p:dataGrid>-->
+                                            <p:column style="font-size: 24px" headerText="Search Results" width="100%" >
+
+                                                <h:panelGrid border="0" columns="3" cellpadding="5" style="width:100%" columnClasses="searchRecordPhotoColumn,detail1,arrow" 
+                                                             styleClass="ui-datascroller-item"> 
+
+                                                    <h:graphicImage id="volunteerPhoto" value="#{VolunteerController.photoStorageDirectoryName()}#{VolunteerController.accountPhoto(volunteer)}" 
+                                                                    style="padding-left: 5%" styleClass="searchRecordPhoto" />  <!-- style="padding-left: 20%" />-->
+
+                                                    <p:outputPanel>
+                                                        <h:panelGrid columns="2" cellpadding="5">
+
+                                                            <h:panelGrid columns="1" cellpadding="5">
+                                                                <h:outputText style=" font-weight: bold; font-size: 20px" value="#{volunteer.firstName} #{volunteer.lastName}" />
+
+                                                                <h:panelGrid columns="2" columnClasses="movieIcon,rating" cellpadding="0"> 
+                                                                    <h:outputText style="font-size: 20px" value="#{volunteer.email}" />
+                                                                    <h:outputText style="font-size: 20px" value="#{volunteer.phoneNumber}" />
+                                                                </h:panelGrid>
+
+                                                                <h:outputText style="font-size: 18px" value="Mission:"/>
+                                                                <h:outputText style="font-size: 18px" value="#{volunteer.mission}" />
+                                                            </h:panelGrid>
+
+                                                        </h:panelGrid>
+                                                    </p:outputPanel>         
+
+                                                    <h:outputText value=">" style="font-size: larger"/>
+
+                                                </h:panelGrid>
+
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
                                     <br/>
                                     
                                 </h:panelGrid>    

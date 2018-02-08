@@ -234,14 +234,14 @@ public class VolunteeringOpportunities implements Serializable {
         return Constants.STATES[state];
     }
     
+    public String getVolunteeringArea() {
+        return Constants.VOLUNTEERING_AREA[volunteeringAreaID];
+    }
+    
     public String getOrganizationName() {
         return organizationName;
     }
     
-//    public String getOwnerName() {
-//        return organizationFacade.getOrganizationName(ownerID);
-//    }
-
     @Override
     public int hashCode() {
         int hash = 0;
