@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <!-- Do not enter tags before the composition line since they are ignored by JSF -->
+
+    <!-- This page is constructed based on the siteTemplate -->
+    <ui:composition template="template/siteTemplate.xhtml">
+
+        <!-- Create the content for this page below -->
+        <ui:define name="editableContent">
+
+            <div align="center">
+                <br/>
+                <br/>
+                <div style="font-family: cursive; font-size: 30px;">
+                    &ldquo;<h:outputText value="Share all the responsibilities and expenses in your Apartment"/>&rdquo;
+                </div>
+                <br/>
+                <br/>
+                <h:form>
+                    <p:commandButton action="SignIn" value="Sign In" icon="fa fa-sign-in" styleClass="commandButton"/>&nbsp; &nbsp; &nbsp;
+                    <p:commandButton action="SelectUserType" value="Register" icon="fa fa-user-plus" styleClass="commandButton"/>
+                </h:form>
+                <br />
+                <br />
+                <div id="sliderFrame">
+                    <div id="slider">
+                        <img src="resources/images/imageSliderPhotos/3.jpg" />
+                        <img src="resources/images/imageSliderPhotos/2.jpg" />
+                        <img src="resources/images/imageSliderPhotos/7.jpg" />
+                        <img src="resources/images/imageSliderPhotos/4.jpg" />
+                        <img src="resources/images/imageSliderPhotos/5.jpg" />                    
+                        <img src="resources/images/imageSliderPhotos/6.jpg" />                    
+                        <img src="resources/images/imageSliderPhotos/8.jpg" />
+                        <img src="resources/images/imageSliderPhotos/9.jpg" />                    
+                        <img src="resources/images/imageSliderPhotos/1.jpg" />                    
+                        <img src="resources/images/imageSliderPhotos/0.jpg" />
+                    </div>
+                </div>
+            </div>
+        </ui:define>
+    </ui:composition>
+    <!-- Do not enter tags after the composition line since they are ignored by JSF -->
+</html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created by Andres Pico on 2016.10.23 
+Copyright © 2016 Osman Balci. All rights reserved.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+    
+    <!-- 
+         The file MovieInfo.xhtml is used to display more information about the selected movie
+         In addition, it allows the user to read reviews about the movie.
+         It also recommends the user 5 similar movies to the one selected, given that there exist recommendations 
+    -->
+    
+    <!-- This page is constructed based on the siteTemplate -->
+    <ui:composition template="/template/siteTemplate.xhtml">
+        
+        <ui:define name="title">
+            <h:outputText value="Edit Opportunity"></h:outputText>
+        </ui:define>
+
+        <!-- Create the content for this page below -->
+        <ui:define name="editableContent">
+
+            <div align="center" style="padding-top: 30px">
+                <div align="center" style="width:60%">
+                    <!-- Error messages will be shown here if any  -->
+                    <p:messages id="msgs" showIcon="false"/>
+                    <h:outputLabel id="form-error-message" class="errorMessages" value="#{OpportunityController.statusMessage}"/>
+
+                    <!-- The different elements of data are displayed/included under this form -->
+                    <h:form id="EditOpportunityForm">
+                        <!-- The datatable "datalist" displays the beasic information about the movie as requested for the turotial -->
+                        <p:dataTable id="datalist" value="#{OpportunityController.selectedOpportunity}" var="opportunity"
+                                         paginator="false"
+                                         rowKey="#{opportunity.opportunityID}"
+                                         rows="1"
+                                         rowStyleClass="ui-state-highlight2"
+                                         >
+                                         
+                            <p:column style="font-size: 24px;" headerText="Opportunity Details" width="100%" >
+                                  
+                                <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%" styleClass="ui-datascroller-item" >
+                                    
+                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="logo,detail2" styleClass="ui-datascroller-item"> 
+                                    
+                                        <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" style="padding-left: 10%"/>
+                                        
+                                        <p:outputPanel style="padding: 0">
+                                            <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+
+                                                <h:outputText style="font-weight: bold; font-size: 20px" value="#{opportunity.title}" />
+                                                <h:outputText style="font-size: 20px" value="#Organization Name Here" />
+                                                <h:outputText style="font-size: 20px" value="Volunteering Area Here" />
+                                                
+                                                <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                    <h:outputText style="font-size: 20px" value="Address" />
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.address}" />
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.city}, #{opportunity.getStateName()}" />
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.zipCode}" />
+                                                </h:panelGrid>
+
+                                            </h:panelGrid>
+                                        </p:outputPanel>
+                                        
+                                    </h:panelGrid>
+                                    
+                                    <br/>
+                                    <h:outputText style="font-size: 18px; font-weight: bold" value="Description" />
+                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
+                                        <h:outputText style="font-size: 18px" value="#{opportunity.description}" />
+                                    </h:panelGrid>
+                                    
+                                    <br/><br/>
+                                    <h:panelGrid border="0" columns="1" cellpadding="5" style="width:100%; align-items: center; text-align: center">
+                                        <h:link style="color: black" outcome="SearchOpportunity"><i class="fa fa-arrow-left"></i>&nbsp;Go Back&nbsp;&nbsp;</h:link>
+                                    </h:panelGrid>
+                                    <br/><br/>
+                                    
+                                    
+                                </h:panelGrid>    
+                            </p:column>
+                        </p:dataTable>
+                         
+                    </h:form>
+                </div>
+            </div>
+        </ui:define>                
+    </ui:composition>
+</html>

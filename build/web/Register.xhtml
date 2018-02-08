@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:p="http://primefaces.org/ui" 
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    
+    <!-- Do not enter tags before the composition line since they are ignored by JSF -->
+
+    <!-- This page is constructed based on the siteTemplate -->
+    <ui:composition template="template/siteTemplate.xhtml">
+
+        <ui:define name="title">
+            <!-- Set the page title -->
+            <h:outputText value="Create Account"></h:outputText>
+        </ui:define>
+
+        <!-- Create the content for this page below -->
+        <ui:define name="editableContent">
+            
+            <div align="center" style="width:50%; margin:0 auto;">
+
+                <!-- Error messages will be shown here if any  -->
+                <p:messages id="msgs" showIcon="false"/>
+                <h:outputLabel id="form-error-message" class="errorMessages" value="#{UsersController.statusMessage}"/>
+
+                    <!-- The different elements of data are displayed/included under this form -->
+                    <h:form id="RegisterForm">
+                        <h2>Create an Account</h2>
+                    
+                        <!-- f:event allows ComponentSystemEventListener instances on a UI component in a JSF page. 
+                        The following f:event assigns an event listener with the UI component "form" - AccountCreationForm.
+
+                        type="postValidate" directs the listener event to invoke the accountManager.validateInformation method
+                        AFTER the UI component "form" is validated with the validation statements included below.
+                        -->
+                        <f:event listener="#{UsersController.validateInformation}" type="postValidate"/>
+
+                        <p:panelGrid columns="2" columnClasses="columnOne, columnTwo">
+
+                            <c:if test="#{UsersController.userRole == 'Organization'}">
+                                <p:outputLabel value="#{bundle.OrganizationName}" for="organizationName" />
+                                <p:inputText id="organizationName" value="#{UsersController.organizationName}" required="true" styleClass="accountInputTextField"
+                                             requiredMessage="#{bundle.RequiredMessage_OrganizationName}" label="Organization Name">
+                                    <f:validateLength minimum="2" />
+                                </p:inputText>
+                            </c:if>
+
+                            <p:outputLabel value="#{bundle.FirstName}" for="firstName" />
+                            <p:inputText id="firstName" value="#{UsersController.firstName}" required="true" styleClass="accountInputTextField"
+                                         requiredMessage="#{bundle.RequiredMessage_FirstName}" label="First Name">
+                                <f:validateLength minimum="2" />
+                            </p:inputText>   
+
+                            <p:outputLabel value="#{bundle.LastName}" for="lastName" />
+                            <p:inputText id="lastName" value="#{UsersController.lastName}" required="true" styleClass="accountInputTextField"
+                                         requiredMessage="#{bundle.RequiredMessage_LastName}" label="Last Name">
+                                <f:validateLength minimum="2" />
+                            </p:inputText>  
+                            
+                            <p:outputLabel value="#{bundle.Email}" for="email" />
+                            <p:inputText id="email" value="#{UsersController.email}" required="true" styleClass="accountInputTextField"
+                                         requiredMessage="#{bundle.RequiredMessage_Email}" label="Email">
+                                <f:validateLength minimum="2" />
+                                <!-- Execute the "validate" method in the "EmailValidator.java" class file to validate the email address entered. -->
+                                <f:validator validatorId="emailValidator" />  
+                            </p:inputText>
+
+                            <p:outputLabel value="#{bundle.Username}" for="username" />
+                            <p:inputText id="username" value="#{UsersController.username}" required="true" styleClass="accountInputTextField"
+                                         requiredMessage="#{bundle.RequiredMessage_Username}" label="Username">
+                                <f:validateLength minimum="2" />
+                            </p:inputText>
+                            
+                            <p:outputLabel value="#{bundle.Address}" for="address" />
+                            <p:inputText id="address" value="#{UsersController.address}" styleClass="accountInputTextField" label="Address">
+                            </p:inputText>
+                            
+                            <p:outputLabel value="#{bundle.City}" for="city" />
+                            <p:inputText id="city" value="#{UsersController.city}" styleClass="accountInputTextField" label="City">
+                            </p:inputText>
+                                                        
+                            <p:outputLabel value="#{bundle.State}" for="state" />
+                            <p:selectOneMenu id="state" label="State"
+                                             value="#{UsersController.stateID}" required="true" >
+                                <f:selectItems value="#{UsersController.statesNames}"/>
+                            </p:selectOneMenu>
+                            
+                            <p:outputLabel value="#{bundle.ZipCode}" for="zipCode" />
+                            <p:inputText id="zipCode" value="#{UsersController.zipCode}" required="true" styleClass="accountInputTextField" 
+                                         requiredMessage="#{bundle.RequiredMessage_ZipCode}" label="Zip Code">
+                                <f:validateLength minimum="5" />
+                                <!-- Execute the "validate" method in the "EmailValidator.java" class file to validate the email address entered. -->
+                                <f:validator validatorId="zipCodeValidator" /> 
+                            </p:inputText>
+                            
+                            <p:outputLabel value="#{bundle.PhoneNumber}" for="phoneNumber" />
+                            <p:inputText id="phoneNumber" value="#{UsersController.phoneNumber}" styleClass="accountInputTextField"
+                                         requiredMessage="#{bundle.RequiredMessage_PhoneNumber}" label="Phone Number">
+                                <!-- Need to implement "PhoneNumberValidator.java" class. -->
+                                <f:validator validatorId="phoneNumberValidator" />  
+                            </p:inputText>
+                            
+                            <p:outputLabel value="#{bundle.Website}" for="website" />
+                            <p:inputText id="website" value="#{UsersController.website}" styleClass="accountInputTextField" label="Website">
+                            </p:inputText>
+                                                                                                                                            
+                            <p:outputLabel value="#{bundle.SecurityQuestion}" for="securityQuestion" />
+                            <p:selectOneMenu id="securityQuestion" label="Security Questions"
+                                             value="#{UsersController.securityQuestion}" required="true" >
+                                <f:selectItems value="#{UsersController.securityQuestions}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="#{bundle.SecurityAnswer}" for="securityAnswer" />
+                            <p:inputText id="securityAnswer" value="#{UsersController.securityAnswer}" required="true" styleClass="accountInputTextField"
+                                         requiredMessage="#{bundle.RequiredMessage_SecurityAnswer}" label="Security Answer">
+                                <f:validateLength minimum="2" />
+                            </p:inputText>
+
+                            <h:outputLabel value="#{bundle.Password} *" for="password" />
+                            <p:password id="password" value="#{UsersController.password}" feedback="true" required="true" styleClass="accountInputTextField">
+                                <!-- Execute the "validate" method in the "PasswordValidator.java" class file to validate the password entered. -->
+                                <f:validator validatorId="passwordValidator" /> 
+                            </p:password>
+
+                            <h:outputLabel value="Confirm Password: *" for="confirmPassword" />
+                            <p:password id="confirmPassword" value="ToBeReadFromThisFieldByUsersController" required="true" styleClass="accountInputTextField"/>
+
+                        </p:panelGrid>
+
+                        <br/>
+                        <p:commandButton id="Submit" value="Register" action="#{UsersController.createUser()}" ajax="false" icon="fa fa-share-square" styleClass="commandButton" />
+                        <p:button outcome="index" value="Cancel" icon="fa fa-ban" styleClass="commandButton"></p:button>
+
+                    </h:form>
+                </div>
+        </ui:define>                
+    </ui:composition>
+</html>

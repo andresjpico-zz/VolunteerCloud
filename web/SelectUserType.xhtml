@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"   
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <!-- Do not enter tags before the composition line since they are ignored by JSF -->
+
+    <!-- This page is constructed based on the siteTemplate -->
+    <ui:composition template="template/siteTemplate.xhtml">
+
+        <!-- Create the content for this page below -->
+        <ui:define name="editableContent">
+
+            <div align="center">
+                <br/>
+                <br/>
+                <div style="font-family: cursive; font-size: 30px;">
+                    &ldquo;<h:outputText value="Select the way in which you want to empower the community."/>&rdquo;
+                </div>
+                <br/>
+                <br/>
+                <h:form>
+                    <p:commandButton value="Volunteer" action="#{UsersController.registerUser('Volunteer')}" ajax="false" icon="fa fa-sign-in" styleClass="commandButton"/>&nbsp; &nbsp; &nbsp;
+                    <p:commandButton value="Organization" action="#{UsersController.registerUser('Organization')}" ajax="false" icon="fa fa-user-plus" styleClass="commandButton"/>
+                </h:form>
+                <br />
+            </div>
+        </ui:define>
+    </ui:composition>
+    <!-- Do not enter tags after the composition line since they are ignored by JSF -->
+</html>

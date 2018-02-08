@@ -1,0 +1,2 @@
+INSERT INTO volunteercloud.volunteering_history (USER_ID, VOLUNTEERING_OPPORTUNITY_ID, PARTICIPATED) 
+	VALUES (1, 1, NULL);

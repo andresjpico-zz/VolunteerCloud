@@ -1,0 +1,18 @@
+/**
+ * Author:  andres
+ * Created: Jan 25, 2018
+ */
+
+# -------------------------------------------------------------
+# SQL Script to Create The VOLUNTEERING_HISTORY Table
+# -------------------------------------------------------------
+ 
+DROP TABLE IF EXISTS VOLUNTEERING_HISTORY;
+
+CREATE TABLE VOLUNTEERING_HISTORY
+(
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    USER_ID INT NOT NULL REFERENCES USERS(USER_ID) ON DELETE CASCADE,  
+    VOLUNTEERING_OPPORTUNITY_ID INT NOT NULL REFERENCES VOLUNTEERING_OPPORTUNITIES(ID) ON DELETE CASCADE,
+    PARTICIPATED CHAR(1)
+);

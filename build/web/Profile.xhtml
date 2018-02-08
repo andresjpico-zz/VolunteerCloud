@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <!-- Do not enter tags before the composition line since they are ignored by JSF -->
+
+    <!-- This page is constructed based on the siteTemplate -->
+    <ui:composition template="template/siteTemplate.xhtml">
+
+
+        <ui:define name="title">
+            <!-- Set the page title -->
+            <h:outputText value="My Account"></h:outputText>
+        </ui:define>
+        <!-- If you wish to add another CSS file:
+           <ui:define name="css">
+               <h:outputStylesheet library="css" name="filename.css" />
+           </ui:define>
+        -->
+
+        <!-- Create the content for this page below -->
+        <ui:define name="editableContent">
+            <div align="center" style="width:70%; margin:0 auto;">
+
+                <h:form id="CustomerViewForm">
+
+                    <c:if test="#{UsersController.isLoggedIn() == true}">
+
+                        <c:if test="#{UsersController.isOrganization() == true}">
+                            <h2> #{UsersController.selectedUser.organizationName} </h2>
+                        </c:if>
+                        <c:if test="#{UsersController.isVolunteer() == true}">
+                            <h2> #{UsersController.selectedUser.getFirstName()} #{UsersController.selectedUser.getLastName()}'s Account Profile </h2>
+                        </c:if>
+                        <h:graphicImage id="profilePic" class="profilePhoto"
+                                        value="#{UsersController.photoStorageDirectoryName()}#{UsersController.accountPhoto()}" >
+                        </h:graphicImage>
+                        <br />
+
+                        <p:button outcome="#{UsersController.showEditProfile()}" value="Edit Profile" icon="fa fa-pencil" styleClass="commandButton"></p:button>
+                        <p:button outcome="ChangePhoto" value="Change Photo" icon="fa fa-camera" styleClass="commandButton"></p:button>
+                        <p:growl id="message" showDetail="true" />
+
+                        <p:commandButton id="deactivate" value="Deactivate Account" update=":ConfirmPasswordForm" 
+                                         oncomplete="PF('ConfirmPasswordDialog').show()" icon="fa fa-trash" styleClass="commandButton">
+
+                            <p:confirm header="Account Deactivation Confirmation" 
+                                       message="Are you sure you want to deactivate your account? Other users won't be able to find you!" 
+                                       icon="ui-icon-alert" />
+                        </p:commandButton>
+
+                        <!-- First, confirmation dialog is displayed to check if user really wants to delete the account.
+                        If the user clicks YES, then ConfirmPasswordDialog is shown in the DeleteAccountDialog.xhtml file
+                        to confirm the deletion by entering password. This provides double layer confirmation. -->
+
+                        <p:confirmDialog id="confirmDialogBox" global="true" showEffect="fade" hideEffect="fade">
+                            <p:commandButton value="YES" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                            <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                        </p:confirmDialog>
+
+                        <!-- ****************** Delete Account End **************************** -->
+
+                        <br /><br />
+                        <h:panelGroup id="display">
+                            <p:panelGrid columns="2" columnClasses="columnOne, columnTwo" >
+                                
+                                <c:if test="#{UsersController.isOrganization() == true}">
+                                    <h:outputText value="#{bundle.OrganizationName}"/>
+                                    <h:outputText value="#{sessionScope.organizationName}" />
+                                </c:if>
+                                
+                                <h:outputText value="#{bundle.FirstName}"/>
+                                <h:outputText value="#{sessionScope.firstName}" />
+
+                                <h:outputText value="#{bundle.LastName}"/>
+                                <h:outputText value="#{sessionScope.lastName}" />
+                                
+                                <h:outputText value="#{bundle.Username}"/>
+                                <h:outputText value="#{sessionScope.username}" />
+                                
+                                <h:outputText value="#{bundle.Email}"/>
+                                <h:outputText value="#{sessionScope.userEmail}" />
+
+                                <h:outputText value="#{bundle.Mission}"/>
+                                <h:outputText value="#{UsersController.selectedUser.mission}" />
+                                
+                                <h:outputText value="#{bundle.PhoneNumber}"/>
+                                <h:outputText value="#{UsersController.selectedUser.phoneNumber}" />
+                                
+                                <h:outputText value="#{bundle.Website}"/>
+                                <h:outputText value="#{UsersController.selectedUser.website}" />
+                                
+                                <h:outputText value="#{bundle.Address}"/>
+                                <h:outputText value="#{UsersController.selectedUser.address}" />
+
+                                <h:outputText value="#{bundle.City}"/>
+                                <h:outputText value="#{UsersController.selectedUser.city}" />
+
+                                <h:outputText value="#{bundle.State}"/>
+                                <h:outputText value="#{UsersController.state}" />
+                                
+                                <h:outputText value="#{bundle.ZipCode}"/>
+                                <h:outputText value="#{UsersController.selectedUser.zipCode}" />
+                                
+                            </p:panelGrid>
+
+                        </h:panelGroup>
+
+                        <br/>
+                        <p:button outcome="#{UsersController.showDashboard()}" value="Go Back" icon="fa fa-step-backward" styleClass="commandButton"></p:button>
+
+                    </c:if>
+                    <c:if test="#{UsersController.isLoggedIn() == false}">
+                        <p:button icon="fa fa-sign-in" styleClass="commandButton" outcome="index" value="Please log in  :)" />
+                    </c:if> 
+                </h:form>
+
+                <ui:include src="DeleteProfileDialog.xhtml"/>
+            </div>
+        </ui:define>
+
+
+    </ui:composition>
+    <!-- Do not enter tags after the composition line since they are ignored by JSF -->
+
+</html>
