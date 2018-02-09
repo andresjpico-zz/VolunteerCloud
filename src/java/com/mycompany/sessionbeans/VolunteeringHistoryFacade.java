@@ -37,6 +37,7 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
     The following methods are added to the generated code
     -----------------------------------------------------
      */
+    
     /**
      * @param opportunityID is the Primary Key of the Roommate entity in a table row in the PizzaHutDB database.
      * @return object reference of the Roommate entity whose primary key is id
@@ -124,12 +125,48 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
         em.remove(record); 
     }
     
+    /**
+     * @param opportunityID is the id attribute (column) value of the roommate
+     * @return object reference of the roommate entity whose id is id
+     */
+    public boolean isVolunteerSubscribedToOpportunity(int userID, int opportunityID) {
+        if (em.createQuery("SELECT c FROM VolunteeringHistory c WHERE c.userID = :userID AND c.opportunityID = :opportunityID")
+                .setParameter("userID", userID)
+                .setParameter("opportunityID", opportunityID)
+                .getResultList().isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
     public List<Integer> getOpportunityParticipants(int opportunityID) {
                 
         List<Integer> participants = new ArrayList<Integer>(); 
-        participants = em.createQuery("SELECT c.userID FROM VolunteeringHistory c WHERE c.opportunityID LIKE :opportunityID AND c.participated LIKE :participated")
+        participants = em.createQuery("SELECT c.userID FROM VolunteeringHistory c WHERE c.opportunityID = :opportunityID")
+                    .setParameter("opportunityID", opportunityID)
+                    .getResultList();
+    
+        return participants;
+    }
+    
+    public List<Integer> getOpportunityConfirmedParticipants(int opportunityID) {
+                
+        List<Integer> participants = new ArrayList<Integer>(); 
+        participants = em.createQuery("SELECT c.userID FROM VolunteeringHistory c WHERE c.opportunityID IN :opportunityID AND c.participated = :participated")
                     .setParameter("opportunityID", opportunityID)
                     .setParameter("participated", 'Y')
+                    .getResultList();
+    
+        return participants;
+    }
+    
+    public List<Integer> getOpportunityUnconfirmedParticipants(int opportunityID) {
+                
+        List<Integer> participants = new ArrayList<Integer>(); 
+        participants = em.createQuery("SELECT c.userID FROM VolunteeringHistory c WHERE c.opportunityID IN :opportunityID AND c.participated = :participated")
+                    .setParameter("opportunityID", opportunityID)
+                    .setParameter("participated", 'N')
                     .getResultList();
     
         return participants;

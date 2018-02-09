@@ -5,7 +5,13 @@ Copyright © 2016 Osman Balci. All rights reserved.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
     
     <!-- 
          The file MovieInfo.xhtml is used to display more information about the selected movie
@@ -43,20 +49,58 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                   
                                 <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%" styleClass="ui-datascroller-item" >
                                     
-                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="logo,detail2" styleClass="ui-datascroller-item"> 
+                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="opportunityInfoPhotoColumn,detail2" styleClass="ui-datascroller-item"> 
                                     
-                                        <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" style="padding-left: 10%"/>
+                                        <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" 
+                                                        style="padding-left: 0%; border-color: black; border-style: solid; border-width: 1px"/>
                                         
                                         <p:outputPanel style="padding: 0">
                                             <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
-
                                                 <h:outputText style="font-weight: bold; font-size: 20px" value="#{opportunity.title}" />
-                                                <h:outputText style="font-size: 20px" value="#{opportunity.organizationName}" />
-                                                <h:outputText style="font-size: 20px" value="#{opportunity.getVolunteeringArea()}" />
+
+                                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                    <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                        <h:outputText style="font-size: 20px" value="#{opportunity.organizationName}" />
+                                                        <h:outputText style="font-size: 20px" value="#{opportunity.getVolunteeringArea()}" />
+                                                        <h:outputText style="font-size: 20px" value="Address" />
+                                                        <h:outputText style="font-size: 20px" value="#{opportunity.address}" />
+                                                    </h:panelGrid>
+                                                
+                                                    <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                        <c:if test="#{OpportunityController.isVolunteer() == true}">
+                                                            <p:commandButton oncomplete=":OpportunityInfoForm:datalist" update=":OpportunityInfoForm,datalist,participantslist" 
+                                                                             styleClass="#{OpportunityController.isVolunteerSubcribed() ? 'ui-state-highlight-command-button' : ''}" 
+                                                                             value="#{OpportunityController.isVolunteerSubcribed() ? 'Unsubscribe' : 'Subscribe'}"
+                                                                             disabled="#{OpportunityController.today.after(opportunity.dateOccurrence)}" 
+                                                                             actionListener="#{OpportunityController.opportunitySubscription()}" icon="ui-icon-circle-check">
+                                                                <f:setPropertyActionListener value="#{opportunity}" target="#{OpportunityController.selectedOpportunity}" />
+                                                            </p:commandButton>
+                                                        </c:if>
+                                                        
+                                                        <c:if test="#{OpportunityController.isOwner() == true}">
+                                                            <p:commandButton action="#{OpportunityController.showEditOpportunity()}" value="Edit" icon="ui-icon-pencil"
+                                                                             disabled="#{OpportunityController.today.after(opportunity.dateOccurrence)}" style="width: 150px">
+                                                            </p:commandButton>
+                                                            
+                                                            <p:commandButton action="#{OpportunityController.cancelOpportunity()}" value="Cancel" icon="ui-icon-cancel"
+                                                                             disabled="#{OpportunityController.today.after(opportunity.dateOccurrence)}" style="width: 150px">
+
+                                                               <p:confirm header="Opportunity Cancelation Confirmation" 
+                                                                          message="Are you sure you want to cancel this volunteering event? This action is not reversible!" 
+                                                                          icon="ui-icon-alert" />
+                                                           </p:commandButton>
+
+                                                           <p:confirmDialog id="confirmDialogBox" global="true" showEffect="fade" hideEffect="fade">
+                                                               <p:commandButton value="YES" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                                               <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                                           </p:confirmDialog>
+                                                        </c:if>
+                                                    </h:panelGrid>
+                                                </h:panelGrid>
                                                 
                                                 <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
-                                                    <h:outputText style="font-size: 20px" value="Address" />
-                                                    <h:outputText style="font-size: 20px" value="#{opportunity.address}" />
+                                                    <!--<h:outputText style="font-size: 20px" value="Address" />-->
+                                                    <!--<h:outputText style="font-size: 20px" value="#{opportunity.address}" />-->
                                                     <h:outputText style="font-size: 20px" value="#{opportunity.city}, #{opportunity.getStateName()}" />
                                                     <h:outputText style="font-size: 20px" value="#{opportunity.zipCode}" />
                                                 </h:panelGrid>
@@ -75,26 +119,26 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     
                                     <br/><br/>
                                     <h:panelGrid border="0" columns="1" cellpadding="5" style="width:100%; align-items: center; text-align: center">
-                                        <h:link style="color: black" outcome="SearchOpportunity"><i class="fa fa-arrow-left"></i>&nbsp;Go Back&nbsp;&nbsp;</h:link>
+                                        <h:link style="color: black" outcome="SearchOpportunity"><i class="fa fa-arrow-left"></i>Go Back</h:link>
                                     </h:panelGrid>
                                     <br/><br/>
                                     
-                                    <h:outputText style="font-size: 18px; font-weight: bold" value="Opportunity Participants" />
-<!--                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
+<!--                                    <h:outputText style="font-size: 18px; font-weight: bold" value="Opportunity Participants" />
+                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
                                         <h:outputText style="font-size: 18px" value="To be done.." />
                                     </h:panelGrid>-->
                                     <div id="divID">
-                                        <p:dataTable id="datalist" value="#{OpportunityController.participants}" var="volunteer"
-                                                         selectionMode="single" selection="#{VolunteerController.selectedParticipant}"
-                                                         paginator="false"
-                                                         rowKey="#{volunteer.userID}"
+                                        <p:dataTable id="participantslist" value="#{OpportunityController.participants}" var="volunteer"
+                                                         selectionMode="single" selection="#{OpportunityController.selectedParticipant}"
+                                                         paginator="false" disabledSelection="true"
+                                                         rowKey="#{volunteer.userID}" emptyMessage="No Participants Found :( !"
                                                          rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight"
                                                          >
 
 <!--                                            <p:ajax event="rowSelect" listener="#{VolunteerController.showVolunteerInfo()}"/>
                                             <p:ajax event="rowUnselect" listener="#{VolunteerController.showVolunteerInfo()}"/> -->
 
-                                            <p:column style="font-size: 24px" headerText="Search Results" width="100%" >
+                                            <p:column style="font-size: 24px" headerText="Participants" width="100%" >
 
                                                 <h:panelGrid border="0" columns="3" cellpadding="5" style="width:100%" columnClasses="searchRecordPhotoColumn,detail1,arrow" 
                                                              styleClass="ui-datascroller-item"> 

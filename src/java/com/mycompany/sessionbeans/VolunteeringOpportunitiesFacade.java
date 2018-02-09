@@ -42,6 +42,50 @@ public class VolunteeringOpportunitiesFacade extends AbstractFacade<Volunteering
     -----------------------------------------------------
      */
     /**
+     * Stores the newly CREATED Apartment (entity) object into the database
+     *
+     * @param opportunity contains object reference of the Apartment
+     */
+    public void ownEdit(VolunteeringOpportunities opportunity) {
+
+        em.createQuery("UPDATE VolunteeringOpportunities c SET c.title = :title, c.description = :description, "
+                + "c.volunteeringAreaID = :volunteeringAreaID, c.address = :address, c.city = :city, "
+                + "c.state = :state, c.zipCode = :zipCode WHERE c.opportunityID = :opportunityID")
+                .setParameter("opportunityID", opportunity.getOpportunityID())
+                .setParameter("title", opportunity.getTitle())
+                .setParameter("description", opportunity.getDescription())
+                .setParameter("volunteeringAreaID", opportunity.getVolunteeringAreaID())
+                .setParameter("address", opportunity.getAddress())
+                .setParameter("city", opportunity.getCity())
+                .setParameter("state", opportunity.getState())
+                .setParameter("zipCode", opportunity.getZipCode())
+                .executeUpdate();
+        em.flush();
+    }
+    
+    /**
+     * @param opportunity contains object reference of the Apartment
+     */
+    public void cancelOpportunity(VolunteeringOpportunities opportunity) {
+
+        em.createQuery("UPDATE VolunteeringOpportunities c SET c.active = :active WHERE c.opportunityID = :opportunityID")
+                .setParameter("opportunityID", opportunity.getOpportunityID())
+                .setParameter("active", opportunity.getActive())
+                .executeUpdate();
+        em.flush();
+    }
+    
+    /**
+     * @param opportunity contains object reference of the Apartment
+     */
+    public void ownRemove(VolunteeringOpportunities opportunity) {
+        em.createQuery("DELETE VolunteeringOpportunities c WHERE c.opportunityID = :opportunityID")
+                .setParameter("opportunityID", opportunity.getOpportunityID())
+                .executeUpdate();
+        em.flush();
+    }
+    
+    /**
      * @param opportunityID is the Primary Key of the Roommate entity in a table row in the PizzaHutDB database.
      * @return object reference of the Roommate entity whose primary key is id
      */

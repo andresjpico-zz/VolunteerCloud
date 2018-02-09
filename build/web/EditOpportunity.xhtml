@@ -5,7 +5,13 @@ Copyright © 2016 Osman Balci. All rights reserved.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
     
     <!-- 
          The file MovieInfo.xhtml is used to display more information about the selected movie
@@ -30,35 +36,54 @@ Copyright © 2016 Osman Balci. All rights reserved.
                     <h:outputLabel id="form-error-message" class="errorMessages" value="#{OpportunityController.statusMessage}"/>
 
                     <!-- The different elements of data are displayed/included under this form -->
-                    <h:form id="EditOpportunityForm">
-                        <!-- The datatable "datalist" displays the beasic information about the movie as requested for the turotial -->
+                    <h:form id="OpportunityInfoForm">
+                        <!-- The datatable "datalist" displays the beasic information about the movie as requested for the tutorial -->
                         <p:dataTable id="datalist" value="#{OpportunityController.selectedOpportunity}" var="opportunity"
                                          paginator="false"
                                          rowKey="#{opportunity.opportunityID}"
                                          rows="1"
                                          rowStyleClass="ui-state-highlight2"
                                          >
-                                         
-                            <p:column style="font-size: 24px;" headerText="Opportunity Details" width="100%" >
-                                  
+  
+                            <p:column style="font-size: 24px;" headerText="Edit Opportunity" width="100%" >
+
                                 <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%" styleClass="ui-datascroller-item" >
+                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="opportunityInfoPhotoColumn,detail2" styleClass="ui-datascroller-item"> 
                                     
-                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="logo,detail2" styleClass="ui-datascroller-item"> 
-                                    
-                                        <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" style="padding-left: 10%"/>
-                                        
+                                        <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                            <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" 
+                                                            style="padding-left: 0%; border-color: black; border-style: solid; border-width: 1px"/>
+                                            <p:button outcome="ChangePhoto" value="Change Photo" icon="fa fa-camera" styleClass="commandButton" style="width: 87%"></p:button>
+                                        </h:panelGrid>
+                                            
                                         <p:outputPanel style="padding: 0">
                                             <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
-
-                                                <h:outputText style="font-weight: bold; font-size: 20px" value="#{opportunity.title}" />
-                                                <h:outputText style="font-size: 20px" value="#Organization Name Here" />
-                                                <h:outputText style="font-size: 20px" value="Volunteering Area Here" />
+                                                <p:inputText id="title" value="#{opportunity.title}" required="true" styleClass="accountInputTextField"
+                                                             requiredMessage="#{bundle.RequiredMessage_Title}" label="Title" style="font-weight: bold; font-size: 20px; width: 60%">
+                                                    <f:validateLength minimum="2" />
+                                                </p:inputText>   
+                                                
+                                                <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.organizationName}" />
+                                                    <p:selectOneMenu id="volunteeringArea" label="Volunteering Area" style="width: 60%; font-size: 20px"
+                                                                     value="#{opportunity.volunteeringAreaID}" required="true">
+                                                        <f:selectItems value="#{OpportunityController.volunteeringAreas}"/>
+                                                    </p:selectOneMenu>
+                                                </h:panelGrid>
                                                 
                                                 <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
                                                     <h:outputText style="font-size: 20px" value="Address" />
-                                                    <h:outputText style="font-size: 20px" value="#{opportunity.address}" />
-                                                    <h:outputText style="font-size: 20px" value="#{opportunity.city}, #{opportunity.getStateName()}" />
-                                                    <h:outputText style="font-size: 20px" value="#{opportunity.zipCode}" />
+                                                    <p:inputText id="address" style="font-size: 20px; width: 60%" value="#{opportunity.address}" styleClass="accountInputTextField" label="Address" />
+                                                    <p:inputText id="city" style="font-size: 20px; width: 60%" value="#{opportunity.city}" styleClass="accountInputTextField" label="City" />
+                                                    <p:selectOneMenu id="state" label="State" style="width: 60%; font-size: 20px"
+                                                                     value="#{opportunity.state}" required="true" >
+                                                        <f:selectItems value="#{OpportunityController.statesNames}"/>
+                                                    </p:selectOneMenu>
+                                                    <p:inputText id="zipCode" value="#{opportunity.zipCode}" required="true" styleClass="accountInputTextField" 
+                                                                 style="font-size: 20px; width: 60%" requiredMessage="#{bundle.RequiredMessage_ZipCode}" label="Zip Code">
+                                                        <f:validateLength minimum="5" />
+                                                        <f:validator validatorId="zipCodeValidator" /> 
+                                                    </p:inputText>
                                                 </h:panelGrid>
 
                                             </h:panelGrid>
@@ -69,20 +94,27 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     <br/>
                                     <h:outputText style="font-size: 18px; font-weight: bold" value="Description" />
                                     <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
-                                        <h:outputText style="font-size: 18px" value="#{opportunity.description}" />
+                                        <p:inputTextarea id="description" value="#{opportunity.description}" styleClass="accountInputTextField" label="Description"
+                                                    style="font-size: 18px; width: 95%" rows="5" cols="10" maxlength="500" > 
+                                           <f:validateLength maximum="500" />
+                                       </p:inputTextarea> 
                                     </h:panelGrid>
+                                    <br/>
                                     
-                                    <br/><br/>
-                                    <h:panelGrid border="0" columns="1" cellpadding="5" style="width:100%; align-items: center; text-align: center">
-                                        <h:link style="color: black" outcome="SearchOpportunity"><i class="fa fa-arrow-left"></i>&nbsp;Go Back&nbsp;&nbsp;</h:link>
+                                    <h:panelGrid border="0" columns="2">
+                                        <p:commandButton id="Submit" value="Save" action="#{OpportunityController.editOpportunity()}" ajax="false" icon="fa fa-pencil" styleClass="commandButton" style="float:right; margin-right: 5px"/>
+                                        <p:button outcome="OpportunityInfo" value="Cancel" icon="fa fa-ban" styleClass="commandButton" style="float:left; margin-left: 5px"></p:button>
                                     </h:panelGrid>
+                                        
                                     <br/><br/>
-                                    
+<!--                                    <h:panelGrid border="0" columns="1" cellpadding="5" style="width:100%; align-items: center; text-align: center">
+                                        <h:link style="color: black" outcome="OpportunityInfo"><i class="fa fa-arrow-left"></i>&nbsp;Go Back&nbsp;&nbsp;</h:link>
+                                    </h:panelGrid>
+                                    <br/><br/>-->
                                     
                                 </h:panelGrid>    
-                            </p:column>
+                            </p:column>                        
                         </p:dataTable>
-                         
                     </h:form>
                 </div>
             </div>

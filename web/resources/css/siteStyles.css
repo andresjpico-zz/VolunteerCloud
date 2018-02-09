@@ -581,6 +581,15 @@ Thumbnails, description and the arrow button
     width: 13%;
 }
 
+.opportunityInfoPhotoColumn {
+    align-content: center;
+    alignment-baseline: central;
+    align-items: center;
+    alignment-adjust: central;
+    align-self: center;
+    width: 18%;
+}
+
 .searchFieldColumn {
     text-align: left;
     white-space: nowrap;
@@ -702,6 +711,15 @@ Thumbnails, description and the arrow button
 /*Changes color of selected row in datatable*/
 .ui-state-highlight {
     background-color: white !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: #09242C !important;
+    text-decoration: none !important;
+    text-shadow: none !important;
+}
+
+.ui-state-highlight-command-button {
+    background-color: green !important;
     background-image: none !important;
     box-shadow: none !important;
     color: #09242C !important;

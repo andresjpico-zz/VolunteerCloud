@@ -521,6 +521,10 @@ public class VolunteeringOpportunitiesController implements Serializable {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userEmail") == "Organization";
     }
     
+    public boolean isOwner() {
+        return (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID") == selectedOpportunity.getOwnerID();
+    }
+    
     /*
     Create a new task account. Return "" if an error occurs; otherwise,
     upon successful account creation, redirect to show the SignIn page.
@@ -577,50 +581,59 @@ public class VolunteeringOpportunitiesController implements Serializable {
         if (statusMessage == null || statusMessage.isEmpty()) {
             
             try { 
-                opportunityFacade.edit(selectedOpportunity);
+                //opportunityFacade.edit(selectedOpportunity);
+                opportunityFacade.ownEdit(selectedOpportunity);
                 state = Constants.STATES[selectedOpportunity.getState()];
                 opportunities = null;
             } catch (EJBException e) {
-                statusMessage = "Something went wrong while confirming the volunteer's participation.";
+                statusMessage = "Something went wrong while editing your opportunity.";
+                return "";
             }
         }
-        return "";
+        return showUpdatedOpportunityInfo();
     }
 
-    public void cancelOpportunity() {
+    public String cancelOpportunity() {
         // Check if date only checks calendar day or time as well
         if(selectedOpportunity.getDateOccurrence().before(today)) {
-            statusMessage = "You cannot deactivate a past event.";
-            return;
+            statusMessage = "You cannot cancel a past event.";
+            return "";
         }
         
         if (selectedOpportunity.getDateOccurrence().after(today) && (statusMessage == null || statusMessage.isEmpty())) {
-            selectedOpportunity.setActive('N');
-            opportunityFacade.edit(selectedOpportunity);
-            if (!JsfUtil.isValidationFailed()) {
-                // The DELETE operation is successfully performed
-                selectedOpportunity = null;    // Set the instance variable 'selected' point to no object
-                opportunities = null;       // Empty the items list
+            try {
+                selectedOpportunity.setActive('N');
+                opportunityFacade.cancelOpportunity(selectedOpportunity);
+                //opportunityFacade.edit(selectedOpportunity);
+                selectedOpportunity = null;
+                opportunities = null;
+                statusMessage = "Your opportunity has been canceled!";
+
+            } catch (EJBException e) {
+                statusMessage = "Something went wrong while cancelling your event";
+                return "";
             }
+            
+            // show Volunteering Activity instead!
+            return showSearchOpportunity();
         }    
+        return "";
     }
     
     public void deleteOpportunity() {
         if (statusMessage == null || statusMessage.isEmpty()) {
-            opportunityFacade.remove(selectedOpportunity);
+            opportunityFacade.ownRemove(selectedOpportunity);
+            //opportunityFacade.remove(selectedOpportunity);
             if (!JsfUtil.isValidationFailed()) {
                 // The DELETE operation is successfully performed
-                selectedOpportunity = null;    // Set the instance variable 'selected' point to no object
+                selectedOpportunity = null;
                 state = null;
-                opportunities = null;       // Empty the items list
+                opportunities = null;
             }
         }
     }
     
     public List<VolunteeringOpportunities> searchAllOpportunities() {
-        
-    //Here you have to write logic to decide which method to call
-        // If no search fields then show all
         opportunities = opportunityFacade.findAll();
         return opportunities;
     }
@@ -709,8 +722,30 @@ public class VolunteeringOpportunitiesController implements Serializable {
         
         return zipCodesList;
     }
+   
+    public boolean isVolunteerSubcribed() {
+        int userID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
+        return volunteeringHistoryFacade.isVolunteerSubscribedToOpportunity(userID, selectedOpportunity.getOpportunityID());
+    }
     
-    public void subscribeToOpportunity() {
+    public boolean isVolunteerSubcribed(int userID) {
+        return volunteeringHistoryFacade.isVolunteerSubscribedToOpportunity(userID, selectedOpportunity.getOpportunityID());
+    }
+    
+    public String opportunitySubscription() {
+        
+        int userID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
+        
+        if (!isVolunteerSubcribed(userID))
+            subscribeToOpportunity(userID);
+        else
+            unsubscribeFromOpportunity(userID);
+        
+        getOpportunityParticipants();
+        return "";
+    }
+    
+    public void subscribeToOpportunity(int userID) {
         
         
         if(selectedOpportunity.getDateOccurrence().before(today)) {
@@ -722,8 +757,6 @@ public class VolunteeringOpportunitiesController implements Serializable {
             try {
                 // Instantiate a new Task object
                 VolunteeringHistory record = new VolunteeringHistory();
-                int userID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
-
                 record.setUserID(userID);
                 record.setOpportunityID(selectedOpportunity.getOpportunityID());
                 volunteeringHistoryFacade.create(record);
@@ -739,7 +772,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
         }
     }
     
-    public void unsubscribeToOpportunity() {
+    public void unsubscribeFromOpportunity(int userID) {
 
         if(selectedOpportunity.getDateOccurrence().before(today)) {
             statusMessage = "You cannot unsubscribe from a past event.";
@@ -747,9 +780,6 @@ public class VolunteeringOpportunitiesController implements Serializable {
         }
         
         if (statusMessage == null || statusMessage.isEmpty()) {
-   
-            int userID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
-            
             try {
                 volunteeringHistoryFacade.deleteRecord(userID, selectedOpportunity.getOpportunityID());
                 opportunities = null;       // Empty the items list
@@ -805,7 +835,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
         records = null;
         statusMessage = "";
         participantsIDs = volunteeringHistoryFacade.getOpportunityParticipants(selectedOpportunity.getOpportunityID());
-        participants = volunteerFacade.SearchVolunteers(participantsIDs);
+        participants = (participantsIDs.isEmpty()) ? null : volunteerFacade.SearchVolunteers(participantsIDs);
         return;
     }
     
@@ -887,12 +917,38 @@ public class VolunteeringOpportunitiesController implements Serializable {
         }
     }
     
+    public String showSearchOpportunity() {
+
+        statusMessage = null;
+        if (isLoggedIn()) {
+            return "SearchOpportunity?faces-redirect=true";
+        } else {
+            return showIndexPage();
+        }
+    }
+    
+    public String showUpdatedOpportunityInfo() {
+        statusMessage = null;
+        return "OpportunityInfo.xhtml?faces-redirect=true";
+    }
+    
     public void showOpportunityInfo() {
         statusMessage = null;
         try {
             // CallMethodForVolunteerInfo();
             getOpportunityParticipants();
             FacesContext.getCurrentInstance().getExternalContext().redirect("OpportunityInfo.xhtml?faces-redirect=true");
+        } 
+        catch(IOException e) { 
+        
+        }
+    }
+    
+    public void showEditOpportunity() {
+        statusMessage = null;
+        try {
+            // CallMethodForVolunteerInfo();
+            FacesContext.getCurrentInstance().getExternalContext().redirect("EditOpportunity.xhtml?faces-redirect=true");
         } 
         catch(IOException e) { 
         

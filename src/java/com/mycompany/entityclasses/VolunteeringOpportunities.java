@@ -108,8 +108,12 @@ public class VolunteeringOpportunities implements Serializable {
     @Column(name = "ACTIVE")
     private Character active;
     @Basic(optional = false)
-    @Column(name = "ORGANIZATION_NAME", table = "USERS")
+    @Column(name = "ORGANIZATION_NAME", table = "USERS", insertable = false, updatable = false)
     private String organizationName;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "USER_ID", table = "USERS", insertable = false, updatable = false)
+    protected int userID;
 
 //    private OrganizationFacade organizationFacade;
     
@@ -240,6 +244,10 @@ public class VolunteeringOpportunities implements Serializable {
     
     public String getOrganizationName() {
         return organizationName;
+    }
+    
+    public int getUserID() {
+        return userID;
     }
     
     @Override
