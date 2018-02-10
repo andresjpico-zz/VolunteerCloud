@@ -6,6 +6,7 @@
 package com.mycompany.sessionbeans;
 
 import com.mycompany.entityclasses.Volunteer;
+import com.mycompany.entityclasses.VolunteeringHistory;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -277,5 +278,16 @@ public class VolunteerFacade extends AbstractFacade<Volunteer> {
     
         return volunteers;
     }
+    
+//    public List<Volunteer> SearchVolunteers2(List<VolunteeringHistory> participationRecords) {
+//                
+//        List<Volunteer> volunteers = new ArrayList<Volunteer>(); 
+//        volunteers = em.createQuery("SELECT c FROM Volunteer c WHERE c.userID IN :userID AND c.active = :active")
+//                    .setParameter("userID", participationRecords.)
+//                    .setParameter("active", 'Y')
+//                    .getResultList();
+//    
+//        return volunteers;
+//    }
     
 }

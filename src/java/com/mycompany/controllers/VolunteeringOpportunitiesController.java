@@ -92,6 +92,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     
     private VolunteeringHistory selectedRecord;
     private List<VolunteeringHistory> records;
+    private List<VolunteeringHistory> participationRecords;
     
     private Volunteer selectedParticipant;
     private List<Volunteer> participants;
@@ -108,7 +109,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     private VolunteerFacade volunteerFacade;
     
     @EJB
-    private OrganizationFacade OrganizationFacade;
+    private OrganizationFacade organizationFacade;
         
     @EJB
     private PhotoFacade photoFacade;
@@ -461,6 +462,14 @@ public class VolunteeringOpportunitiesController implements Serializable {
         this.records = records;
     }
     
+    public List<VolunteeringHistory> getParticipationRecords() {
+        return participationRecords;
+    }
+
+    public void setParticipationRecords(List<VolunteeringHistory> recoparticipationRecordsrds) {
+        this.participationRecords = participationRecords;
+    }
+    
         // EL in Profile.xhtml invokes this method to obtain the constant value
     public String photoStorageDirectoryName() {
         return Constants.STORAGE_DIRECTORY;
@@ -522,7 +531,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     }
     
     public boolean isOwner() {
-        return (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID") == selectedOpportunity.getOwnerID();
+        return (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID") == selectedOpportunity.getOwnerID().getUserID();
     }
     
     /*
@@ -537,9 +546,10 @@ public class VolunteeringOpportunitiesController implements Serializable {
 
             // Get ID of user creating the opportunity
             ownerID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
-
+            Users owner = organizationFacade.findByID(ownerID);
+            
             // Dress up the newly created Task object with the values given
-            opportunity.setOwnerID(ownerID);
+            opportunity.setOwnerID(owner);
             opportunity.setVolunteeringAreaID(volunteeringAreaID);
             opportunity.setTitle(title);
             opportunity.setDescription(description);
@@ -581,8 +591,8 @@ public class VolunteeringOpportunitiesController implements Serializable {
         if (statusMessage == null || statusMessage.isEmpty()) {
             
             try { 
-                //opportunityFacade.edit(selectedOpportunity);
-                opportunityFacade.ownEdit(selectedOpportunity);
+                opportunityFacade.edit(selectedOpportunity);
+//                opportunityFacade.ownEdit(selectedOpportunity);
                 state = Constants.STATES[selectedOpportunity.getState()];
                 opportunities = null;
             } catch (EJBException e) {
@@ -603,8 +613,8 @@ public class VolunteeringOpportunitiesController implements Serializable {
         if (selectedOpportunity.getDateOccurrence().after(today) && (statusMessage == null || statusMessage.isEmpty())) {
             try {
                 selectedOpportunity.setActive('N');
-                opportunityFacade.cancelOpportunity(selectedOpportunity);
-                //opportunityFacade.edit(selectedOpportunity);
+//                opportunityFacade.cancelOpportunity(selectedOpportunity);
+                opportunityFacade.edit(selectedOpportunity);
                 selectedOpportunity = null;
                 opportunities = null;
                 statusMessage = "Your opportunity has been canceled!";
@@ -622,8 +632,8 @@ public class VolunteeringOpportunitiesController implements Serializable {
     
     public void deleteOpportunity() {
         if (statusMessage == null || statusMessage.isEmpty()) {
-            opportunityFacade.ownRemove(selectedOpportunity);
-            //opportunityFacade.remove(selectedOpportunity);
+//            opportunityFacade.ownRemove(selectedOpportunity);
+            opportunityFacade.remove(selectedOpportunity);
             if (!JsfUtil.isValidationFailed()) {
                 // The DELETE operation is successfully performed
                 selectedOpportunity = null;
@@ -732,6 +742,18 @@ public class VolunteeringOpportunitiesController implements Serializable {
         return volunteeringHistoryFacade.isVolunteerSubscribedToOpportunity(userID, selectedOpportunity.getOpportunityID());
     }
     
+    // Calling this method for each volunteer might not be the best way to do this. In fact it can result in an expensive operation as the number of records increases.
+    // However, realistically, the number of participants in a volunteering event is not very high. This means that even if this could not escalate very well, it is good
+    // enough for business purposes. First make it work, then make it pretty. Ideal solution might require too much effort or time in relation to the reward at the moment.
+    public boolean isVolunteerParticipationConfirmed() {
+        int userID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
+        return volunteeringHistoryFacade.isVolunteerParticipationConfirmed(userID, selectedOpportunity.getOpportunityID());
+    }
+    
+    public boolean isVolunteerParticipationConfirmed(int userID) {
+        return volunteeringHistoryFacade.isVolunteerParticipationConfirmed(userID, selectedOpportunity.getOpportunityID());
+    }
+    
     public String opportunitySubscription() {
         
         int userID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
@@ -834,10 +856,19 @@ public class VolunteeringOpportunitiesController implements Serializable {
         participants = null;
         records = null;
         statusMessage = "";
-        participantsIDs = volunteeringHistoryFacade.getOpportunityParticipants(selectedOpportunity.getOpportunityID());
+        participantsIDs = volunteeringHistoryFacade.getOpportunityParticipantsIDs(selectedOpportunity.getOpportunityID());
         participants = (participantsIDs.isEmpty()) ? null : volunteerFacade.SearchVolunteers(participantsIDs);
         return;
     }
+    
+//    public void getOpportunityParticipants() {
+//        participants = null;
+//        records = null;
+//        statusMessage = "";
+//        participationRecords = volunteeringHistoryFacade.getOpportunityParticipantsRecords(selectedOpportunity.getOpportunityID());
+//        participants = (participationRecords.isEmpty()) ? null : volunteerFacade.SearchVolunteers(participationRecords);
+//        return;
+//    }
     
     //Method hides table with data when exiting the page
     public void leaving() {
@@ -952,6 +983,19 @@ public class VolunteeringOpportunitiesController implements Serializable {
         } 
         catch(IOException e) { 
         
+        }
+    }
+    
+    public String showChangeOpportunityPhoto() {
+
+        statusMessage = null;
+        if (isLoggedIn()) {
+            FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("opportunityID", selectedOpportunity.getOpportunityID());
+//            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().clear();
+            return "ChangeOpportunityPhoto?faces-redirect=true";
+        } else {
+            return showIndexPage();
         }
     }
         

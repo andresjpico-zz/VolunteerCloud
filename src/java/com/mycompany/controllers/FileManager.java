@@ -1,9 +1,11 @@
 package com.mycompany.controllers;
 
 import com.mycompany.entityclasses.Users;
+import com.mycompany.entityclasses.VolunteeringOpportunities;
 import com.mycompany.entityclasses.Photo;
 import com.mycompany.entityclasses.Constants;
 import com.mycompany.sessionbeans.UsersFacade;
+import com.mycompany.sessionbeans.VolunteeringOpportunitiesFacade;
 import com.mycompany.sessionbeans.PhotoFacade;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -41,6 +43,9 @@ public class FileManager implements Serializable {
 
     @EJB
     private UsersFacade usersFacade;
+    
+    @EJB 
+    private VolunteeringOpportunitiesFacade opportunityFacade;
     
     /*
     The @EJB annotation implies that the EJB container will perform an injection of the object
@@ -125,12 +130,53 @@ public class FileManager implements Serializable {
         return "Profile?faces-redirect=true";
     }
 
+    // Handle the upload of the selected file
+    public String uploadOpportunityPhoto() {
+
+        // Check if a file is selected
+        if (file.getSize() == 0) {
+            statusMessage = "You need to choose a file first!";
+            return "";
+        }
+
+        // Obtain the uploaded file's MIME file type
+        String mimeFileType = file.getContentType();
+
+        if (mimeFileType.startsWith("image/")) {
+            // The uploaded file is an image file
+            /*
+            The subSequence() method returns the portion of the mimeFileType string from the 6th
+            position to the last character. Note that it starts with "image/" which has 6 characters at
+            positions 0,1,2,3,4,5. Therefore, we start the subsequence at position 6 to obtain the file extension.
+             */
+            String fileExtension = mimeFileType.subSequence(6, mimeFileType.length()).toString();
+
+            String fileExtensionInCaps = fileExtension.toUpperCase();
+
+            if (fileExtensionInCaps.endsWith("JPG") || fileExtensionInCaps.endsWith("JPEG") || fileExtensionInCaps.endsWith("PNG")) {
+                // File type is acceptable
+            } else {
+                statusMessage = "The uploaded file type is not a JPG, JPEG or PNG!";
+                return "";
+            }
+        } else {
+            statusMessage = "The uploaded file must be an image file of type JPG, JPEG or PNG!";
+            return "";
+        }
+
+        storeOpportunityPhotoFile(file);
+        statusMessage = "";
+
+        // Redirect to show the Profile page
+        return "EditOpportunity?faces-redirect=true";
+    }
+    
     // Cancel file upload
     public String cancel() {
         statusMessage = "";
         return "Profile?faces-redirect=true";
     }
-
+    
     // Store the uploaded photo file and its thumbnail version and create a database record 
     public FacesMessage storePhotoFile(UploadedFile file) {
         try {
@@ -194,6 +240,84 @@ public class FileManager implements Serializable {
             // Create and save the thumbnail version of the uploaded file
             saveThumbnail(uploadedFile, photo);
 
+            // Compose the result message
+            resultMsg = new FacesMessage("Success!", "File Successfully Uploaded!");
+
+            // Return the result message
+            return resultMsg;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new FacesMessage("Upload failure!",
+                "There was a problem reading the image file. Please try again with a new photo file.");
+    }
+    
+    // Store the uploaded photo file and its thumbnail version and create a database record 
+    public FacesMessage storeOpportunityPhotoFile(UploadedFile file) {
+        try {
+
+            // Delete logged-in roommate's uploaded photo file, its thumbnail file, tmp_file, and its database record.
+            deleteOpportunityPhoto();
+
+            /*
+            InputStream is an abstract class, which is the superclass of all classes representing an input stream of bytes.
+            Convert the uploaded file into an input stream of bytes.
+             */
+            InputStream inputStream = file.getInputstream();
+
+            // Write the uploaded file's input stream of bytes into the file named TEMP_FILE = "tmp_file"
+            File tempFile = inputStreamToFile(inputStream, Constants.TEMP_FILE);
+
+            // Close the input stream and release any system resources associated with it
+            inputStream.close();
+
+            FacesMessage resultMsg;
+
+            // Obtain the username of the logged-in roommate
+            Integer userID = (int) FacesContext.getCurrentInstance()
+                    .getExternalContext().getSessionMap().get("userID");
+            Integer opportunityID = (int) FacesContext.getCurrentInstance()
+                    .getExternalContext().getSessionMap().get("opportunityID");
+
+            // Obtain the uploaded file's MIME file type
+            String mimeFileType = file.getContentType();
+
+            // If it is an image file, obtain its file extension; otherwise, set png as the file extension anyway.
+            String fileExtension = mimeFileType.startsWith("image/") ? mimeFileType.subSequence(6, mimeFileType.length()).toString() : "png";
+
+            /*
+            Obtain the list of Photo objects that belong to the roommate whose
+            database primary key is roommate.getroommateID()
+             */
+            Photo photo = photoFacade.findPhotoByOpportunityID(opportunityID);
+
+            if (photo != null) {
+                // Remove the photo from the database
+                photoFacade.remove(photo);
+            }
+
+            // Construct a new Photo object with file extension and roommate's object reference
+            Photo newPhoto = new Photo(fileExtension, userID, opportunityID);
+
+            // Create a record for the new Photo object in the database
+            photoFacade.create(newPhoto);
+
+            photo = photoFacade.findPhotoByOpportunityID(opportunityID);
+
+            // Reconvert the uploaded file into an input stream of bytes.
+            inputStream = file.getInputstream();
+
+            // Write the uploaded file's input stream of bytes under the photo object's
+            // filename using the inputStreamToFile method given below
+            File uploadedFile = inputStreamToFile(inputStream, photo.getFilename());
+
+            // Create and save the thumbnail version of the uploaded file
+            saveThumbnail(uploadedFile, photo);
+            
+            // Removes selected opportunityID from session map as picture has been saved by now
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("opportunityID");
+            
             // Compose the result message
             resultMsg = new FacesMessage("Success!", "File Successfully Uploaded!");
 
@@ -289,6 +413,47 @@ public class FileManager implements Serializable {
         if (photo == null) {
 
             resultMsg = new FacesMessage("Error", "You do not have a photo to delete.");
+
+        } else {
+            // Obtain the object reference of the first Photo object in the list
+            try {
+                // Delete the uploaded photo file if it exists
+                Files.deleteIfExists(Paths.get(photo.getFilePath()));
+
+                // Delete the thumbnail image file if it exists
+                Files.deleteIfExists(Paths.get(photo.getThumbnailFilePath()));
+
+                // Delete the temporary file if it exists
+                Files.deleteIfExists(Paths.get(Constants.ROOT_DIRECTORY + "tmp_file"));
+
+                photoFacade.remove(photo);
+
+            } catch (IOException ex) {
+                Logger.getLogger(FileManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            resultMsg = new FacesMessage("Success", "Photo successfully deleted!");
+        }
+        FacesContext.getCurrentInstance().addMessage(null, resultMsg);
+    }
+    
+    /*
+    Delete uploaded photo, thumbnail photo, and tmp_file that belong to
+    the logged-in roommate object and remove the photo's database record.
+     */
+    public void deleteOpportunityPhoto() {
+
+        FacesMessage resultMsg;
+
+        int opportunityID = (int) FacesContext.getCurrentInstance()
+                .getExternalContext().getSessionMap().get("opportunityID");
+
+        VolunteeringOpportunities opportunity = opportunityFacade.findByOpportunityID(opportunityID);
+        Photo photo = photoFacade.findPhotoByOpportunityID(opportunity.getOpportunityID());
+
+        if (photo == null) {
+
+            resultMsg = new FacesMessage("Error", "The opportunity does not have a photo to delete.");
 
         } else {
             // Obtain the object reference of the first Photo object in the list

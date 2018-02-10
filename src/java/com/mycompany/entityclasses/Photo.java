@@ -52,8 +52,6 @@ public class Photo implements Serializable {
     @NotNull
     @Column(name = "USER_ID")
     private int userID;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "OPPORTUNITY_ID")
     private Integer opportunityID;
 
@@ -75,6 +73,18 @@ public class Photo implements Serializable {
     public Photo(String extension, Users user) {
         this.extension = extension;
         this.userID = user.getUserID();
+    }
+    
+    public Photo(String extension, Integer userID, Integer opportunityID) {
+        this.extension = extension;
+        this.userID = userID;
+        this.opportunityID = opportunityID;
+    }
+    
+    public Photo(String extension, Users user, VolunteeringOpportunities opportunity) {
+        this.extension = extension;
+        this.userID = user.getUserID();
+        this.opportunityID = opportunity.getOpportunityID();
     }
 
     public Integer getphotoID() {

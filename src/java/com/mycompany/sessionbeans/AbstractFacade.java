@@ -5,8 +5,18 @@
  */
 package com.mycompany.sessionbeans;
 
+import com.mycompany.controllers.util.JsfUtil;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 /**
  *
@@ -22,8 +32,33 @@ public abstract class AbstractFacade<T> {
 
     protected abstract EntityManager getEntityManager();
 
+//    public void create(T entity) {
+//        try {
+//            getEntityManager().persist(entity);
+//        } catch (ConstraintViolationException e) {
+//            log.log(Level.SEVERE,"Exception: ");
+//            e.getConstraintViolations().forEach(err->log.log(Level.SEVERE,err.toString()));
+//        }
+//    }
+    
     public void create(T entity) {
-        getEntityManager().persist(entity);
+
+        // Used code from StackOverflow to display error information of wrong database validation constraints
+        // https://stackoverflow.com/questions/12823000/bean-validation-constraints-violated-while-executing-automatic-bean-validation
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<T>> constraintViolations = validator.validate(entity);
+        if(constraintViolations.size() > 0){
+            Iterator<ConstraintViolation<T>> iterator = constraintViolations.iterator();
+            while(iterator.hasNext()){
+                ConstraintViolation<T> cv = iterator.next();
+                System.err.println(cv.getRootBeanClass().getName()+"."+cv.getPropertyPath() + " " +cv.getMessage());
+
+                JsfUtil.addErrorMessage(cv.getRootBeanClass().getSimpleName()+"."+cv.getPropertyPath() + " " +cv.getMessage());
+            }
+        }else{
+            getEntityManager().persist(entity);
+        }
     }
 
     public void edit(T entity) {

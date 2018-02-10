@@ -656,9 +656,21 @@ public class VolunteerController implements Serializable {
     }
 
     public void showVolunteerInfo() {
-        statusMessage = null;
         try {
             // CallMethodForVolunteerInfo();
+            statusMessage = null;
+            FacesContext.getCurrentInstance().getExternalContext().redirect("VolunteerInfo.xhtml?faces-redirect=true");
+        } 
+        catch(IOException e) { 
+        
+        }
+    }
+    
+    public void showVolunteerInfo(Volunteer volunteer) {
+        try {
+            // CallMethodForVolunteerInfo();
+            statusMessage = null;
+            selectedVolunteer = volunteer;
             FacesContext.getCurrentInstance().getExternalContext().redirect("VolunteerInfo.xhtml?faces-redirect=true");
         } 
         catch(IOException e) { 

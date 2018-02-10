@@ -109,7 +109,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
 
                                                 <h:panelGrid columns="1" cellpadding="5">
                                                     <h:outputText style=" font-weight: bold; font-size: 20px" value="#{opportunity.title}" />
-                                                    <h:outputText style="font-size: 20px" value="#{opportunity.organizationName}" />
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.ownerID.getOrganizationName()}" />
                                                     <h:outputText style="font-size: 18px" value="#{opportunity.dateOccurrence}" >
                                                         <f:convertDateTime type="date" dateStyle="long" /> <!-- short = 1/2/2000 / medium = Mar 20, 2018 / long = March 20, 2018 / full = Tuesday, March 20, 2018 / default = March 20, 2018 -->
                                                     </h:outputText>

@@ -140,7 +140,22 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
         }
     }
     
-    public List<Integer> getOpportunityParticipants(int opportunityID) {
+    /**
+     * @param opportunityID is the id attribute (column) value of the roommate
+     * @return object reference of the roommate entity whose id is id
+     */
+    public boolean isVolunteerParticipationConfirmed(int userID, int opportunityID) {
+        if (em.createQuery("SELECT c.participated FROM VolunteeringHistory c WHERE c.userID = :userID AND c.opportunityID = :opportunityID")
+                .setParameter("userID", userID)
+                .setParameter("opportunityID", opportunityID)
+                .getSingleResult() == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    public List<Integer> getOpportunityParticipantsIDs(int opportunityID) {
                 
         List<Integer> participants = new ArrayList<Integer>(); 
         participants = em.createQuery("SELECT c.userID FROM VolunteeringHistory c WHERE c.opportunityID = :opportunityID")
@@ -148,6 +163,16 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
                     .getResultList();
     
         return participants;
+    }
+    
+    public List<VolunteeringHistory> getOpportunityParticipantsRecords(int opportunityID) {
+                
+        List<VolunteeringHistory> participationRecords = new ArrayList<VolunteeringHistory>(); 
+        participationRecords = em.createQuery("SELECT c FROM VolunteeringHistory c WHERE c.opportunityID = :opportunityID")
+                    .setParameter("opportunityID", opportunityID)
+                    .getResultList();
+    
+        return participationRecords;
     }
     
     public List<Integer> getOpportunityConfirmedParticipants(int opportunityID) {

@@ -53,7 +53,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                         <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
                                             <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" 
                                                             style="padding-left: 0%; border-color: black; border-style: solid; border-width: 1px"/>
-                                            <p:button outcome="ChangePhoto" value="Change Photo" icon="fa fa-camera" styleClass="commandButton" style="width: 87%"></p:button>
+                                            <p:button outcome="#{OpportunityController.showChangeOpportunityPhoto()}" value="Change Photo" icon="fa fa-camera" styleClass="commandButton" style="width: 87%"></p:button>
                                         </h:panelGrid>
                                             
                                         <p:outputPanel style="padding: 0">
@@ -64,7 +64,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                                 </p:inputText>   
                                                 
                                                 <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
-                                                    <h:outputText style="font-size: 20px" value="#{opportunity.organizationName}" />
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.ownerID.getOrganizationName()}" />
                                                     <p:selectOneMenu id="volunteeringArea" label="Volunteering Area" style="width: 60%; font-size: 20px"
                                                                      value="#{opportunity.volunteeringAreaID}" required="true">
                                                         <f:selectItems value="#{OpportunityController.volunteeringAreas}"/>

@@ -26,6 +26,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import com.mycompany.entityclasses.Organization;
 import com.mycompany.sessionbeans.OrganizationFacade;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SecondaryTable;
 
 /**
@@ -40,7 +42,7 @@ import javax.persistence.SecondaryTable;
 
 @Entity
 @Table(name = "VOLUNTEERING_OPPORTUNITIES")
-@SecondaryTable(name = "USERS", pkJoinColumns = { @PrimaryKeyJoinColumn(name="USER_ID", referencedColumnName="OWNER_ID")})
+//@SecondaryTable(name = "USERS", pkJoinColumns = { @PrimaryKeyJoinColumn(name="USER_ID", referencedColumnName="OWNER_ID")})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "VolunteeringOpportunities.findAll", query = "SELECT v FROM VolunteeringOpportunities v")
@@ -64,10 +66,10 @@ public class VolunteeringOpportunities implements Serializable {
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer opportunityID;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "OWNER_ID")
-    private int ownerID;
+//    @Basic(optional = false)
+//    @NotNull
+//    @Column(name = "OWNER_ID")
+//    private int ownerID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "VOLUNTEERING_AREA_ID")
@@ -77,9 +79,7 @@ public class VolunteeringOpportunities implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "TITLE")
     private String title;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 255)
+    @Size(max = 255)
     @Column(name = "DESCRIPTION")
     private String description;
     @Size(max = 255)
@@ -107,15 +107,20 @@ public class VolunteeringOpportunities implements Serializable {
     @NotNull
     @Column(name = "ACTIVE")
     private Character active;
-    @Basic(optional = false)
-    @Column(name = "ORGANIZATION_NAME", table = "USERS", insertable = false, updatable = false)
-    private String organizationName;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "USER_ID", table = "USERS", insertable = false, updatable = false)
-    protected int userID;
+//    @Basic(optional = false)
+//    @Column(name = "ORGANIZATION_NAME", table = "USERS", insertable = false, updatable = false)
+//    private String organizationName;
 
-//    private OrganizationFacade organizationFacade;
+//    @ManyToOne
+//    @JoinColumn(name = "USER_ID", referencedColumnName = "OWNER_ID")
+//    private int userID;
+//    @Basic(optional = false)
+
+    @NotNull
+    @JoinColumn(name = "OWNER_ID", referencedColumnName = "USER_ID")
+    @ManyToOne
+    private Users ownerID;
+
     
     public VolunteeringOpportunities() {
     }
@@ -124,9 +129,9 @@ public class VolunteeringOpportunities implements Serializable {
         this.opportunityID = opportunityID;
     }
 
-    public VolunteeringOpportunities(Integer opportunityID, int ownerID, int volunteeringAreaID, String title, String description, String address, String city, int state, String zipCode, Date dateOccurrence, Character active) {
+    public VolunteeringOpportunities(Integer opportunityID, int volunteeringAreaID, String title, String description, String address, String city, int state, String zipCode, Date dateOccurrence, Character active) {
         this.opportunityID = opportunityID;
-        this.ownerID = ownerID;
+//        this.ownerID = ownerID;
         this.volunteeringAreaID = volunteeringAreaID;
         this.title = title;
         this.description = description;
@@ -146,11 +151,11 @@ public class VolunteeringOpportunities implements Serializable {
         this.opportunityID = opportunityID;
     }
 
-    public int getOwnerID() {
+    public Users getOwnerID() {
         return ownerID;
     }
 
-    public void setOwnerID(int ownerID) {
+    public void setOwnerID(Users ownerID) {
         this.ownerID = ownerID;
     }
 
@@ -242,13 +247,13 @@ public class VolunteeringOpportunities implements Serializable {
         return Constants.VOLUNTEERING_AREA[volunteeringAreaID];
     }
     
-    public String getOrganizationName() {
-        return organizationName;
-    }
+//    public String getOrganizationName() {
+//        return organizationName;
+//    }
     
-    public int getUserID() {
-        return userID;
-    }
+//    public int getUserID() {
+//        return userID;
+//    }
     
     @Override
     public int hashCode() {

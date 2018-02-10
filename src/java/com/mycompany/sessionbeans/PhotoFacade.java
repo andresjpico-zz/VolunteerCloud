@@ -27,12 +27,12 @@ public class PhotoFacade extends AbstractFacade<Photo> {
     
     public Photo findPhotoByUserID(int userID) {
 
-        if (em.createQuery("SELECT p FROM Photo p WHERE p.userID = :userID")
+        if (em.createQuery("SELECT p FROM Photo p WHERE p.userID = :userID AND p.opportunityID IS NULL")
                 .setParameter("userID", userID)
                 .getResultList().isEmpty()) {
             return null;
         } else {
-            return (Photo) (em.createQuery("SELECT p FROM Photo p WHERE p.userID = :userID")
+            return (Photo) (em.createQuery("SELECT p FROM Photo p WHERE p.userID = :userID AND p.opportunityID IS NULL")
                 .setParameter("userID", userID)
                 .getSingleResult());
         }
