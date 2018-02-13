@@ -27,9 +27,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "UserVolunteeringInterest.findAll", query = "SELECT u FROM UserVolunteeringInterest u")
-    , @NamedQuery(name = "UserVolunteeringInterest.findById", query = "SELECT u FROM UserVolunteeringInterest u WHERE u.id = :id")
-    , @NamedQuery(name = "UserVolunteeringInterest.findByVolunteeringAreaId", query = "SELECT u FROM UserVolunteeringInterest u WHERE u.volunteeringAreaId = :volunteeringAreaId")
-    , @NamedQuery(name = "UserVolunteeringInterest.findByUserId", query = "SELECT u FROM UserVolunteeringInterest u WHERE u.userId = :userId")})
+    , @NamedQuery(name = "UserVolunteeringInterest.findByID", query = "SELECT u FROM UserVolunteeringInterest u WHERE u.ID = :ID")
+    , @NamedQuery(name = "UserVolunteeringInterest.findByVolunteeringAreaID", query = "SELECT u FROM UserVolunteeringInterest u WHERE u.volunteeringAreaID = :volunteeringAreaID")
+    , @NamedQuery(name = "UserVolunteeringInterest.findByUserID", query = "SELECT u FROM UserVolunteeringInterest u WHERE u.userID = :userID")})
 public class UserVolunteeringInterest implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,57 +37,62 @@ public class UserVolunteeringInterest implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "ID")
-    private Integer id;
+    private Integer ID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "VOLUNTEERING_AREA_ID")
-    private int volunteeringAreaId;
+    private int volunteeringAreaID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "USER_ID")
-    private int userId;
+    private int userID;
 
     public UserVolunteeringInterest() {
     }
 
-    public UserVolunteeringInterest(Integer id) {
-        this.id = id;
+    public UserVolunteeringInterest(Integer ID) {
+        this.ID = ID;
     }
 
-    public UserVolunteeringInterest(Integer id, int volunteeringAreaId, int userId) {
-        this.id = id;
-        this.volunteeringAreaId = volunteeringAreaId;
-        this.userId = userId;
+    public UserVolunteeringInterest(int volunteeringAreaID, int userID) {
+        this.volunteeringAreaID = volunteeringAreaID;
+        this.userID = userID;
+    }
+    
+    public UserVolunteeringInterest(Integer ID, int volunteeringAreaID, int userID) {
+        this.ID = ID;
+        this.volunteeringAreaID = volunteeringAreaID;
+        this.userID = userID;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getID() {
+        return ID;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setID(Integer ID) {
+        this.ID = ID;
     }
 
-    public int getVolunteeringAreaId() {
-        return volunteeringAreaId;
+    public int getVolunteeringAreaID() {
+        return volunteeringAreaID;
     }
 
-    public void setVolunteeringAreaId(int volunteeringAreaId) {
-        this.volunteeringAreaId = volunteeringAreaId;
+    public void setVolunteeringAreaID(int volunteeringAreaID) {
+        this.volunteeringAreaID = volunteeringAreaID;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getUserID() {
+        return userID;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (ID != null ? ID.hashCode() : 0);
         return hash;
     }
 
@@ -98,7 +103,7 @@ public class UserVolunteeringInterest implements Serializable {
             return false;
         }
         UserVolunteeringInterest other = (UserVolunteeringInterest) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.ID == null && other.ID != null) || (this.ID != null && !this.ID.equals(other.ID))) {
             return false;
         }
         return true;
@@ -106,7 +111,7 @@ public class UserVolunteeringInterest implements Serializable {
 
     @Override
     public String toString() {
-        return "com.mycompany.entityclasses.UserVolunteeringInterest[ id=" + id + " ]";
+        return "com.mycompany.entityclasses.UserVolunteeringInterest[ id=" + ID + " ]";
     }
     
 }

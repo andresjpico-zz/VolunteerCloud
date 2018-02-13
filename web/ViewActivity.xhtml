@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created by Andres Pico on 2016.10.23 
+Copyright © 2016 Osman Balci. All rights reserved.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core" 
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" >
+    
+    <!-- 
+         The file MovieInfo.xhtml is used to display more information about the selected movie
+         In addition, it allows the user to read reviews about the movie.
+         It also recommends the user 5 similar movies to the one selected, given that there exist recommendations 
+    -->
+    
+    <!-- This page is constructed based on the siteTemplate -->
+    <ui:composition template="/template/siteTemplate.xhtml">
+        
+        <ui:define name="title">
+            <h:outputText value="View Activity"></h:outputText>
+        </ui:define>
+
+        <!-- Create the content for this page below -->
+        <ui:define name="editableContent">
+
+            <div align="center" style="padding-top: 30px">
+                <div align="center" style="width:60%">
+                    <!-- Error messages will be shown here if any  -->
+                    <p:messages id="msgs" showIcon="false"/>
+                    <h:outputLabel id="form-error-message" class="errorMessages" value="#{UsersController.statusMessage}"/>
+
+                    <!-- The different elements of data are displayed/included under this form -->
+                    <h:form id="ViewActivityForm">
+                        <!-- The datatable "datalist" displays the beasic information about the movie as requested for the turotial -->
+                        <p:dataTable id="datalist" value="#{UsersController.selectedUser}" var="user"
+                                         paginator="false"
+                                         rowKey="#{user.userID}"
+                                         rows="1"
+                                         rowStyleClass="ui-state-highlight2"
+                                         >
+                                         
+                            <p:column style="font-size: 24px;" headerText="Volunteering Activity" width="100%" >
+                                  
+                                <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%" styleClass="ui-datascroller-item" >
+                                    
+                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="logo,detail2" styleClass="ui-datascroller-item"> 
+                                    
+                                        <h:graphicImage id="userPhoto" value="#{UsersController.photoStorageDirectoryName()}#{UsersController.accountPhoto(user)}" style="padding-left: 10%"/>
+                                        
+                                        <p:outputPanel style="padding: 0">
+                                            <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+
+                                                <c:if test="#{UsersController.isOrganization()}">
+                                                    <h:outputText style="font-weight: bold; font-size: 20px" value="#{user.organizationName}" />
+                                                    <h:outputText style="font-size: 20px" value="#{user.firstName} #{user.lastName}" />
+                                                </c:if>
+                                                
+                                                <c:if test="#{UsersController.isVolunteer()}">
+                                                    <h:outputText style="font-weight: bold; font-size: 20px" value="#{user.firstName} #{user.lastName}" />
+                                                </c:if>
+                                                
+                                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                    <h:outputText style="font-size: 18px" value="#{user.email}" />
+                                                    <h:outputText style="font-size: 18px" value="#{user.website}" />
+                                                </h:panelGrid>
+
+                                                <h:outputText style="font-size: 20px" value="#{user.phoneNumber}" />
+                                                
+                                                <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                    <h:outputText style="font-size: 20px" value="Address" />
+                                                    <h:outputText style="font-size: 20px" value="#{user.address}" />
+                                                    <h:outputText style="font-size: 20px" value="#{user.city}, #{user.getStateName()}" />
+                                                    <h:outputText style="font-size: 20px" value="#{user.zipCode}" />
+                                                </h:panelGrid>
+
+                                            </h:panelGrid>
+                                        </p:outputPanel>
+                                        
+                                    </h:panelGrid>
+                                    
+                                    <br/>
+                                    <h:outputText style="font-size: 18px; font-weight: bold" value="Mission" />
+                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
+                                        <h:outputText style="font-size: 18px" value="#{user.mission}" />
+                                    </h:panelGrid>
+                                    <br/>
+                                    <p:separator />                                    
+                                    <h:outputText style="font-size: 18px; font-weight: bold" value="Areas of Interest" />
+                                    <c:if test="#{!UsersController.modeEditInterestAreas}">
+                                       <p:commandButton oncomplete=":ViewActivityForm" update=":ViewActivityForm" value="Edit" 
+                                                        actionListener="#{UsersController.enterModeEditInterestAreas()}" icon="ui-icon-pencil">
+                                        </p:commandButton>
+                                    </c:if>
+                                    <c:if test="#{UsersController.modeEditInterestAreas}">
+                                        <p:commandButton oncomplete=":ViewActivityForm" update=":ViewActivityForm" value="Save" 
+                                                         actionListener="#{UsersController.updateVolunteeringInterestAreas()}" icon="ui-icon-pencil">
+                                        </p:commandButton>
+                                    </c:if>
+                                        
+                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width: 100%; background: white">
+                                        <br/>
+                                        <p:selectManyCheckbox id="grid" value="#{UsersController.userAreasOfInterest}" layout="grid" columns="3" 
+                                                              disabled="false" style="#{(UsersController.modeEditInterestAreas) ? '' : 'pointer-events: none'}" 
+                                                              styleClass="ui-chkbox-box, ui-chkbox-icon, ui-chkbox-label">
+                                            <f:selectItems value="#{UsersController.volunteeringAreas}" var="areaID" itemValue="#{areaID}" />
+                                        </p:selectManyCheckbox>
+                                    </h:panelGrid>
+                                    
+                                    <br/>
+                                    <p:separator />
+                                    
+                                    <h:outputText style="font-size: 18px; font-weight: bold" value="Volunteering Activities" />
+                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
+                                        <h:outputText style="font-size: 18px" value="To be done with export button and activity search/filter.." />
+                                    </h:panelGrid>
+                                    
+<!--                                    <p:dataGrid id="volunteeringActivities" var="opportunity" value="#{volunteer.getVolunteeringActivities()}" 
+                                        columns="3" layout="grid" rows="12" paginator="false" rowsPerPageTemplate="6,12,16">
+
+                                        <p:panel header="#{cast.actorName}" style="text-align:center; background: white">
+                                            <h:panelGrid columns="1" style="width:100%; font-size: 15px; color: #09242C">
+                                                <h:graphicImage url="#{cast.posterPath}"/>
+                                                <h:outputText value="#{cast.characterName}" style="padding-top: 30px" />
+                                            </h:panelGrid>
+                                        </p:panel>
+
+                                    </p:dataGrid>-->
+                                    
+                                    <br/>
+                                    
+                                </h:panelGrid>    
+                            </p:column>
+                        </p:dataTable>
+                         
+                    </h:form>
+                </div>
+            </div>
+        </ui:define>                
+    </ui:composition>
+</html>

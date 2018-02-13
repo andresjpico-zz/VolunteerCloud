@@ -5,7 +5,12 @@ Copyright © 2016 Osman Balci. All rights reserved.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core" 
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" >
     
     <!-- 
          The file MovieInfo.xhtml is used to display more information about the selected movie
@@ -76,17 +81,35 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
                                         <h:outputText style="font-size: 18px" value="#{volunteer.mission}" />
                                     </h:panelGrid>
+                                    
                                     <br/>
+                                    <p:separator />
+
                                     <h:outputText style="font-size: 18px; font-weight: bold" value="Areas of Interest" />
-                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
-                                        <h:outputText style="font-size: 18px" value="To be done.." />
+                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width: 100%; background: white">
+                                        <!--<h:outputText style="font-size: 18px" value="To be done.." />-->
+                                        
+<!--                                        <p:selectCheckboxMenu id="areasOfInterest" value="#{VolunteerController.volunteerAreasOfInterest}" label="Areas of Interest" updateLabel="true" disabled="false" 
+                                                filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
+                                            <f:selectItems value="#{VolunteerController.volunteeringAreas}" />
+                                        </p:selectCheckboxMenu>-->
+
+                                        <br/>
+                                        <p:selectManyCheckbox id="grid" value="#{VolunteerController.volunteerAreasOfInterest}" layout="grid" columns="3" 
+                                                              disabled="false" style="pointer-events: none" styleClass="ui-chkbox-box, ui-chkbox-icon, ui-chkbox-label">
+                                            <f:selectItems value="#{VolunteerController.volunteeringAreas}" var="areaID" itemValue="#{areaID}" />
+                                        <!--itemLabel="#{VolunteerController.volunteeringAreas.get(areaID)}"-->
+                                        </p:selectManyCheckbox>
                                     </h:panelGrid>
                                     
-                                    <br/><br/>
+                                    <br/>
+                                    <p:separator />
+
+<!--                                    <br/><br/>
                                     <h:panelGrid border="0" columns="1" cellpadding="5" style="width:100%; align-items: center; text-align: center; align-content: center">
                                         <h:link style="color: black" outcome="SearchVolunteer"><i class="fa fa-arrow-left"></i>&nbsp;Go Back&nbsp;&nbsp;</h:link>
-                                    </h:panelGrid>
-                                    <br/><br/>
+                                    </h:panelGrid> 
+                                    <br/><br/> -->
                                     
                                     <h:outputText style="font-size: 18px; font-weight: bold" value="Volunteering Activities" />
                                     <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">

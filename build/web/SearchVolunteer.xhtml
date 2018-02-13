@@ -39,7 +39,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                         <div style="color: black; font-family: Trebuchet MS">Please enter the search fields below.</div>                        
                         <br/>
                         
-                        <h:panelGrid border="0" columns="5" width="100%" > <!--styleClass="ui-panelgrid-cell"-->
+                        <h:panelGrid border="0" columns="6" width="100%" > <!--styleClass="ui-panelgrid-cell"-->
 
                             <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
                                 <p:outputLabel value="First Name" for="searchFirstName" />
@@ -49,6 +49,15 @@ Copyright © 2016 Osman Balci. All rights reserved.
                             <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
                                 <p:outputLabel value="Last Name" for="searchLastName" />
                                 <p:inputText id="searchLastName" value="#{VolunteerController.searchLastNameField}" label="Last Name"/>   
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                                <p:outputLabel value="Category" for="searchVolunteeringArea" />
+                                <p:selectOneMenu id="searchVolunteeringArea" label="Volunteering Area" 
+                                                 value="#{VolunteerController.searchVolunteeringAreaField}" style="width: 160px" >
+                                    <f:selectItem itemLabel="" itemValue=""/>
+                                    <f:selectItems value="#{VolunteerController.volunteeringAreas}"/>
+                                </p:selectOneMenu>
                             </h:panelGrid>
                             
                             <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 

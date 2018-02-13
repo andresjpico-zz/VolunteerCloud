@@ -54,7 +54,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     private final String ZipCodeAPI2 = "/miles?minimal";
     
     private int ownerID;
-    private int volunteeringAreaID;
+    private String volunteeringAreaID;
     private String ownerName;
     private String title;
     private String description;
@@ -74,9 +74,10 @@ public class VolunteeringOpportunitiesController implements Serializable {
     private Date searchDateOccurrenceField = null;
     private Date searchDateStartField = null;
     private Date searchDateEndField = null;
+    private String searchOrganizationNameField = null;
     private String searchZipCodeField = null;
     private int searchZipCodeRadiusField;
-    private int searchVolunteeringAreaField;
+    private String searchVolunteeringAreaField;
     private String searchActiveField = null;
     private String visible = "hidden";
 
@@ -90,9 +91,9 @@ public class VolunteeringOpportunitiesController implements Serializable {
     private VolunteeringOpportunities selectedOpportunity;
     private List<VolunteeringOpportunities> opportunities;
     
+    private boolean participation;
     private VolunteeringHistory selectedRecord;
     private List<VolunteeringHistory> records;
-    private List<VolunteeringHistory> participationRecords;
     
     private Volunteer selectedParticipant;
     private List<Volunteer> participants;
@@ -135,11 +136,11 @@ public class VolunteeringOpportunitiesController implements Serializable {
         this.ownerID = ownerID;
     }
 
-    public int getVolunteeringAreaID() {
+    public String getVolunteeringAreaID() {
         return volunteeringAreaID;
     }
 
-    public void setVolunteeringAreaID(int volunteeringAreaID) {
+    public void setVolunteeringAreaID(String volunteeringAreaID) {
         this.volunteeringAreaID = volunteeringAreaID;
     }
 
@@ -287,6 +288,14 @@ public class VolunteeringOpportunitiesController implements Serializable {
         this.searchDateEndField = searchDateEndField;
     }
     
+    public String getSearchOrganizationNameField() {
+        return searchOrganizationNameField;
+    }
+
+    public void setSearchOrganizationNameField(String searchOrganizationNameField) {
+        this.searchOrganizationNameField = searchOrganizationNameField;
+    }
+    
     public String getSearchZipCodeField() {
         return searchZipCodeField;
     }
@@ -311,11 +320,11 @@ public class VolunteeringOpportunitiesController implements Serializable {
         this.searchActiveField = searchActiveField;
     }
     
-    public int getVolunteeringAreaField() {
+    public String getSearchVolunteeringAreaField() {
         return searchVolunteeringAreaField;
     }
 
-    public void setSearchVolunteeringAreaField(int searchVolunteeringAreaField) {
+    public void setSearchVolunteeringAreaField(String searchVolunteeringAreaField) {
         this.searchVolunteeringAreaField = searchVolunteeringAreaField;
     }
 
@@ -446,6 +455,14 @@ public class VolunteeringOpportunitiesController implements Serializable {
         this.participantsIDs = participantsIDs;
     }
     
+    public boolean getParticipation() {
+        return participation;
+    }
+
+    public void setParticipation(boolean participation) {
+        this.participation = participation;
+    }
+
     public VolunteeringHistory getSelectedRecord() {
         return selectedRecord;
     }
@@ -460,14 +477,6 @@ public class VolunteeringOpportunitiesController implements Serializable {
 
     public void setRecords(List<VolunteeringHistory> records) {
         this.records = records;
-    }
-    
-    public List<VolunteeringHistory> getParticipationRecords() {
-        return participationRecords;
-    }
-
-    public void setParticipationRecords(List<VolunteeringHistory> recoparticipationRecordsrds) {
-        this.participationRecords = participationRecords;
     }
     
         // EL in Profile.xhtml invokes this method to obtain the constant value
@@ -592,7 +601,6 @@ public class VolunteeringOpportunitiesController implements Serializable {
             
             try { 
                 opportunityFacade.edit(selectedOpportunity);
-//                opportunityFacade.ownEdit(selectedOpportunity);
                 state = Constants.STATES[selectedOpportunity.getState()];
                 opportunities = null;
             } catch (EJBException e) {
@@ -613,7 +621,6 @@ public class VolunteeringOpportunitiesController implements Serializable {
         if (selectedOpportunity.getDateOccurrence().after(today) && (statusMessage == null || statusMessage.isEmpty())) {
             try {
                 selectedOpportunity.setActive('N');
-//                opportunityFacade.cancelOpportunity(selectedOpportunity);
                 opportunityFacade.edit(selectedOpportunity);
                 selectedOpportunity = null;
                 opportunities = null;
@@ -632,7 +639,6 @@ public class VolunteeringOpportunitiesController implements Serializable {
     
     public void deleteOpportunity() {
         if (statusMessage == null || statusMessage.isEmpty()) {
-//            opportunityFacade.ownRemove(selectedOpportunity);
             opportunityFacade.remove(selectedOpportunity);
             if (!JsfUtil.isValidationFailed()) {
                 // The DELETE operation is successfully performed
@@ -682,9 +688,9 @@ public class VolunteeringOpportunitiesController implements Serializable {
         
         // If no search fields then show all
         if(searchDateStartField == null && searchDateEndField == null) 
-            opportunities = opportunityFacade.SearchOpportunities(zipCodesList, searchTitleField, searchKeywordField);
+            opportunities = opportunityFacade.SearchOpportunities(zipCodesList, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField);
         else if(!searchDateStartField.after(searchDateEndField))
-            opportunities = opportunityFacade.SearchOpportunitiesWithinDateRange(zipCodesList, searchTitleField, searchKeywordField, searchDateStartField, searchDateEndField); // , searchVolunteeringAreaField)
+            opportunities = opportunityFacade.SearchOpportunitiesWithinDateRange(zipCodesList, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField, searchDateStartField, searchDateEndField); // , searchVolunteeringAreaField)
         else
             statusMessage = "Start Date cannot be later than End Date.";
             
@@ -742,16 +748,21 @@ public class VolunteeringOpportunitiesController implements Serializable {
         return volunteeringHistoryFacade.isVolunteerSubscribedToOpportunity(userID, selectedOpportunity.getOpportunityID());
     }
     
-    // Calling this method for each volunteer might not be the best way to do this. In fact it can result in an expensive operation as the number of records increases.
-    // However, realistically, the number of participants in a volunteering event is not very high. This means that even if this could not escalate very well, it is good
-    // enough for business purposes. First make it work, then make it pretty. Ideal solution might require too much effort or time in relation to the reward at the moment.
-    public boolean isVolunteerParticipationConfirmed() {
-        int userID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
-        return volunteeringHistoryFacade.isVolunteerParticipationConfirmed(userID, selectedOpportunity.getOpportunityID());
+    public boolean isVolunteerParticipationConfirmed(String participated) {
+        return (participated != null) ? true : false;
     }
     
     public boolean isVolunteerParticipationConfirmed(int userID) {
         return volunteeringHistoryFacade.isVolunteerParticipationConfirmed(userID, selectedOpportunity.getOpportunityID());
+    }
+    
+    public String getParticipationMessage(String participated){
+        if (participated.equals("Y"))
+            return "Participated";
+        else if (participated.equals("N"))
+            return "No participation";
+        else
+            return "";
     }
     
     public String opportunitySubscription() {
@@ -778,8 +789,9 @@ public class VolunteeringOpportunitiesController implements Serializable {
         if (statusMessage == null || statusMessage.isEmpty()) {
             try {
                 // Instantiate a new Task object
+                Users volunteer = volunteerFacade.findByID(userID);
                 VolunteeringHistory record = new VolunteeringHistory();
-                record.setUserID(userID);
+                record.setParticipant(volunteer);
                 record.setOpportunityID(selectedOpportunity.getOpportunityID());
                 volunteeringHistoryFacade.create(record);
                 
@@ -811,8 +823,19 @@ public class VolunteeringOpportunitiesController implements Serializable {
         }
     }
     
+    public String confirmParticipation(VolunteeringHistory participantRecord) {
+        
+        
+        if (participation)
+            confirmVolunteerParticipation(participantRecord);
+        else
+            declineVolunteerParticipation(participantRecord);
+        
+        getOpportunityParticipants();
+        return "";
+    }
     
-    public void confirmVolunteerParticipation() {
+    public void confirmVolunteerParticipation(VolunteeringHistory participantRecord) {
         
         // Check if date only checks calendar day or time as well
         if(selectedOpportunity.getDateOccurrence().after(today)) {
@@ -821,18 +844,19 @@ public class VolunteeringOpportunitiesController implements Serializable {
         }
         
         if (selectedOpportunity.getDateOccurrence().before(today) && (statusMessage == null || statusMessage.isEmpty())) {
-            VolunteeringHistory record = volunteeringHistoryFacade.SearchHistoryRecord(selectedOpportunity.getOpportunityID(), selectedParticipant.getUserID());
-            
             try {
-                record.setParticipated('Y');
-                volunteeringHistoryFacade.edit(record);
+                participantRecord.setParticipated("Y");
+                volunteeringHistoryFacade.edit(participantRecord);
+                getOpportunityParticipants();
+                //selectedRecord.setParticipated("Y");
+                //volunteeringHistoryFacade.edit(selectedRecord);
             } catch (EJBException e) {
                 statusMessage = "Something went wrong while confirming the volunteer's participation.";
             }
         }    
     }
     
-    public void declineVolunteerParticipation() {
+    public void declineVolunteerParticipation(VolunteeringHistory participantRecord) {
              
         // Check if date only checks calendar day or time as well
         if(selectedOpportunity.getDateOccurrence().after(today)) {
@@ -841,11 +865,12 @@ public class VolunteeringOpportunitiesController implements Serializable {
         }
         
         if (selectedOpportunity.getDateOccurrence().before(today) && (statusMessage == null || statusMessage.isEmpty())) {
-            VolunteeringHistory record = volunteeringHistoryFacade.SearchHistoryRecord(selectedOpportunity.getOpportunityID(), selectedParticipant.getUserID());
-            
             try {
-                record.setParticipated('N');
-                volunteeringHistoryFacade.edit(record);
+                participantRecord.setParticipated("N");
+                volunteeringHistoryFacade.edit(participantRecord);
+                getOpportunityParticipants();
+                //selectedRecord.setParticipated("N");
+                //volunteeringHistoryFacade.edit(selectedRecord);
             } catch (EJBException e) {
                 statusMessage = "Something went wrong while declining the volunteer's participation.";
             }
@@ -856,25 +881,16 @@ public class VolunteeringOpportunitiesController implements Serializable {
         participants = null;
         records = null;
         statusMessage = "";
-        participantsIDs = volunteeringHistoryFacade.getOpportunityParticipantsIDs(selectedOpportunity.getOpportunityID());
-        participants = (participantsIDs.isEmpty()) ? null : volunteerFacade.SearchVolunteers(participantsIDs);
+        records = volunteeringHistoryFacade.getOpportunityParticipantsRecords(selectedOpportunity.getOpportunityID());
         return;
     }
-    
-//    public void getOpportunityParticipants() {
-//        participants = null;
-//        records = null;
-//        statusMessage = "";
-//        participationRecords = volunteeringHistoryFacade.getOpportunityParticipantsRecords(selectedOpportunity.getOpportunityID());
-//        participants = (participationRecords.isEmpty()) ? null : volunteerFacade.SearchVolunteers(participationRecords);
-//        return;
-//    }
     
     //Method hides table with data when exiting the page
     public void leaving() {
         searchTitleField = null;
         searchKeywordField = null;
         searchDateOccurrenceField = null;
+        searchVolunteeringAreaField = null;
         searchZipCodeField = null;
         searchActiveField = null;
         visible = "hidden";

@@ -27,116 +27,146 @@ Copyright © 2016 Osman Balci. All rights reserved.
         <ui:define name="editableContent">
 
             <div align="center" style="padding-top: 30px">
-                <div align="center" style="width:60%">
-                    <!-- Error messages will be shown here if any  -->
-                    <p:messages id="msgs" showIcon="false"/>
-                    <h:outputLabel id="form-error-message" class="errorMessages" value="#{OpportunityController.statusMessage}"/>
+            <div align="center" style="width: 60%">
+                <!-- Error messages will be shown here if any  -->
+                <p:messages id="msgs" showIcon="false"/>
+                <h:outputLabel id="form-error-message" class="errorMessages" value="#{OpportunityController.statusMessage}"/>
 
-                    <!-- The different elements of data are displayed/included under this form -->
-                    <h:form id="OpportunitySearchForm">
-                        
-                        <!-- Search Fields -->
-                        <div style="color: black; font-family: Trebuchet MS">Please enter the search fields below.</div>                        
-                        <br/>
-                        
-                        <h:panelGrid border="0" columns="7" width="100%" > <!--styleClass="ui-panelgrid-cell"-->
+                <!-- The different elements of data are displayed/included under this form -->
+                <h:form id="OpportunitySearchForm">
 
-                            <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
-                                <p:outputLabel value="Title" for="searchTitle" />
-                                <p:inputText id="searchTitle" value="#{OpportunityController.searchTitleField}" label="Title"/>   
-                            </h:panelGrid>
-                            
-                            <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
-                                <p:outputLabel value="Keyword" for="searchKeyword" />
-                                <p:inputText id="searchKeyword" value="#{OpportunityController.searchKeywordField}" label="Keyword"/>   
-                            </h:panelGrid>
-                            
-                            <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
-                                <p:outputLabel value="Start Date" for="searchDateStart" />
-                                <p:calendar id="searchDateStart" value="#{OpportunityController.searchDateStartField}" navigator="true" 
-                                            showButtonPanel="true" effect="slide" pattern="MM/dd/yyyy" label="Start Date" >
-                                </p:calendar>
-                            </h:panelGrid>
-                            
-                            <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
-                                <p:outputLabel value="End Date" for="searchDateEnd" />
-                                <p:calendar id="searchDateEnd" value="#{OpportunityController.searchDateEndField}" navigator="true" 
-                                            showButtonPanel="true" effect="slide" pattern="MM/dd/yyyy" label="End Date" >
-                                </p:calendar>
-                            </h:panelGrid>
-                            
-                            <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
-                                <p:outputLabel value="Zip Code" for="searchZipCode" />
-                                <p:inputText id="searchZipCode" value="#{OpportunityController.searchZipCodeField}" label="Zip Code" required="true"/>   
-                            </h:panelGrid>
-                            
-                            <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
-                                <p:outputLabel value="Miles" for="searchZipCodeRadius" />
-                                <p:selectOneMenu id="searchZipCodeRadius" label="Mile Radius" 
-                                                 value="#{OpportunityController.searchZipCodeRadiusField}" required="true" >
-                                    <f:selectItems value="#{OpportunityController.zipCodeRadiuses}"/>
-                                </p:selectOneMenu>                            
-                            </h:panelGrid>
-                            
-                            <p:commandButton value="Search" id="searchButton" style="width: 90%; height: 100%" icon="fa fa-sign-in" styleClass="searchButton"
-                                             action="#{OpportunityController.searchOpportunities()}" ajax="false" update="OpportunitySearchForm" />
-                                
+                    <!-- Search Fields -->
+                    <div style="color: black; font-family: Trebuchet MS">Please enter the search fields below.</div>                        
+                    <br/>
+
+                    <!--<div style="width: 80%">-->
+                    <h:panelGrid border="0" columns="4" width="100%" > <!--styleClass="ui-panelgrid-cell"-->
+
+                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                            <p:outputLabel value="Title" for="searchTitle" />
+                            <p:inputText id="searchTitle" value="#{OpportunityController.searchTitleField}" label="Title"/>   
                         </h:panelGrid>
-                        <br/><br/><br/>
+
+                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                            <p:outputLabel value="Keyword" for="searchKeyword" />
+                            <p:inputText id="searchKeyword" value="#{OpportunityController.searchKeywordField}" label="Keyword"/>   
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                            <p:outputLabel value="Start Date" for="searchDateStart" />
+                            <p:calendar id="searchDateStart" value="#{OpportunityController.searchDateStartField}" navigator="true" 
+                                        showButtonPanel="true" effect="slide" pattern="MM/dd/yyyy" label="Start Date" >
+                            </p:calendar>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                            <p:outputLabel value="End Date" for="searchDateEnd" />
+                            <p:calendar id="searchDateEnd" value="#{OpportunityController.searchDateEndField}" navigator="true" 
+                                        showButtonPanel="true" effect="slide" pattern="MM/dd/yyyy" label="End Date" >
+                            </p:calendar>
+                        </h:panelGrid>
                         
-                        <!-- Results Table -->
-                        <div id="divID" style="visibility: #{OpportunityController.getVisible()}" onbeforeunload="#{OpportunityController.leaving()}">
-                            <p:dataTable id="datalist" value="#{OpportunityController.opportunities}" var="opportunity"
-                                             selectionMode="single" selection="#{OpportunityController.selectedOpportunity}"
-                                             paginator="false"
-                                             rowKey="#{opportunity.opportunityID}"
-                                             rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight"
-                                             >
+                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                            <p:outputLabel value="Organization" for="searchOrganizationName" />
+                            <p:inputText id="searchOrganizationName" value="#{OpportunityController.searchOrganizationNameField}" label="Organization"/>   
+                        </h:panelGrid>
+                        
+                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                            <p:outputLabel value="Category" for="searchVolunteeringArea" />
+                            <p:selectOneMenu id="searchVolunteeringArea" label="Volunteering Area" 
+                                             value="#{OpportunityController.searchVolunteeringAreaField}" style="width: 160px" >
+                                <f:selectItem itemLabel="" itemValue=""/>
+                                <f:selectItems value="#{OpportunityController.volunteeringAreas}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
 
-                                <p:ajax event="rowSelect" listener="#{OpportunityController.showOpportunityInfo()}"/>
-                                <p:ajax event="rowUnselect" listener="#{OpportunityController.showOpportunityInfo()}"/> 
+                        <h:panelGrid columns="2" cellpadding="0" columnClasses="searchFieldColumn"> 
+                            <p:outputLabel value="Zip Code" for="searchZipCode" />
+                            <p:outputLabel value="Miles" for="searchZipCodeRadius" />
 
-                                <p:column style="font-size: 24px" headerText="Search Results" width="100%" >
+                            <p:inputText id="searchZipCode" value="#{OpportunityController.searchZipCodeField}" label="Zip Code" required="true" style="width: 90px"/>   
 
-                                    <h:panelGrid border="0" columns="3" cellpadding="5" style="width:100%" columnClasses="searchRecordPhotoColumn,detail1,arrow" 
-                                                 styleClass="ui-datascroller-item"> 
+                            <p:selectOneMenu id="searchZipCodeRadius" label="Mile Radius"  style="width: 50px"
+                                             value="#{OpportunityController.searchZipCodeRadiusField}" required="true" >
+                                <f:selectItems value="#{OpportunityController.zipCodeRadiuses}"/>
+                            </p:selectOneMenu>                            
+                        </h:panelGrid>
+                        
+<!--                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                            <p:outputLabel value="Zip Code" for="searchZipCode" />
+                            <p:inputText id="searchZipCode" value="#{OpportunityController.searchZipCodeField}" label="Zip Code" required="true"/>   
+                        </h:panelGrid>
 
-                                        <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" 
-                                                        style="padding-left: 5%" styleClass="searchRecordPhoto" />  <!-- style="padding-left: 20%" />-->
-                                        
-                                        <p:outputPanel>
-                                            <h:panelGrid columns="2" cellpadding="5">
+                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                            <p:outputLabel value="Miles" for="searchZipCodeRadius" />
+                            <p:selectOneMenu id="searchZipCodeRadius" label="Mile Radius" 
+                                             value="#{OpportunityController.searchZipCodeRadiusField}" required="true" >
+                                <f:selectItems value="#{OpportunityController.zipCodeRadiuses}"/>
+                            </p:selectOneMenu>                            
+                        </h:panelGrid>-->
 
-                                                <h:panelGrid columns="1" cellpadding="5">
-                                                    <h:outputText style=" font-weight: bold; font-size: 20px" value="#{opportunity.title}" />
-                                                    <h:outputText style="font-size: 20px" value="#{opportunity.ownerID.getOrganizationName()}" />
-                                                    <h:outputText style="font-size: 18px" value="#{opportunity.dateOccurrence}" >
-                                                        <f:convertDateTime type="date" dateStyle="long" /> <!-- short = 1/2/2000 / medium = Mar 20, 2018 / long = March 20, 2018 / full = Tuesday, March 20, 2018 / default = March 20, 2018 -->
-                                                    </h:outputText>
-                                                    
+                        <p:commandButton value="Search" id="searchButton" style="width: 200px; height: 100%" icon="fa fa-sign-in" styleClass="searchButton"
+                                         action="#{OpportunityController.searchOpportunities()}" ajax="false" update="OpportunitySearchForm" />
+
+                    </h:panelGrid>
+                    <!--</div>-->
+                    <br/><br/><br/>
+
+                    <!-- Results Table -->
+                    <!--<div style="width: 60%">-->
+                    <div id="divID" style="visibility: #{OpportunityController.getVisible()}" onbeforeunload="#{OpportunityController.leaving()}">
+                        <p:dataTable id="datalist" value="#{OpportunityController.opportunities}" var="opportunity"
+                                         selectionMode="single" selection="#{OpportunityController.selectedOpportunity}"
+                                         paginator="false"
+                                         rowKey="#{opportunity.opportunityID}"
+                                         rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight"
+                                         >
+
+                            <p:ajax event="rowSelect" listener="#{OpportunityController.showOpportunityInfo()}"/>
+                            <p:ajax event="rowUnselect" listener="#{OpportunityController.showOpportunityInfo()}"/> 
+
+                            <p:column style="font-size: 24px" headerText="Search Results" width="100%" >
+
+                                <h:panelGrid border="0" columns="3" cellpadding="5" style="width:100%" columnClasses="searchRecordPhotoColumn,detail1,arrow" 
+                                             styleClass="ui-datascroller-item"> 
+
+                                    <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" 
+                                                    style="padding-left: 5%" styleClass="searchRecordPhoto" />  <!-- style="padding-left: 20%" />-->
+
+                                    <p:outputPanel>
+                                        <h:panelGrid columns="2" cellpadding="5">
+
+                                            <h:panelGrid columns="1" cellpadding="5">
+                                                <h:outputText style=" font-weight: bold; font-size: 20px" value="#{opportunity.title}" />
+                                                <h:outputText style="font-size: 20px" value="#{opportunity.ownerID.getOrganizationName()}" />
+                                                <h:outputText style="font-size: 18px" value="#{opportunity.dateOccurrence}" >
+                                                    <f:convertDateTime type="date" dateStyle="long" /> <!-- short = 1/2/2000 / medium = Mar 20, 2018 / long = March 20, 2018 / full = Tuesday, March 20, 2018 / default = March 20, 2018 -->
+                                                </h:outputText>
+
 <!--                                                    <h:panelGrid columns="2" columnClasses="movieIcon,rating" cellpadding="0"> 
-                                                        <h:outputText style="font-size: 20px" value="#{opportunity.ownerID}" />
-                                                        <h:outputText style="font-size: 20px" value="#{opportunity.dateOccurrence}" >
-                                                            <f:convertDateTime type="date" dateStyle="full" />
-                                                        </h:outputText>
-                                                    </h:panelGrid>-->
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.ownerID}" />
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.dateOccurrence}" >
+                                                        <f:convertDateTime type="date" dateStyle="full" />
+                                                    </h:outputText>
+                                                </h:panelGrid>-->
 
-                                                    <h:outputText style="font-size: 18px" value="Description:"/>
-                                                    <h:outputText style="font-size: 18px" value="#{opportunity.description}" />
-                                                </h:panelGrid>
-
+                                                <h:outputText style="font-size: 18px" value="Description:"/>
+                                                <h:outputText style="font-size: 18px" value="#{opportunity.description}" />
                                             </h:panelGrid>
-                                        </p:outputPanel>         
-                                        
-                                        <h:outputText value=">" style="font-size: larger"/>
 
-                                    </h:panelGrid>
+                                        </h:panelGrid>
+                                    </p:outputPanel>         
 
-                                </p:column>
-                            </p:dataTable>
-                        </div>
-                    </h:form>
-                </div>
+                                    <h:outputText value=">" style="font-size: larger"/>
+
+                                </h:panelGrid>
+
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                    <!--</div>-->
+                </h:form>
+            </div>
             </div>
         </ui:define>                
     </ui:composition>

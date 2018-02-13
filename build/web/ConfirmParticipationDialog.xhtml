@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+        <!-- Display a Confirmation Dialog in which the user enters his/her account password to confirm deletion -->
+        <p:dialog id="ConfirmParticipationdDlg" widgetVar="ConfirmParticipationDialog" modal="true" resizable="false" 
+                  width="400" height="200" appendTo="@(body)" header="Volunteer Participation Confirmation">
+
+            <div align="center">
+                <h:form id="ConfirmParticipationForm">
+                    
+                    <p:panel >
+                        <p:panelGrid columns="2">
+                            <p:outputLabel value="Participation" for="participation" style="width:100px;height:20px" />
+                            <p:inputSwitch id='participation' value="#{OpportunityController.participation}" label="Participation" />
+                        </p:panelGrid>
+
+                        <p:commandButton id="Save" value="Save" action="#{OpportunityController.confirmParticipation()}"
+                                         update=":ConfirmParticipationForm" oncomplete="PF('ConfirmParticipationDialog').hide()" icon="fa fa-trash" styleClass="commandButton">
+                        </p:commandButton>
+
+                        <p:commandButton id="cancel" value="Cancel" icon="fa fa-sban" styleClass="commandButton"
+                                         oncomplete="PF('ConfirmParticipationDialog').hide()" >
+                        </p:commandButton>
+                        <br/>
+                    </p:panel>
+                    <br/>
+                    <!-- Error messages will be shown here if any -->
+                    <p:messages id="msgs" showIcon="false"/>
+                    <h:outputLabel value="#{OpportunityController.statusMessage}" style="font-family: Arial, Helvetica, sans-serif; 
+                                   font-size: 12pt; font-style: normal; font-weight: normal; color: #FF0000;" />
+                    <!-- Since this page is not constructed based on siteTemplate.xhtml, we cannot use siteStyles.css -->
+                </h:form>
+            </div>
+        </p:dialog>
+
+    </ui:composition>
+</html>

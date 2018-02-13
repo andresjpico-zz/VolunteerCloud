@@ -541,6 +541,10 @@ Thumbnails, description and the arrow button
     font-size: 24px;
 }
 
+.participationColumn{
+    width:15%;
+}
+
 /*Movies*/
 /*.arrow {
     font-size: 24px;
@@ -590,6 +594,15 @@ Thumbnails, description and the arrow button
     width: 18%;
 }
 
+.participantPhotoColumn {
+    align-content: center;
+    alignment-baseline: central;
+    align-items: center;
+    alignment-adjust: central;
+    align-self: center;
+    width: 10%;
+}
+
 .searchFieldColumn {
     text-align: left;
     white-space: nowrap;
@@ -608,6 +621,11 @@ Thumbnails, description and the arrow button
 
 .detail3 {
     width: 80%;
+}
+
+.detail4 {
+    width: 30%;
+    padding-left: 0px;
 }
 
 .detail td {
@@ -727,6 +745,65 @@ Thumbnails, description and the arrow button
     text-shadow: none !important;
 }
 
+.ui-selectmanycheckbox {
+}
+
+.ui-chkbox-box {
+    margin-left: 100px !important;
+    padding: 0px !important;
+}
+
+.ui-chkbox-icon {
+    margin: 0px !important;
+    padding: 0px !important;
+    width: 100% !important;
+}
+
+.ui-chkbox-label {
+    margin: 0px !important;
+    padding: 0px !important; 
+    font-size: 20px !important;
+    text-align: left !important;
+    width: 90% !important;
+}
+
+.ui-chkbox-box-2 {
+    margin-left: 0px !important;
+    padding: 0px !important;
+}
+
+.ui-chkbox-icon-2 {
+    margin: 0px !important;
+    padding: 0px !important;
+    width: 0% !important;
+}
+
+.ui-chkbox-label-2 {
+    margin: 0px !important;
+    padding: 0px !important; 
+    font-size: 12px !important;
+    text-align: left !important;
+    width: 0% !important;
+}
+
+.disableSelectManyCheckbox {
+    pointer-events: none !important;
+}
+
+/*.ui-state-disabled {
+    color: black;
+    opacity: 1 !important;
+}*/
+
+.participated {
+    text-align: center;
+    color: green;
+}
+
+.noParticipation {
+    text-align: center;
+    color: red;
+}
 
 .High{
 color: #cc0033 !important;

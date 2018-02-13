@@ -73,7 +73,7 @@ public class VolunteeringOpportunities implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Column(name = "VOLUNTEERING_AREA_ID")
-    private int volunteeringAreaID;
+    private String volunteeringAreaID;
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -129,7 +129,7 @@ public class VolunteeringOpportunities implements Serializable {
         this.opportunityID = opportunityID;
     }
 
-    public VolunteeringOpportunities(Integer opportunityID, int volunteeringAreaID, String title, String description, String address, String city, int state, String zipCode, Date dateOccurrence, Character active) {
+    public VolunteeringOpportunities(Integer opportunityID, String volunteeringAreaID, String title, String description, String address, String city, int state, String zipCode, Date dateOccurrence, Character active) {
         this.opportunityID = opportunityID;
 //        this.ownerID = ownerID;
         this.volunteeringAreaID = volunteeringAreaID;
@@ -159,11 +159,11 @@ public class VolunteeringOpportunities implements Serializable {
         this.ownerID = ownerID;
     }
 
-    public int getVolunteeringAreaID() {
+    public String getVolunteeringAreaID() {
         return volunteeringAreaID;
     }
 
-    public void setVolunteeringAreaID(int volunteeringAreaID) {
+    public void setVolunteeringAreaID(String volunteeringAreaID) {
         this.volunteeringAreaID = volunteeringAreaID;
     }
 
@@ -244,7 +244,7 @@ public class VolunteeringOpportunities implements Serializable {
     }
     
     public String getVolunteeringArea() {
-        return Constants.VOLUNTEERING_AREA[volunteeringAreaID];
+        return Constants.VOLUNTEERING_AREA[Integer.parseInt(volunteeringAreaID)];
     }
     
 //    public String getOrganizationName() {

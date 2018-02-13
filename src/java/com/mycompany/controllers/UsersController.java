@@ -3,6 +3,7 @@ package com.mycompany.controllers;
 import com.mycompany.entityclasses.Users;
 import com.mycompany.entityclasses.Volunteer;
 import com.mycompany.entityclasses.Organization;
+import com.mycompany.entityclasses.UserVolunteeringInterest;
 import com.mycompany.entityclasses.Constants;
 import com.mycompany.entityclasses.Photo;
 import com.mycompany.controllers.util.JsfUtil;
@@ -10,6 +11,7 @@ import com.mycompany.controllers.util.JsfUtil.PersistAction;
 import com.mycompany.sessionbeans.UsersFacade;
 import com.mycompany.sessionbeans.VolunteerFacade;
 import com.mycompany.sessionbeans.OrganizationFacade;
+import com.mycompany.sessionbeans.UserVolunteeringInterestFacade;
 import com.mycompany.sessionbeans.PhotoFacade;
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -77,8 +79,11 @@ public class UsersController implements Serializable {
     private Map<String, Object> statesAbbrv;
     private Map<String, Object> volunteeringAreas;
     private Map<String, Object> userRoles;
+    private List<String> userAreasOfInterest;
+
 
     private String statusMessage;
+    private boolean modeEditInterestAreas;
 
     private Users selectedUser;
     private List<Users> users;
@@ -104,6 +109,9 @@ public class UsersController implements Serializable {
     
     @EJB
     private OrganizationFacade organizationFacade;
+    
+    @EJB
+    private UserVolunteeringInterestFacade volunteeringInterestFacade;
     
     @EJB
     private PhotoFacade photoFacade;
@@ -405,6 +413,15 @@ public class UsersController implements Serializable {
         return userRoles;
     }
     
+    public List<String> getUserAreasOfInterest() {
+        userAreasOfInterest = volunteeringInterestFacade.getStringListInterestAreaIDsFromUser(selectedUser.getUserID());
+        return userAreasOfInterest;
+    }
+
+    public void setUserAreasOfInterest(List<String> userAreasOfInterest) {
+        this.userAreasOfInterest = userAreasOfInterest;
+    }
+    
     public String getStatusMessage() {
         return statusMessage;
     }
@@ -412,7 +429,15 @@ public class UsersController implements Serializable {
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
     }
+    
+    public boolean getModeEditInterestAreas() {
+        return modeEditInterestAreas;
+    }
 
+    public void setModeEditInterestAreas(boolean modeEditInterestAreas) {
+        this.modeEditInterestAreas = modeEditInterestAreas;
+    }
+            
     public Users getSelectedUser() {
         return selectedUser;
     }
@@ -530,72 +555,6 @@ public class UsersController implements Serializable {
     }
 
     public String accountPhoto(Users user) {
-
-        /*
-        Roommate photo files are not stored in the database. Only the primary key (id) of the
-        Roommate's photo is stored in the database.
-        
-        When Roommate uploads a photo, a thumbnail (small) version of the file is created
-        in the saveThumbnail() method of FileManager by using the Scalr.resize method provided
-        in the imgscalr (Java Image Scaling Library) imported as imgscalr-lib-4.2.jar
-
-        Both uploaded and thumbnail photo files are named after the primary key (id) of the
-        Roommate's photo and are stored in the PizzaHutStorageLocation. For example,
-        for the primary key (id) = 25 and file extension = jpeg, the files are named as:
-            e.g., 25.jpeg
-            e.g., 25_thumbnail.jpeg
-         */
-        // Obtain a list of photo files (e.g., 25.jpeg and 25_thumbnail.jpeg) associated
-        // with the logged-in Roommate whose database primary key is roommate.getId()
-        Photo photo = photoFacade.findPhotoByUserID(user.getUserID());
-
-        if (photo == null) {
-            // No Roommate photo exists. Return the default Roommate photo image.
-            return "defaultPhoto.png";
-        }
-
-        /*
-        photoList.get(0) returns the object reference of the first Photo object in the list.
-        getThumbnailName() message is sent to that Photo object to retrieve its
-        thumbnail image file name, e.g., 25_thumbnail.jpeg
-         */
-        return photo.getThumbnailName();
-    }
-    
-    public String accountPhoto(Volunteer user) {
-
-        /*
-        Roommate photo files are not stored in the database. Only the primary key (id) of the
-        Roommate's photo is stored in the database.
-        
-        When Roommate uploads a photo, a thumbnail (small) version of the file is created
-        in the saveThumbnail() method of FileManager by using the Scalr.resize method provided
-        in the imgscalr (Java Image Scaling Library) imported as imgscalr-lib-4.2.jar
-
-        Both uploaded and thumbnail photo files are named after the primary key (id) of the
-        Roommate's photo and are stored in the PizzaHutStorageLocation. For example,
-        for the primary key (id) = 25 and file extension = jpeg, the files are named as:
-            e.g., 25.jpeg
-            e.g., 25_thumbnail.jpeg
-         */
-        // Obtain a list of photo files (e.g., 25.jpeg and 25_thumbnail.jpeg) associated
-        // with the logged-in Roommate whose database primary key is roommate.getId()
-        Photo photo = photoFacade.findPhotoByUserID(user.getUserID());
-
-        if (photo == null) {
-            // No Roommate photo exists. Return the default Roommate photo image.
-            return "defaultPhoto.png";
-        }
-
-        /*
-        photoList.get(0) returns the object reference of the first Photo object in the list.
-        getThumbnailName() message is sent to that Photo object to retrieve its
-        thumbnail image file name, e.g., 25_thumbnail.jpeg
-         */
-        return photo.getThumbnailName();
-    }
-
-    public String accountPhoto(Organization user) {
 
         /*
         Roommate photo files are not stored in the database. Only the primary key (id) of the
@@ -927,15 +886,6 @@ public class UsersController implements Serializable {
             userRoles = getUserRoles();
             userRole = Constants.USER_ROLES[userRoleID];
             
-//            if (apartmentID != null) {
-//                apartmentRoommates = roommateFacade.findApartmentRoommates(apartmentID);
-//
-//                if (apartmentRoommates.size() > 1) {
-//                    apartmentRoommatesButMe = apartmentRoommates;
-//                    apartmentRoommatesButMe.remove(roommate);
-//                }
-//            }
-            
             // Initialize the session map with Roommate properties of interest
             initializeSessionMap(user);
 
@@ -992,10 +942,6 @@ public class UsersController implements Serializable {
                 user.setState(this.selectedUser.getState());
                 user.setZipCode(this.selectedUser.getZipCode());
                 
-                // Change security question and answer?
-                //user.setSecurityQuestion(securityQuestion);
-                //user.setSecurityAnswer(securityAnswer);
-
                 // It is optional for the Roommate to change his/her password
                 String new_Password = getNewPassword();
 
@@ -1313,7 +1259,23 @@ public class UsersController implements Serializable {
      VOLUNTEERING INTERESTS METHODS GO HERE!
     ===============================
      */    
-
+    public void enterModeEditInterestAreas() {
+        modeEditInterestAreas = true;
+    }
+    
+    public void exitModeEditInterestAreas() {
+        modeEditInterestAreas = false;
+    }
+    
+    public void updateVolunteeringInterestAreas() {
+        try {
+            volunteeringInterestFacade.updateVolunteeringInterestAreas(selectedUser.getUserID(), userAreasOfInterest);
+            exitModeEditInterestAreas();
+        } catch (EJBException e) {
+            statusMessage = "Something went wrong while updating your volunteering interests!";
+        }
+    }
+    
     
     /*
     ===============================
@@ -1394,7 +1356,6 @@ public class UsersController implements Serializable {
         }
     }
     
-    
     public String showSearchOrganization() {
 
         statusMessage = null;
@@ -1410,6 +1371,16 @@ public class UsersController implements Serializable {
         statusMessage = null;
         if (isLoggedIn()) {
             return "OrganizationInfo?faces-redirect=true";
+        } else {
+            return showIndexPage();
+        }
+    }
+    
+    public String showVolunteeringActivity() {
+        statusMessage = null;
+        if (isLoggedIn()) {
+            exitModeEditInterestAreas();
+            return "ViewActivity?faces-redirect=true";
         } else {
             return showIndexPage();
         }

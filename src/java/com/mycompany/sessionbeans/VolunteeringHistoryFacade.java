@@ -5,6 +5,7 @@
  */
 package com.mycompany.sessionbeans;
 
+import com.mycompany.entityclasses.Users;
 import com.mycompany.entityclasses.VolunteeringHistory;
 import com.mycompany.entityclasses.VolunteeringOpportunities;
 import java.util.ArrayList;
@@ -71,7 +72,7 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
     public List<VolunteeringHistory> findByUserID(int userID) {
 
         List<VolunteeringHistory> historyRecords = new ArrayList<VolunteeringHistory>(); 
-        historyRecords = em.createQuery("SELECT c FROM VolunteeringHistory c WHERE c.userID = :userID")
+        historyRecords = em.createQuery("SELECT c FROM VolunteeringHistory c WHERE c.participant.userID = :userID")
                     .setParameter("userID", userID)
                     .getResultList();
         
@@ -125,12 +126,18 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
         em.remove(record); 
     }
     
+//    public void deleteRecord(Users user, int opportunityID) {
+//        
+//        VolunteeringHistory record = SearchHistoryRecord(opportunityID, user);
+//        em.remove(record); 
+//    }
+    
     /**
      * @param opportunityID is the id attribute (column) value of the roommate
      * @return object reference of the roommate entity whose id is id
      */
     public boolean isVolunteerSubscribedToOpportunity(int userID, int opportunityID) {
-        if (em.createQuery("SELECT c FROM VolunteeringHistory c WHERE c.userID = :userID AND c.opportunityID = :opportunityID")
+        if (em.createQuery("SELECT c FROM VolunteeringHistory c WHERE c.participant.userID = :userID AND c.opportunityID = :opportunityID")
                 .setParameter("userID", userID)
                 .setParameter("opportunityID", opportunityID)
                 .getResultList().isEmpty()) {
@@ -145,7 +152,7 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
      * @return object reference of the roommate entity whose id is id
      */
     public boolean isVolunteerParticipationConfirmed(int userID, int opportunityID) {
-        if (em.createQuery("SELECT c.participated FROM VolunteeringHistory c WHERE c.userID = :userID AND c.opportunityID = :opportunityID")
+        if (em.createQuery("SELECT c.participated FROM VolunteeringHistory c WHERE c.participant.userID = :userID AND c.opportunityID = :opportunityID")
                 .setParameter("userID", userID)
                 .setParameter("opportunityID", opportunityID)
                 .getSingleResult() == null) {
@@ -180,7 +187,7 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
         List<Integer> participants = new ArrayList<Integer>(); 
         participants = em.createQuery("SELECT c.userID FROM VolunteeringHistory c WHERE c.opportunityID IN :opportunityID AND c.participated = :participated")
                     .setParameter("opportunityID", opportunityID)
-                    .setParameter("participated", 'Y')
+                    .setParameter("participated", "Y")
                     .getResultList();
     
         return participants;
@@ -191,24 +198,24 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
         List<Integer> participants = new ArrayList<Integer>(); 
         participants = em.createQuery("SELECT c.userID FROM VolunteeringHistory c WHERE c.opportunityID IN :opportunityID AND c.participated = :participated")
                     .setParameter("opportunityID", opportunityID)
-                    .setParameter("participated", 'N')
+                    .setParameter("participated", "N")
                     .getResultList();
     
         return participants;
     }
     
     public VolunteeringHistory SearchHistoryRecord(int opportunityID, int userID) {
-        if (em.createQuery("SELECT c FROM VolunteeringHistory c WHERE c.opportunityID = :opportunityID AND c.userID = :userID")
+        if (em.createQuery("SELECT c FROM VolunteeringHistory c WHERE c.opportunityID = :opportunityID AND c.participant.userID = :userID")
                 .setParameter("opportunityID", opportunityID)
                 .setParameter("userID", userID)
                 .getResultList().isEmpty()) {
             return null;
         } else {
-            return (VolunteeringHistory) (em.createQuery("SELECT c FROM VolunteeringHistory c WHERE c.opportunityID = :opportunityID AND c.userID = :userID")
+            return (VolunteeringHistory) (em.createQuery("SELECT c FROM VolunteeringHistory c WHERE c.opportunityID = :opportunityID AND c.participant.userID = :userID")
                     .setParameter("opportunityID", opportunityID)
                     .setParameter("userID", userID)
                     .getSingleResult());
         }
     }
-    
+  
 }

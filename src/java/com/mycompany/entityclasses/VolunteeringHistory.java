@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -28,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "VolunteeringHistory.findAll", query = "SELECT v FROM VolunteeringHistory v")
     , @NamedQuery(name = "VolunteeringHistory.findByRecordID", query = "SELECT v FROM VolunteeringHistory v WHERE v.recordID = :recordID")
-    , @NamedQuery(name = "VolunteeringHistory.findByUserID", query = "SELECT v FROM VolunteeringHistory v WHERE v.userID = :userID")
+    , @NamedQuery(name = "VolunteeringHistory.findByUserID", query = "SELECT v FROM VolunteeringHistory v WHERE v.participant.userID = :userID")
     , @NamedQuery(name = "VolunteeringHistory.findByOpportunityID", query = "SELECT v FROM VolunteeringHistory v WHERE v.opportunityID = :opportunityID")
     , @NamedQuery(name = "VolunteeringHistory.findByParticipated", query = "SELECT v FROM VolunteeringHistory v WHERE v.participated = :participated")})
 public class VolunteeringHistory implements Serializable {
@@ -39,16 +41,21 @@ public class VolunteeringHistory implements Serializable {
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer recordID;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "USER_ID")
-    private int userID;
+//    @Basic(optional = false)
+//    @NotNull
+//    @Column(name = "USER_ID")
+//    private int userID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "VOLUNTEERING_OPPORTUNITY_ID")
     private int opportunityID;
     @Column(name = "PARTICIPATED")
-    private Character participated;
+    private String participated;
+    
+    @NotNull
+    @JoinColumn(name = "USER_ID", referencedColumnName = "USER_ID")
+    @ManyToOne
+    private Users participant;
 
     public VolunteeringHistory() {
     }
@@ -57,9 +64,9 @@ public class VolunteeringHistory implements Serializable {
         this.recordID = recordID;
     }
 
-    public VolunteeringHistory(Integer recordID, int userID, int opportunityID) {
+    public VolunteeringHistory(Integer recordID, int opportunityID) {
         this.recordID = recordID;
-        this.userID = userID;
+//        this.userID = userID;
         this.opportunityID = opportunityID;
     }
 
@@ -71,13 +78,21 @@ public class VolunteeringHistory implements Serializable {
         this.recordID = recordID;
     }
 
-    public int getUserID() {
-        return userID;
+    public Users getParticipant() {
+        return participant;
     }
 
-    public void setUserID(int userID) {
-        this.userID = userID;
+    public void setParticipant(Users participant) {
+        this.participant = participant;
     }
+    
+//    public int getUserID() {
+//        return userID;
+//    }
+//
+//    public void setUserID(int userID) {
+//        this.userID = userID;
+//    }
 
     public int getOpportunityID() {
         return opportunityID;
@@ -87,11 +102,11 @@ public class VolunteeringHistory implements Serializable {
         this.opportunityID = opportunityID;
     }
 
-    public Character getParticipated() {
+    public String getParticipated() {
         return participated;
     }
 
-    public void setParticipated(Character participated) {
+    public void setParticipated(String participated) {
         this.participated = participated;
     }
 

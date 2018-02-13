@@ -181,21 +181,6 @@ public class VolunteerFacade extends AbstractFacade<Volunteer> {
     
     /**
      * Deletes the Roommate entity whose email is roommateEmail
-     * @param volunteerID is the Primary Key of the Roommate entity in a table row in the ApartMatesDB database.
-     * @return boolean that indicates whether roommate left the apartment successfully
-     */
-    public List<Volunteer> findVolunteersByVolunteeringArea(Integer apartmentID) {
-        //Use Join
-        List<Volunteer> volunteers = new ArrayList<Volunteer>(); 
-//        volunteers = em.createQuery("SELECT c FROM Roommate c WHERE c.apartmentID = :apartmentID")
-//                    .setParameter("apartmentID", apartmentID)
-//                    .getResultList();
-        
-        return volunteers;
-    }
-    
-    /**
-     * Deletes the Roommate entity whose email is roommateEmail
      * @return boolean that indicates whether roommate left the apartment successfully
      */
     public List<Volunteer> findActiveVolunteers() {
@@ -252,22 +237,6 @@ public class VolunteerFacade extends AbstractFacade<Volunteer> {
         return volunteers;
     }
     
-    // MySQL Query Below:
-    // SELECT * FROM USERS WHERE FIRST_NAME LIKE '%ANDRES%' AND LAST_NAME LIKE '%PI%' AND ZIP_CODE IN (24060, 24061, 34638); 
-    public List<Volunteer> SearchVolunteers(List<String> zipCodesList, String firstName, String lastName) {
-                
-        List<Volunteer> volunteers = new ArrayList<Volunteer>(); 
-        volunteers = em.createQuery("SELECT c FROM Volunteer c WHERE c.firstName LIKE :firstName AND c.lastName LIKE :lastName "
-                + "AND c.zipCode IN :zipCode AND c.active = :active")
-                    .setParameter("firstName", "%" + firstName + "%")
-                    .setParameter("lastName", "%" + lastName + "%")
-                    .setParameter("zipCode", zipCodesList)
-                    .setParameter("active", 'Y')
-                    .getResultList();
-    
-        return volunteers;
-    }
-    
     public List<Volunteer> SearchVolunteers(List<Integer> userIDs) {
                 
         List<Volunteer> volunteers = new ArrayList<Volunteer>(); 
@@ -277,17 +246,39 @@ public class VolunteerFacade extends AbstractFacade<Volunteer> {
                     .getResultList();
     
         return volunteers;
+    }    
+
+    // MySQL Query Below:
+    // SELECT * FROM USERS WHERE FIRST_NAME LIKE '%ANDRES%' AND LAST_NAME LIKE '%PI%' AND ZIP_CODE IN (24060, 24061, 34638); 
+    public List<Volunteer> SearchVolunteers(List<String> zipCodesList, String firstName, String lastName) {
+                
+        List<Volunteer> volunteers = new ArrayList<Volunteer>(); 
+        if (!zipCodesList.isEmpty())
+            volunteers = em.createQuery("SELECT c FROM Volunteer c WHERE c.firstName LIKE :firstName AND c.lastName LIKE :lastName "
+                    + "AND c.zipCode IN :zipCode AND c.active = :active")
+                        .setParameter("firstName", "%" + firstName + "%")
+                        .setParameter("lastName", "%" + lastName + "%")
+                        .setParameter("zipCode", zipCodesList)
+                        .setParameter("active", 'Y')
+                        .getResultList();
+    
+        return volunteers;
     }
     
-//    public List<Volunteer> SearchVolunteers2(List<VolunteeringHistory> participationRecords) {
-//                
-//        List<Volunteer> volunteers = new ArrayList<Volunteer>(); 
-//        volunteers = em.createQuery("SELECT c FROM Volunteer c WHERE c.userID IN :userID AND c.active = :active")
-//                    .setParameter("userID", participationRecords.)
-//                    .setParameter("active", 'Y')
-//                    .getResultList();
-//    
-//        return volunteers;
-//    }
+    public List<Volunteer> SearchVolunteers(List<Integer> userIDsList, List<String> zipCodesList, String firstName, String lastName) {
+                
+        List<Volunteer> volunteers = new ArrayList<Volunteer>();
+        if (!userIDsList.isEmpty() && !zipCodesList.isEmpty())
+            volunteers = em.createQuery("SELECT c FROM Volunteer c WHERE c.firstName LIKE :firstName AND c.lastName LIKE :lastName "
+                    + "AND c.userID IN :userID AND c.zipCode IN :zipCode AND c.active = :active")
+                        .setParameter("firstName", "%" + firstName + "%")
+                        .setParameter("lastName", "%" + lastName + "%")
+                        .setParameter("userID", userIDsList)
+                        .setParameter("zipCode", zipCodesList)
+                        .setParameter("active", 'Y')
+                        .getResultList();
+    
+        return volunteers;
+    }
     
 }

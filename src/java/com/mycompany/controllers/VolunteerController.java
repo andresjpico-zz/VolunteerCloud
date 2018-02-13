@@ -3,6 +3,7 @@ package com.mycompany.controllers;
 import com.mycompany.entityclasses.Users;
 import com.mycompany.entityclasses.Volunteer;
 import com.mycompany.entityclasses.Organization;
+import com.mycompany.entityclasses.UserVolunteeringInterest;
 import com.mycompany.entityclasses.Constants;
 import com.mycompany.entityclasses.Photo;
 import com.mycompany.controllers.util.JsfUtil;
@@ -10,6 +11,7 @@ import com.mycompany.controllers.util.JsfUtil.PersistAction;
 import com.mycompany.sessionbeans.UsersFacade;
 import com.mycompany.sessionbeans.VolunteerFacade;
 import com.mycompany.sessionbeans.OrganizationFacade;
+import com.mycompany.sessionbeans.UserVolunteeringInterestFacade;
 import com.mycompany.sessionbeans.PhotoFacade;
 import com.sun.javafx.scene.control.skin.VirtualFlow;
 import java.io.Serializable;
@@ -77,7 +79,7 @@ public class VolunteerController implements Serializable {
     private String searchLastNameField = null;
     private String searchZipCodeField = null;
     private int searchZipCodeRadiusField;
-    private int searchVolunteeringAreaField;
+    private String searchVolunteeringAreaField;
     private String searchActiveField = null;
     private String visible = "hidden";
     
@@ -85,8 +87,12 @@ public class VolunteerController implements Serializable {
     private Map<String, Object> statesNames;
     private Map<String, Object> statesAbbrv;
     private Map<String, Object> volunteeringAreas;
+//    private Map<String, Object> volunteerAreasOfInterest;
+    private List<Integer> volunteerAreasOfInterest;
+
 
     private String statusMessage;
+    private String backwardsDestination;
 
     private Volunteer selectedVolunteer;
     private List<Volunteer> volunteers;
@@ -98,6 +104,9 @@ public class VolunteerController implements Serializable {
      */
     @EJB
     private VolunteerFacade volunteerFacade;
+    
+    @EJB
+    private UserVolunteeringInterestFacade volunteeringInterestFacade;
     
     @EJB
     private PhotoFacade photoFacade;
@@ -279,11 +288,11 @@ public class VolunteerController implements Serializable {
         this.searchActiveField = searchActiveField;
     }
     
-    public int getVolunteeringAreaField() {
+    public String getSearchVolunteeringAreaField() {
         return searchVolunteeringAreaField;
     }
 
-    public void setSearchVolunteeringAreaField(int searchVolunteeringAreaField) {
+    public void setSearchVolunteeringAreaField(String searchVolunteeringAreaField) {
         this.searchVolunteeringAreaField = searchVolunteeringAreaField;
     }
     
@@ -365,6 +374,26 @@ public class VolunteerController implements Serializable {
         }
         return volunteeringAreas;
     }
+    
+//    public Map<String, Object> getVolunteerAreasOfInterest() {
+//        
+//        List<Integer> volunteeringAreaIDs = volunteeringInterestFacade.getListInterestAreaIDsFromUser(selectedVolunteer.getUserID());
+//        volunteerAreasOfInterest = new LinkedHashMap<>();
+//        
+//        for(Integer areaID : volunteeringAreaIDs)
+//            volunteerAreasOfInterest.put(Constants.VOLUNTEERING_AREA[areaID], areaID);
+//        
+//        return volunteerAreasOfInterest;
+//    }
+    
+    public List<Integer> getVolunteerAreasOfInterest() {
+        volunteerAreasOfInterest = volunteeringInterestFacade.getListInterestAreaIDsFromUser(selectedVolunteer.getUserID());
+        return volunteerAreasOfInterest;
+    }
+
+    public void setVolunteerAreasOfInterest(List<Integer> volunteerAreasOfInterest) {
+        this.volunteerAreasOfInterest = volunteerAreasOfInterest;
+    }
         
     public String getStatusMessage() {
         return statusMessage;
@@ -372,6 +401,14 @@ public class VolunteerController implements Serializable {
 
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
+    }
+    
+    public String getBackwardsDestination() {
+        return backwardsDestination;
+    }
+
+    public void setBackwardsDestination(String backwardsDestination) {
+        this.backwardsDestination = backwardsDestination;
     }
 
     public Volunteer getSelectedVolunteer() {
@@ -476,18 +513,20 @@ public class VolunteerController implements Serializable {
         statusMessage = "";
         
         // Get list of Zip Codes
-        List<String> zipCodesList = getZipCodesList();
+//        List<String> zipCodesList = getZipCodesList();
         
         //Use when testing
-        //List<String> zipCodesList = new ArrayList<String>();
-        //zipCodesList.add("24060");
-        //zipCodesList.add("24061");
+        List<String> zipCodesList = new ArrayList<String>();
+        zipCodesList.add("24060");
+        zipCodesList.add("24061");
         
         // If no search fields then show all
-        if(zipCodesList == null && searchFirstNameField == null && searchLastNameField == null) // && searchVolunteeringAreaField == null)
-            volunteers = searchAllVolunteers();
+        if(searchVolunteeringAreaField != null) {
+            List<Integer> userIDsList = getListVolunteerUserIDsInterestedInArea();
+            volunteers = volunteerFacade.SearchVolunteers(userIDsList, zipCodesList, searchFirstNameField, searchLastNameField);
+        }
         else
-            volunteers = volunteerFacade.SearchVolunteers(zipCodesList, searchFirstNameField, searchLastNameField); // , searchVolunteeringAreaField)
+            volunteers = volunteerFacade.SearchVolunteers(zipCodesList, searchFirstNameField, searchLastNameField);
 
     }
   
@@ -578,10 +617,16 @@ public class VolunteerController implements Serializable {
 //        return zipCodes;
 //    }
     
+    public List<Integer> getListVolunteerUserIDsInterestedInArea() {
+        List<Integer> userIDs = volunteeringInterestFacade.getListUserIDsInterestedInArea(Integer.parseInt(searchVolunteeringAreaField));
+        return userIDs;
+    }
+    
     //Method hides table with data when exiting the page
     public void leaving() {
         searchFirstNameField = null;
         searchLastNameField = null;
+        searchVolunteeringAreaField = null;
         searchZipCodeField = null;
         searchActiveField = null;
         visible = "hidden";
@@ -654,6 +699,16 @@ public class VolunteerController implements Serializable {
             return showIndexPage();
         }
     }
+    
+    public String showGoBackwards() {
+        
+        statusMessage = null;
+        if (isLoggedIn()) {
+            return backwardsDestination + "?faces-redirect=true";
+        } else {
+            return showIndexPage();
+        }
+    }
 
     public void showVolunteerInfo() {
         try {
@@ -671,6 +726,8 @@ public class VolunteerController implements Serializable {
             // CallMethodForVolunteerInfo();
             statusMessage = null;
             selectedVolunteer = volunteer;
+//            backwardsDestination = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("backwardsDestination");
+//            FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().clear();
             FacesContext.getCurrentInstance().getExternalContext().redirect("VolunteerInfo.xhtml?faces-redirect=true");
         } 
         catch(IOException e) { 

@@ -175,21 +175,6 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
     
     /**
      * Deletes the Roommate entity whose email is roommateEmail
-     * @param organizationID is the Primary Key of the Roommate entity in a table row in the ApartMatesDB database.
-     * @return boolean that indicates whether roommate left the apartment successfully
-     */
-    public List<Organization> findOrganizationsByVolunteeringArea(Integer apartmentID) {
-        //Use Join
-        List<Organization> organizations = new ArrayList<Organization>(); 
-//        volunteers = em.createQuery("SELECT c FROM Roommate c WHERE c.apartmentID = :apartmentID")
-//                    .setParameter("apartmentID", apartmentID)
-//                    .getResultList();
-        
-        return organizations;
-    }
-    
-    /**
-     * Deletes the Roommate entity whose email is roommateEmail
      * @return boolean that indicates whether roommate left the apartment successfully
      */
     public List<Organization> findActiveOrganizations() {
@@ -252,19 +237,46 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
         return organizations;
     }
     
+    public List<Organization> SearchVolunteers(List<Integer> userIDs) {
+                
+        List<Organization> organizations = new ArrayList<Organization>(); 
+        organizations = em.createQuery("SELECT c FROM Organization c WHERE c.userID IN :userID AND c.active = :active")
+                    .setParameter("userID", userIDs)
+                    .setParameter("active", 'Y')
+                    .getResultList();
+    
+        return organizations;
+    }   
+    
     // MySQL Query Below:
     // SELECT * FROM USERS WHERE FIRST_NAME LIKE '%ANDRES%' AND LAST_NAME LIKE '%PI%' AND ZIP_CODE IN (24060, 24061, 34638); 
     public List<Organization> SearchOrganizations(List<String> zipCodesList, String organizationName, String keyword) {
                 
+        List<Organization> organizations = new ArrayList<Organization>();
+        if (!zipCodesList.isEmpty())
+            organizations = em.createQuery("SELECT c FROM Organization c WHERE c.organizationName LIKE :organizationName AND c.mission LIKE :keyword "
+                    + "AND c.zipCode IN :zipCode AND c.active = :active")
+                        .setParameter("organizationName", "%" + organizationName + "%")
+                        .setParameter("keyword", "%" + keyword + "%")
+                        .setParameter("zipCode", zipCodesList)
+                        .setParameter("active", 'Y')
+                        .getResultList();
+    
+        return organizations;
+    }
+    
+    public List<Organization> SearchOrganizations(List<Integer> userIDsList, List<String> zipCodesList, String organizationName, String keyword) {
+                
         List<Organization> organizations = new ArrayList<Organization>(); 
-        organizations = em.createQuery("SELECT c FROM Organization c WHERE c.organizationName LIKE :organizationName AND c.mission LIKE :keyword "
-                + "AND c.zipCode IN :zipCode AND c.active = :active AND c.userRole = :userRole")
-                    .setParameter("organizationName", "%" + organizationName + "%")
-                    .setParameter("keyword", "%" + keyword + "%")
-                    .setParameter("zipCode", zipCodesList)
-                    .setParameter("active", 'Y')
-                    .setParameter("userRole", 1)
-                    .getResultList();
+        if (!userIDsList.isEmpty() && !zipCodesList.isEmpty())
+            organizations = em.createQuery("SELECT c FROM Organization c WHERE c.organizationName LIKE :organizationName AND c.mission LIKE :keyword "
+                    + "AND c.userID IN :userID AND c.zipCode IN :zipCode AND c.active = :active")
+                        .setParameter("organizationName", "%" + organizationName + "%")
+                        .setParameter("keyword", "%" + keyword + "%")
+                        .setParameter("userID", userIDsList)
+                        .setParameter("zipCode", zipCodesList)
+                        .setParameter("active", 'Y')
+                        .getResultList();
     
         return organizations;
     }
