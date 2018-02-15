@@ -75,10 +75,10 @@ public class UsersController implements Serializable {
     private String zipCode;
     
     private Map<String, Object> securityQuestions;
+    private Map<String, Object> userRoles;
     private Map<String, Object> statesNames;
     private Map<String, Object> statesAbbrv;
     private Map<String, Object> volunteeringAreas;
-    private Map<String, Object> userRoles;
     private List<String> userAreasOfInterest;
 
 
@@ -344,6 +344,23 @@ public class UsersController implements Serializable {
         }
         return securityQuestions;
     }
+        
+    public Map<String, Object> getUserRoles() {
+
+        if (userRoles == null) {
+            /*
+            Difference between HashMap and LinkedHashMap:
+            HashMap stores key-value pairings in no particular order. Values are retrieved based on their corresponding Keys.
+            LinkedHashMap stores and retrieves key-value pairings in the order they were put into the map.
+             */
+            userRoles = new LinkedHashMap<>();
+
+            for (int i = 0; i < Constants.USER_ROLES.length; i++) {
+                userRoles.put(Constants.USER_ROLES[i], i);
+            }
+        }
+        return userRoles;
+    }
     
     public Map<String, Object> getStatesNames() {
 
@@ -394,23 +411,6 @@ public class UsersController implements Serializable {
             }
         }
         return volunteeringAreas;
-    }
-        
-    public Map<String, Object> getUserRoles() {
-
-        if (userRoles == null) {
-            /*
-            Difference between HashMap and LinkedHashMap:
-            HashMap stores key-value pairings in no particular order. Values are retrieved based on their corresponding Keys.
-            LinkedHashMap stores and retrieves key-value pairings in the order they were put into the map.
-             */
-            userRoles = new LinkedHashMap<>();
-
-            for (int i = 0; i < Constants.USER_ROLES.length; i++) {
-                userRoles.put(Constants.USER_ROLES[i], i);
-            }
-        }
-        return userRoles;
     }
     
     public List<String> getUserAreasOfInterest() {
@@ -633,6 +633,10 @@ public class UsersController implements Serializable {
     
     public boolean isVolunteer() {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userRole") == "Volunteer";
+    }
+    
+    public boolean isUserSameAsUserLoggedIn(int userID) {
+        return selectedUser.getUserID() == userID;
     }
     
     public boolean isOrganization() {
@@ -1411,16 +1415,6 @@ public class UsersController implements Serializable {
         statusMessage = null;
         if (isLoggedIn()) {
             return "OpportunityInfo?faces-redirect=true";
-        } else {
-            return showIndexPage();
-        }
-    }
-    
-    public String showVolunteeringHistory() {
-
-        statusMessage = null;
-        if (isLoggedIn()) {
-            return "VolunteeringHistory?faces-redirect=true";
         } else {
             return showIndexPage();
         }

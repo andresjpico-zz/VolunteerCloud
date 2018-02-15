@@ -60,10 +60,12 @@ Copyright © 2016 Osman Balci. All rights reserved.
 
                                                 <h:panelGrid columns="2" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
                                                     <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
-                                                        <!--<h:outputText style="font-size: 20px" value="#{opportunity.ownerID.getOrganizationName()}" />-->
-                                                        <p:commandLink actionListener="#{OrganizationController.showOrganizationInfo(OpportunityController.selectedOpportunity.ownerID)}" ajax="false" >
+                                                        <p:commandLink actionListener="#{OrganizationController.showAccountInfo(OpportunityController.selectedOpportunity.ownerID)}" ajax="false" >
                                                             <h:outputText style="font-size: 20px; color: black" value="#{opportunity.ownerID.getOrganizationName()}" />
                                                         </p:commandLink> 
+<!--                                                        <p:commandLink actionListener="#{OrganizationController.showOrganizationInfo(OpportunityController.selectedOpportunity.ownerID)}" ajax="false" >
+                                                            <h:outputText style="font-size: 20px; color: black" value="#{opportunity.ownerID.getOrganizationName()}" />
+                                                        </p:commandLink> -->
                                                         <h:outputText style="font-size: 20px" value="#{opportunity.getVolunteeringArea()}" />
                                                         <h:outputText style="font-size: 20px" value="#{opportunity.getDateOccurrence()}" >
                                                             <f:convertDateTime type="date" dateStyle="long" /> <!-- short = 1/2/2000 / medium = Mar 20, 2018 / long = March 20, 2018 / full = Tuesday, March 20, 2018 / default = March 20, 2018 -->
@@ -139,9 +141,12 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                                          rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight"
                                                          >
 
-                                            <p:ajax event="rowSelect" listener="#{VolunteerController.showVolunteerInfo(OpportunityController.selectedRecord.participant)}"/>
-                                            <p:ajax event="rowUnselect" listener="#{VolunteerController.showVolunteerInfo(OpportunityController.selectedRecord.participant)}"/>
-
+<!--                                            <p:ajax event="rowSelect" listener="#{VolunteerController.showVolunteerInfo(OpportunityController.selectedRecord.participant)}"/>
+                                            <p:ajax event="rowUnselect" listener="#{VolunteerController.showVolunteerInfo(OpportunityController.selectedRecord.participant)}"/>-->
+                                            
+                                            <p:ajax event="rowSelect" listener="#{VolunteerController.showAccountInfo(OpportunityController.selectedRecord.participant)}"/>
+                                            <p:ajax event="rowUnselect" listener="#{VolunteerController.showAccountInfo(OpportunityController.selectedRecord.participant)}"/>
+                                            
                                             <p:column style="font-size: 24px" headerText="Registered Participants" width="100%" >
 
                                                 <h:panelGrid border="0" columns="3" cellpadding="5" style="width:100%" columnClasses="participantPhotoColumn,detail4,participationColumn" 

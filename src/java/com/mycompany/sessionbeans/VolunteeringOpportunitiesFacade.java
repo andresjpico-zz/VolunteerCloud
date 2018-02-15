@@ -235,5 +235,136 @@ public class VolunteeringOpportunitiesFacade extends AbstractFacade<Volunteering
 
         return opportunities;
     }
+  
+    public List<VolunteeringOpportunities> SearchHistoryOpportunities(int userID, List<Integer> opportunitiesID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID) {
+        
+        List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
+        
+        if (!opportunitiesID.isEmpty())
+            opportunities = SearchVolunteerHistoryOpportunities(opportunitiesID, zipCodesList, title, keyword, organizationName, volunteeringAreaID);
+        else
+            opportunities = SearchOrganizationHistoryOpportunities(userID, zipCodesList, title, keyword, organizationName, volunteeringAreaID);
 
+        return opportunities;
+    }
+    
+    public List<VolunteeringOpportunities> SearchHistoryOpportunitiesWithinDateRange(int userID, List<Integer> opportunitiesID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID, Date dateStart, Date dateEnd) {
+        
+        List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
+        
+        if (!opportunitiesID.isEmpty())
+            opportunities = SearchVolunteerHistoryOpportunitiesWithinDateRange(opportunitiesID, zipCodesList, title, keyword, organizationName, volunteeringAreaID, dateStart, dateEnd);
+        else
+            opportunities = SearchOrganizationHistoryOpportunitiesWithinDateRange(userID, zipCodesList, title, keyword, organizationName, volunteeringAreaID, dateStart, dateEnd);
+
+        return opportunities;
+    }
+    
+    // Methods below are without filter!
+    public List<VolunteeringOpportunities> SearchVolunteerHistoryOpportunities(List<Integer> opportunitiesID) {
+            
+        List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
+        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.opportunityID IN :opportunityID AND c.active = :active ORDER BY c.dateOccurrence DESC") 
+                    .setParameter("opportunityID", opportunitiesID)
+                    .setParameter("active", 'Y')
+                    .getResultList();
+
+        return opportunities;
+    }
+
+    public List<VolunteeringOpportunities> SearchOrganizationHistoryOpportunities(int organizationID) {
+            
+        List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
+        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.ownerID.userID = :organizationID AND c.active = :active ORDER BY c.dateOccurrence DESC") 
+                    .setParameter("organizationID", organizationID)
+                    .setParameter("active", 'Y')
+                    .getResultList();
+
+        return opportunities;
+    }
+    
+    public List<VolunteeringOpportunities> SearchVolunteerHistoryOpportunities(List<Integer> opportunitiesID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID) {
+            
+        volunteeringAreaID = (volunteeringAreaID == null) ? "%%" : volunteeringAreaID;
+        if (zipCodesList.isEmpty()) zipCodesList.add("c.zipCode");
+        
+        List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
+        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.opportunityID IN :opportunityID AND c.title LIKE :title AND c.description LIKE :description AND c.ownerID.organizationName LIKE :organizationName "
+                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND c.zipCode IN :zipCode AND c.active = :active ORDER BY c.dateOccurrence DESC")
+                    .setParameter("opportunityID", opportunitiesID)
+                    .setParameter("title", "%" + title + "%")
+                    .setParameter("description", "%" + keyword + "%")
+                    .setParameter("organizationName", "%" + organizationName + "%")
+                    .setParameter("volunteeringAreaID", volunteeringAreaID)
+                    .setParameter("zipCode", zipCodesList)
+                    .setParameter("active", 'Y')
+                    .getResultList();
+
+        return opportunities;
+    }
+
+    public List<VolunteeringOpportunities> SearchOrganizationHistoryOpportunities(int organizationID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID) {
+            
+        volunteeringAreaID = (volunteeringAreaID == null) ? "%%" : volunteeringAreaID;
+        if (zipCodesList.isEmpty()) zipCodesList.add("c.zipCode");
+        
+        List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
+        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.ownerID.userID = :organizationID AND c.title LIKE :title AND c.description LIKE :description AND c.ownerID.organizationName LIKE :organizationName "
+                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND c.zipCode IN :zipCode AND c.active = :active ORDER BY c.dateOccurrence DESC")
+                    .setParameter("organizationID", organizationID)
+                    .setParameter("title", "%" + title + "%")
+                    .setParameter("description", "%" + keyword + "%")
+                    .setParameter("organizationName", "%" + organizationName + "%")
+                    .setParameter("volunteeringAreaID", volunteeringAreaID)
+                    .setParameter("zipCode", zipCodesList)
+                    .setParameter("active", 'Y')
+                    .getResultList();
+
+        return opportunities;
+    }
+    
+    public List<VolunteeringOpportunities> SearchVolunteerHistoryOpportunitiesWithinDateRange(List<Integer> opportunitiesID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID, Date dateStart, Date dateEnd) {
+            
+        volunteeringAreaID = (volunteeringAreaID == null) ? "%%" : volunteeringAreaID;
+        if (zipCodesList.isEmpty()) zipCodesList.add("c.zipCode");
+        
+        List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
+        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.opportunityID IN :opportunityID AND c.title LIKE :title AND c.description LIKE :description AND c.ownerID.organizationName LIKE :organizationName "
+                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND c.dateOccurrence >= :dateStart AND c.dateOccurrence <= :dateEnd AND c.zipCode IN :zipCode AND c.active = :active")
+                    .setParameter("opportunityID", opportunitiesID)
+                    .setParameter("title", "%" + title + "%")
+                    .setParameter("description", "%" + keyword + "%")
+                    .setParameter("organizationName", "%" + organizationName + "%")
+                    .setParameter("volunteeringAreaID", volunteeringAreaID)
+                    .setParameter("dateStart", dateStart)
+                    .setParameter("dateEnd", dateEnd)
+                    .setParameter("zipCode", zipCodesList)
+                    .setParameter("active", 'Y')
+                    .getResultList();
+
+        return opportunities;
+    }
+
+    public List<VolunteeringOpportunities> SearchOrganizationHistoryOpportunitiesWithinDateRange(int organizationID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID, Date dateStart, Date dateEnd) {
+            
+        volunteeringAreaID = (volunteeringAreaID == null) ? "%%" : volunteeringAreaID;
+        if (zipCodesList.isEmpty()) zipCodesList.add("c.zipCode");
+        
+        List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
+        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.ownerID.userID = :organizationID AND c.title LIKE :title AND c.description LIKE :description AND c.ownerID.organizationName LIKE :organizationName "
+                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND c.dateOccurrence >= :dateStart AND c.dateOccurrence <= :dateEnd AND c.zipCode IN :zipCode AND c.active = :active")
+                    .setParameter("organizationID", organizationID)
+                    .setParameter("title", "%" + title + "%")
+                    .setParameter("description", "%" + keyword + "%")
+                    .setParameter("organizationName", "%" + organizationName + "%")
+                    .setParameter("volunteeringAreaID", volunteeringAreaID)
+                    .setParameter("dateStart", dateStart)
+                    .setParameter("dateEnd", dateEnd)
+                    .setParameter("zipCode", zipCodesList)
+                    .setParameter("active", 'Y')
+                    .getResultList();
+
+        return opportunities;
+    }
+    
 }

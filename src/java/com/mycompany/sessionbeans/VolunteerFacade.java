@@ -55,15 +55,13 @@ public class VolunteerFacade extends AbstractFacade<Volunteer> {
      * @return object reference of the roommate entity whose id is id
      */
     public Volunteer findByID(int userID) {
-        if (em.createQuery("SELECT c FROM Volunteer c WHERE c.userID = :userID AND c.userRole = :userRole")
+        if (em.createQuery("SELECT c FROM Volunteer c WHERE c.userID = :userID")
                 .setParameter("userID", userID)
-                .setParameter("userRole", 0)
                 .getResultList().isEmpty()) {
             return null;
         } else {
-            return (Volunteer) (em.createQuery("SELECT c FROM Volunteer c WHERE c.userID = :userID AND c.userRole = :userRole")
+            return (Volunteer) (em.createQuery("SELECT c FROM Volunteer c WHERE c.userID = :userID")
                     .setParameter("userID", userID)
-                    .setParameter("userRole", 0)
                     .getSingleResult());
         }
     }

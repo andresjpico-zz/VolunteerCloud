@@ -315,6 +315,10 @@ public class Users implements Serializable {
     public String getStateName() {
         return Constants.STATES[state];
     }
+    
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 
     @Override
     public int hashCode() {

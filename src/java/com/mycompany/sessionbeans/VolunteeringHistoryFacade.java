@@ -217,5 +217,19 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
                     .getSingleResult());
         }
     }
+    
+    /**
+     * @param userID is the username attribute (column) value of the roommate
+     * @return object reference of the Roommate entity whose username is username
+     */
+    public List<Integer> getOpportunityIDsFromVolunteerHistory(int userID) {
+
+        List<Integer> opportunityIDs = new ArrayList<Integer>(); 
+        opportunityIDs = em.createQuery("SELECT c.opportunityID FROM VolunteeringHistory c WHERE c.participant.userID = :userID")
+                    .setParameter("userID", userID)
+                    .getResultList();
+        
+        return opportunityIDs;
+    }
   
 }

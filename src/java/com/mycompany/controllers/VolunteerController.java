@@ -494,6 +494,17 @@ public class VolunteerController implements Serializable {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userRole") == "Organization";
     }
     
+    public boolean isUserSameAsUserLoggedIn(int volunteerID) {
+        int userID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
+        return volunteerID == userID;
+    }
+    
+    // Return True if a roommate is logged in; otherwise, return False
+//    public boolean isVolunteerSameAsUserLoggedIn(Volunteer volunteer) {
+//        int loggedInUserID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
+//        return loggedInUserID == volunteer.getUserID();
+//    }
+    
     public List<Volunteer> searchAllVolunteers() {
         
     //Here you have to write logic to decide which method to call
@@ -710,6 +721,23 @@ public class VolunteerController implements Serializable {
         }
     }
 
+    public void showAccountInfo(Volunteer volunteer) {
+        if (isUserSameAsUserLoggedIn(volunteer.getUserID()))
+            showVolunteeringActivity();
+        else
+            showVolunteerInfo(volunteer);
+    }
+    
+    public void showVolunteeringActivity() {
+        try {
+            statusMessage = null;
+            FacesContext.getCurrentInstance().getExternalContext().redirect("ViewActivity.xhtml?faces-redirect=true");
+        } 
+        catch(IOException e) { 
+        
+        }
+    }
+    
     public void showVolunteerInfo() {
         try {
             // CallMethodForVolunteerInfo();
@@ -723,11 +751,8 @@ public class VolunteerController implements Serializable {
     
     public void showVolunteerInfo(Volunteer volunteer) {
         try {
-            // CallMethodForVolunteerInfo();
             statusMessage = null;
             selectedVolunteer = volunteer;
-//            backwardsDestination = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("backwardsDestination");
-//            FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().clear();
             FacesContext.getCurrentInstance().getExternalContext().redirect("VolunteerInfo.xhtml?faces-redirect=true");
         } 
         catch(IOException e) { 

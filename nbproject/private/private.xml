@@ -4,11 +4,10 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/Users/andres/NETBEANS_PROJECTS/VolunteerCloud/web/ViewActivity.xhtml</file>
-            <file>file:/Users/andres/NETBEANS_PROJECTS/VolunteerCloud/src/java/com/mycompany/entityclasses/UserVolunteeringInterest.java</file>
-            <file>file:/Users/andres/NETBEANS_PROJECTS/VolunteerCloud/src/java/com/mycompany/sessionbeans/AbstractFacade.java</file>
             <file>file:/Users/andres/NETBEANS_PROJECTS/VolunteerCloud/src/java/com/mycompany/controllers/VolunteerController.java</file>
-            <file>file:/Users/andres/NETBEANS_PROJECTS/VolunteerCloud/src/java/com/mycompany/controllers/UsersController.java</file>
-            <file>file:/Users/andres/NETBEANS_PROJECTS/VolunteerCloud/src/java/com/mycompany/sessionbeans/UserVolunteeringInterestFacade.java</file>
+            <file>file:/Users/andres/NETBEANS_PROJECTS/VolunteerCloud/src/java/com/mycompany/controllers/OrganizationController.java</file>
+            <file>file:/Users/andres/NETBEANS_PROJECTS/VolunteerCloud/web/OpportunityInfo.xhtml</file>
+            <file>file:/Users/andres/NETBEANS_PROJECTS/VolunteerCloud/src/java/com/mycompany/controllers/VolunteeringOpportunitiesController.java</file>
         </group>
     </open-files>
 </project-private>

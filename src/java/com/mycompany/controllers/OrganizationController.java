@@ -488,6 +488,11 @@ public class OrganizationController implements Serializable {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userRole") == "Organization";
     }
     
+    public boolean isUserSameAsUserLoggedIn(int organizationID) {
+        int userID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
+        return organizationID == userID;
+    }
+    
     public List<Organization> searchAllOrganizations() {
         
     //Here you have to write logic to decide which method to call
@@ -645,6 +650,23 @@ public class OrganizationController implements Serializable {
             return "Dashboard?faces-redirect=true";
         } else {
             return showIndexPage();
+        }
+    }
+    
+    public void showAccountInfo(Organization organization) {
+        if (isUserSameAsUserLoggedIn(organization.getUserID()))
+            showVolunteeringActivity();
+        else
+            showOrganizationInfo(organization);
+    }
+    
+    public void showVolunteeringActivity() {
+        try {
+            statusMessage = null;
+            FacesContext.getCurrentInstance().getExternalContext().redirect("ViewActivity.xhtml?faces-redirect=true");
+        } 
+        catch(IOException e) { 
+        
         }
     }
 

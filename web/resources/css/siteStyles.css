@@ -608,6 +608,17 @@ Thumbnails, description and the arrow button
     white-space: nowrap;
 }
 
+.searchZipCodeFieldColumn {
+    text-align: left;
+    white-space: nowrap;
+    width: 94px;
+}
+
+.searchZipCodeRadiusFieldColumn {
+    text-align: left;
+    white-space: nowrap;
+}
+
 /*Details below are from Movies*/
 .detail1 {
     width: 60%;
@@ -839,4 +850,8 @@ font-weight: lighter !important;
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
+}
+
+.myTable thead {
+    display:none;
 }

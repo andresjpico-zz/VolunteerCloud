@@ -1,5 +1,9 @@
 package com.mycompany.controllers;
 
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.PageSize;
 import com.mycompany.entityclasses.VolunteeringOpportunities;
 import com.mycompany.controllers.util.JsfUtil;
 import com.mycompany.controllers.util.JsfUtil.PersistAction;
@@ -39,6 +43,7 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.event.ComponentSystemEvent;
 import org.primefaces.json.JSONArray;
 import org.primefaces.json.JSONObject;
+import org.primefaces.component.export.PDFExporter;
 
 @Named("OpportunityController")
 @SessionScoped
@@ -81,6 +86,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     private String searchActiveField = null;
     private String visible = "hidden";
 
+    private Map<String, Object> userRoles;
     private Map<String, Object> zipCodeRadiuses;
     private Map<String, Object> statesNames;
     private Map<String, Object> statesAbbrv;
@@ -89,10 +95,12 @@ public class VolunteeringOpportunitiesController implements Serializable {
     private String statusMessage;
 
     private VolunteeringOpportunities selectedOpportunity;
+    private VolunteeringOpportunities selectedHistoryOpportunity;
     private List<VolunteeringOpportunities> opportunities;
     
     private boolean participation;
     private VolunteeringHistory selectedRecord;
+    private List<Integer> listOpportunityIDsFromUserHistory;
     private List<VolunteeringHistory> records;
     
     private Volunteer selectedParticipant;
@@ -339,6 +347,23 @@ public class VolunteeringOpportunitiesController implements Serializable {
     When the user selects a security question, its number (int) is stored; not its String.
     Later, given the number (int), the security question String is retrieved.
      */
+    public Map<String, Object> getUserRoles() {
+
+        if (userRoles == null) {
+            /*
+            Difference between HashMap and LinkedHashMap:
+            HashMap stores key-value pairings in no particular order. Values are retrieved based on their corresponding Keys.
+            LinkedHashMap stores and retrieves key-value pairings in the order they were put into the map.
+             */
+            userRoles = new LinkedHashMap<>();
+
+            for (int i = 0; i < Constants.USER_ROLES.length; i++) {
+                userRoles.put(Constants.USER_ROLES[i], i);
+            }
+        }
+        return userRoles;
+    }
+    
     public Map<String, Object> getZipCodeRadiuses() {
 
         if (zipCodeRadiuses == null) {
@@ -423,6 +448,14 @@ public class VolunteeringOpportunitiesController implements Serializable {
         this.selectedOpportunity = selectedOpportunity;
     }
     
+    public VolunteeringOpportunities getSelectedHistoryOpportunity() {
+        return selectedHistoryOpportunity;
+    }
+
+    public void setSelectedHistoryOpportunity(VolunteeringOpportunities selectedHistoryOpportunity) {
+        this.selectedHistoryOpportunity = selectedHistoryOpportunity;
+    }
+    
     public List<VolunteeringOpportunities> getOpportunities() {
         return opportunities;
     }
@@ -470,7 +503,16 @@ public class VolunteeringOpportunitiesController implements Serializable {
     public void setSelectedRecord(VolunteeringHistory selectedRecord) {
         this.selectedRecord = selectedRecord;
     }
-    
+
+    public List<Integer> getListOpportunityIDsFromUserHistory() {
+        return listOpportunityIDsFromUserHistory;
+    }
+
+    public void setListOpportunityIDsFromUserHistory(List<Integer> listOpportunityIDsFromUserHistory) {
+        this.listOpportunityIDsFromUserHistory = listOpportunityIDsFromUserHistory;
+    }
+
+            
     public List<VolunteeringHistory> getRecords() {
         return records;
     }
@@ -533,11 +575,23 @@ public class VolunteeringOpportunitiesController implements Serializable {
     public boolean isVolunteer() {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userRole") == "Volunteer";
     }
+
+    // Return True if a roommate is logged in; otherwise, return False
+    public boolean isVolunteer(int userRole) {
+        userRoles = getUserRoles();
+        return (userRole) == (int) userRoles.get("Volunteer");
+    }    
     
     // Return True if a roommate is logged in; otherwise, return False
     public boolean isOrganization() {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userEmail") == "Organization";
     }
+    
+    // Return True if a roommate is logged in; otherwise, return False
+    public boolean isOrganization(int userRole) {
+        userRoles = getUserRoles();
+        return (userRole) == (int) userRoles.get("Organization");
+    }   
     
     public boolean isOwner() {
         return (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID") == selectedOpportunity.getOwnerID().getUserID();
@@ -632,7 +686,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
             }
             
             // show Volunteering Activity instead!
-            return showSearchOpportunity();
+            return showVolunteeringActivity();
         }    
         return "";
     }
@@ -666,6 +720,55 @@ public class VolunteeringOpportunitiesController implements Serializable {
         opportunities = opportunityFacade.findByOrganization(organizationID);
 
     }
+    
+    public List<VolunteeringOpportunities> searchVolunteeringHistory(Users user) {
+
+        opportunities = null;
+        statusMessage = "";
+        
+        // Returns all history without filter
+        if (isVolunteer(user.getUserRole())) {
+            listOpportunityIDsFromUserHistory = getUserVolunteeringHistoryRecords(user.getUserID());
+            opportunities = opportunityFacade.SearchVolunteerHistoryOpportunities(listOpportunityIDsFromUserHistory);
+        } else {
+            opportunities = opportunityFacade.SearchOrganizationHistoryOpportunities(user.getUserID());
+        }
+
+        return opportunities;
+    }
+    
+    // Search History with filter
+//    public List<VolunteeringOpportunities> searchVolunteeringHistory(Users user) {
+//
+//        if (searchDateStartField == null ^ searchDateEndField == null) { // XOR -> '^'
+//            statusMessage = "Please fill both date fields or leave them empty.";
+//            return null;
+//        }
+//        
+//        opportunities = null;
+//        statusMessage = "";
+//        
+//        // Get list of Zip Codes
+//        List<String> zipCodesList = getZipCodesList();
+//        
+//        //Use this instead to get list of Zip Codes when testing
+////        List<String> zipCodesList = new ArrayList<String>();
+////        zipCodesList.add("24060");
+////        zipCodesList.add("24061");
+//        
+//        listOpportunityIDsFromUserHistory = getUserVolunteeringHistoryRecords(user.getUserID());
+//        
+//        // If no search fields then show all
+//        if(searchDateStartField == null && searchDateEndField == null) 
+//            opportunities = opportunityFacade.SearchHistoryOpportunities(user.getUserID(), listOpportunityIDsFromUserHistory, zipCodesList, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField);
+//        else if(!searchDateStartField.after(searchDateEndField))
+//            opportunities = opportunityFacade.SearchHistoryOpportunitiesWithinDateRange(user.getUserID(), listOpportunityIDsFromUserHistory, zipCodesList, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField, searchDateStartField, searchDateEndField);
+//        else
+//            statusMessage = "Start Date cannot be later than End Date.";
+//        
+//        return opportunities;
+//        
+//    }
     
     public void searchOpportunities() {
 
@@ -877,6 +980,11 @@ public class VolunteeringOpportunitiesController implements Serializable {
         }    
     }
     
+    public List<Integer> getUserVolunteeringHistoryRecords(int userID) {
+        statusMessage = "";
+        return volunteeringHistoryFacade.getOpportunityIDsFromVolunteerHistory(userID);
+    }
+
     public void getOpportunityParticipants() {
         participants = null;
         records = null;
@@ -890,6 +998,8 @@ public class VolunteeringOpportunitiesController implements Serializable {
         searchTitleField = null;
         searchKeywordField = null;
         searchDateOccurrenceField = null;
+        searchDateStartField = null;
+        searchDateEndField = null;
         searchVolunteeringAreaField = null;
         searchZipCodeField = null;
         searchActiveField = null;
@@ -927,6 +1037,13 @@ public class VolunteeringOpportunitiesController implements Serializable {
                 reader.close();
             }
         }
+    }
+    
+    public void preProcessPDF(Object document) throws IOException, BadElementException, DocumentException {
+        Document pdf = (Document) document;
+        pdf.open();
+        pdf.setPageSize(PageSize.A4);
+        //pdf.addTitle("Volunteering History");
     }
     
     
@@ -991,6 +1108,18 @@ public class VolunteeringOpportunitiesController implements Serializable {
         }
     }
     
+    public void showOpportunityInfo(VolunteeringOpportunities opportunity) {
+        try {
+            statusMessage = null;
+            selectedOpportunity = opportunity;
+            getOpportunityParticipants();
+            FacesContext.getCurrentInstance().getExternalContext().redirect("OpportunityInfo.xhtml?faces-redirect=true");
+        } 
+        catch(IOException e) { 
+        
+        }
+    }
+    
     public void showEditOpportunity() {
         statusMessage = null;
         try {
@@ -1008,13 +1137,21 @@ public class VolunteeringOpportunitiesController implements Serializable {
         if (isLoggedIn()) {
             FacesContext.getCurrentInstance().getExternalContext().
                 getSessionMap().put("opportunityID", selectedOpportunity.getOpportunityID());
-//            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().clear();
             return "ChangeOpportunityPhoto?faces-redirect=true";
         } else {
             return showIndexPage();
         }
     }
         
+    public String showVolunteeringActivity() {
+        statusMessage = null;
+        if (isLoggedIn()) {
+            return "ViewActivity?faces-redirect=true";
+        } else {
+            return showIndexPage();
+        }
+    }
+    
     public void showVolunteerInfo() {
         statusMessage = null;
         try {

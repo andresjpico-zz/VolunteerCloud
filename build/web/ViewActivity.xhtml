@@ -101,42 +101,157 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                                          actionListener="#{UsersController.updateVolunteeringInterestAreas()}" icon="ui-icon-pencil">
                                         </p:commandButton>
                                     </c:if>
-                                        
-                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width: 100%; background: white">
-                                        <br/>
-                                        <p:selectManyCheckbox id="grid" value="#{UsersController.userAreasOfInterest}" layout="grid" columns="3" 
-                                                              disabled="false" style="#{(UsersController.modeEditInterestAreas) ? '' : 'pointer-events: none'}" 
-                                                              styleClass="ui-chkbox-box, ui-chkbox-icon, ui-chkbox-label">
-                                            <f:selectItems value="#{UsersController.volunteeringAreas}" var="areaID" itemValue="#{areaID}" />
-                                        </p:selectManyCheckbox>
-                                    </h:panelGrid>
-                                    
+                                    <!--<div onbeforeunload="#{UsersController.exitModeEditInterestAreas()}">-->
+                                    <div>
+                                        <h:panelGrid border="0" columns="1" cellpadding="0" style="width: 100%; background: white">
+                                            <br/>
+                                            <p:selectManyCheckbox id="grid" value="#{UsersController.userAreasOfInterest}" layout="grid" columns="3" 
+                                                                  disabled="false" style="#{(UsersController.modeEditInterestAreas) ? '' : 'pointer-events: none'}" 
+                                                                  styleClass="ui-chkbox-box, ui-chkbox-icon, ui-chkbox-label">
+                                                <f:selectItems value="#{UsersController.volunteeringAreas}" var="areaID" itemValue="#{areaID}" />
+                                            </p:selectManyCheckbox>
+                                        </h:panelGrid>
+                                    </div>
                                     <br/>
                                     <p:separator />
                                     
                                     <h:outputText style="font-size: 18px; font-weight: bold" value="Volunteering Activities" />
-                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
-                                        <h:outputText style="font-size: 18px" value="To be done with export button and activity search/filter.." />
+<!--                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
+                                        <h:outputText style="font-size: 18px" value="Contributions to the community:" />
+                                    </h:panelGrid>-->
+                                    <br/>
+                                    
+<!--                                     SEARCH FILTER 
+                                    <h:panelGrid border="0" columns="4" width="100%" > styleClass="ui-panelgrid-cell"
+
+                                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                                            <p:outputLabel value="Title" for="searchTitle" style="font-size: 15px" />
+                                            <p:inputText id="searchTitle" value="#{OpportunityController.searchTitleField}" label="Title" style="font-size: 15px"/>   
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                                            <p:outputLabel value="Keyword" for="searchKeyword" style="font-size: 15px" />
+                                            <p:inputText id="searchKeyword" value="#{OpportunityController.searchKeywordField}" label="Keyword" style="font-size: 15px"/>   
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                                            <p:outputLabel value="Start Date" for="searchDateStart" style="font-size: 15px" />
+                                            <p:calendar id="searchDateStart" value="#{OpportunityController.searchDateStartField}" navigator="true" 
+                                                        showButtonPanel="true" effect="slide" pattern="MM/dd/yyyy" label="Start Date" style="font-size: 15px">
+                                            </p:calendar>
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                                            <p:outputLabel value="End Date" for="searchDateEnd" style="font-size: 15px" />
+                                            <p:calendar id="searchDateEnd" value="#{OpportunityController.searchDateEndField}" navigator="true" 
+                                                        showButtonPanel="true" effect="slide" pattern="MM/dd/yyyy" label="End Date" style="font-size: 15px">
+                                            </p:calendar>
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                                            <p:outputLabel value="Organization" for="searchOrganizationName" style="font-size: 15px" />
+                                            <p:inputText id="searchOrganizationName" value="#{OpportunityController.searchOrganizationNameField}" label="Organization" style="font-size: 15px"/>   
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                                            <p:outputLabel value="Category" for="searchVolunteeringArea" style="font-size: 15px" />
+                                            <p:selectOneMenu id="searchVolunteeringArea" label="Volunteering Area" style="width: 145px; font-size: 15px"
+                                                             value="#{OpportunityController.searchVolunteeringAreaField}" >
+                                                <f:selectItem itemLabel="" itemValue=""/>
+                                                <f:selectItems value="#{OpportunityController.volunteeringAreas}"/>
+                                            </p:selectOneMenu>
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0" columnClasses="searchZipCodeFieldColumn,searchZipCodeRadiusFieldColumn">  
+                                            <p:outputLabel value="Zip Code" for="searchZipCode" style="font-size: 15px" />
+                                            <p:outputLabel value="Miles" for="searchZipCodeRadius" style="font-size: 15px" />
+                                            
+                                            <p:inputText id="searchZipCode" value="#{OpportunityController.searchZipCodeField}" label="Zip Code" required="true" style="width: 70px; font-size: 15px"/>   
+
+                                            <p:selectOneMenu id="searchZipCodeRadius" label="Mile Radius"  style="width: 40px; font-size: 15px;"
+                                                             value="#{OpportunityController.searchZipCodeRadiusField}" required="true" >
+                                                <f:selectItems value="#{OpportunityController.zipCodeRadiuses}"/>
+                                            </p:selectOneMenu>                            
+                                        </h:panelGrid>
+                                            
+                                        <p:commandButton value="Filter History" id="searchButton" style="width: 178px; height: 100%" icon="fa fa-sign-in" styleClass="searchButton"
+                                                         action="#{OpportunityController.searchVolunteeringHistory(user)}" ajax="false" update="OpportunitySearchForm" />
+
                                     </h:panelGrid>
+                                    <br/>
+                                    <br/>-->
                                     
-<!--                                    <p:dataGrid id="volunteeringActivities" var="opportunity" value="#{volunteer.getVolunteeringActivities()}" 
-                                        columns="3" layout="grid" rows="12" paginator="false" rowsPerPageTemplate="6,12,16">
+                                    <!--<div style="width: 60%">-->
+                                    <div onbeforeunload="#{OpportunityController.leaving()}">
+                                                    <!--value="#{OpportunityController.searchVolunteeringHistory(UsersController.selectedUser.userID)}" The controller would change based on which page is calling this function-->
+                                        <p:dataTable id="opportunityHistoryList" value="#{OpportunityController.searchVolunteeringHistory(user)}" var="opportunity"
+                                                         selectionMode="single" selection="#{OpportunityController.selectedHistoryOpportunity}"
+                                                         paginator="false" disabledSelection="false"
+                                                         rowKey="#{opportunity.opportunityID}"
+                                                         rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight" styleClass="myTable"
+                                                         >
 
-                                        <p:panel header="#{cast.actorName}" style="text-align:center; background: white">
-                                            <h:panelGrid columns="1" style="width:100%; font-size: 15px; color: #09242C">
-                                                <h:graphicImage url="#{cast.posterPath}"/>
-                                                <h:outputText value="#{cast.characterName}" style="padding-top: 30px" />
-                                            </h:panelGrid>
-                                        </p:panel>
+                                            <p:ajax event="rowSelect" listener="#{OpportunityController.showOpportunityInfo(OpportunityController.selectedHistoryOpportunity)}"/>
+                                            <p:ajax event="rowUnselect" listener="#{OpportunityController.showOpportunityInfo(OpportunityController.selectedHistoryOpportunity)}"/> 
 
-                                    </p:dataGrid>-->
-                                    
+                                            <f:facet name="header">
+                                                <h:outputText value="Volunteering Activities" style="vertical-align: central; text-align: center"/>
+                                                <h:commandLink id="pdf">
+                                                    <p:graphicImage value="resources/images/pdf.png" />
+                                                    <p:dataExporter type="pdf" target="opportunityHistoryList" fileName="#{UsersController.isVolunteer() ? user.getFullName() : user.organizationName}'s Volunteering History" preProcessor="#{OpportunityController.preProcessPDF}"/>
+                                                </h:commandLink>
+                                            </f:facet>
+                                            
+                                            <p:column style="font-size: 24px" headerText="Volunteering Activities" width="100%" exportable="false" >
+
+                                                <h:panelGrid border="0" columns="3" cellpadding="5" style="width:100%" columnClasses="searchRecordPhotoColumn,detail1" 
+                                                             styleClass="ui-datascroller-item"> 
+
+                                                    <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" 
+                                                                    style="padding-left: 5%" styleClass="searchRecordPhoto" />  <!-- style="padding-left: 20%" />-->
+
+                                                    <p:outputPanel>
+                                                        <h:panelGrid columns="2" cellpadding="5">
+
+                                                            <h:panelGrid columns="1" cellpadding="5">
+                                                                <h:outputText style=" font-weight: bold; font-size: 20px" value="#{opportunity.title}" />
+                                                                <h:outputText style="font-size: 20px" value="#{opportunity.ownerID.getOrganizationName()}" />
+                                                                <h:outputText style="font-size: 18px" value="#{opportunity.dateOccurrence}" >
+                                                                    <f:convertDateTime type="date" dateStyle="long" /> <!-- short = 1/2/2000 / medium = Mar 20, 2018 / long = March 20, 2018 / full = Tuesday, March 20, 2018 / default = March 20, 2018 -->
+                                                                </h:outputText>
+
+                                                                <h:outputText style="font-size: 18px" value="Description:"/>
+                                                                <h:outputText style="font-size: 18px" value="#{opportunity.description}" />
+                                                            </h:panelGrid>
+
+                                                        </h:panelGrid>
+                                                    </p:outputPanel>         
+                                                </h:panelGrid>
+                                            </p:column>
+                                            <p:column headerText="Organization" exportable="true" visible="false">
+                                                <h:outputText value="#{opportunity.ownerID.organizationName}"/>
+                                            </p:column>
+                                            <p:column headerText="Title" exportable="true" visible="false">
+                                                <h:outputText value="#{opportunity.title}"/>
+                                            </p:column>
+                                            <p:column headerText="Description" style="font-size: 8px" exportable="true" visible="false">
+                                                <h:outputText value="#{opportunity.description}"/>
+                                            </p:column>
+                                            <p:column headerText="Date" exportable="true" visible="false">
+                                                <h:outputText value="#{opportunity.dateOccurrence}">
+                                                    <f:convertDateTime type="date" dateStyle="long" /> 
+                                                </h:outputText>
+                                            </p:column>
+                                            <p:column headerText="Zip Code" exportable="true" visible="false">
+                                                <h:outputText value="#{opportunity.zipCode}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </div>
                                     <br/>
                                     
                                 </h:panelGrid>    
                             </p:column>
                         </p:dataTable>
-                         
                     </h:form>
                 </div>
             </div>
