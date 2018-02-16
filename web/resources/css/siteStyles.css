@@ -673,6 +673,10 @@ Thumbnails, description and the arrow button
     padding: 0px !important;
 }
 
+.panelGridCenter td {
+    text-align: center !important;
+}
+
 .ui-panelgrid-cell {
     border: black !important;
 }

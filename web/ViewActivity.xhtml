@@ -31,11 +31,12 @@ Copyright © 2016 Osman Balci. All rights reserved.
             <div align="center" style="padding-top: 30px">
                 <div align="center" style="width:60%">
                     <!-- Error messages will be shown here if any  -->
-                    <p:messages id="msgs" showIcon="false"/>
-                    <h:outputLabel id="form-error-message" class="errorMessages" value="#{UsersController.statusMessage}"/>
+<!--                    <p:messages id="msgs" showIcon="false"/>
+                    <h:outputLabel id="form-error-message" class="errorMessages" value="#{OpportunityController.statusMessage}"/>-->
 
                     <!-- The different elements of data are displayed/included under this form -->
                     <h:form id="ViewActivityForm">
+
                         <!-- The datatable "datalist" displays the beasic information about the movie as requested for the turotial -->
                         <p:dataTable id="datalist" value="#{UsersController.selectedUser}" var="user"
                                          paginator="false"
@@ -116,13 +117,16 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     <p:separator />
                                     
                                     <h:outputText style="font-size: 18px; font-weight: bold" value="Volunteering Activities" />
-<!--                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
-                                        <h:outputText style="font-size: 18px" value="Contributions to the community:" />
-                                    </h:panelGrid>-->
+                                    
+                                    <!-- Error messages will be shown here if any  -->
+                                    <h:panelGrid columns="1" styleClass="panelGridCenter" > 
+                                    <p:messages id="msgs" showIcon="false" style=" text-align: center"/>
+                                    <h:outputLabel id="form-error-message" class="errorMessages" value="#{OpportunityController.statusMessage}" style=" text-align: center"/>
+                                    </h:panelGrid>
                                     <br/>
                                     
-<!--                                     SEARCH FILTER 
-                                    <h:panelGrid border="0" columns="4" width="100%" > styleClass="ui-panelgrid-cell"
+                                     <!--SEARCH FILTER--> 
+                                    <h:panelGrid border="0" columns="4" width="100%" > 
 
                                         <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
                                             <p:outputLabel value="Title" for="searchTitle" style="font-size: 15px" />
@@ -162,28 +166,29 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                             </p:selectOneMenu>
                                         </h:panelGrid>
 
-                                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0" columnClasses="searchZipCodeFieldColumn,searchZipCodeRadiusFieldColumn">  
+                                        <h:panelGrid columns="1" cellpadding="0" cellspacing="0" columnClasses="searchZipCodeFieldColumn">  
+                                            <p:outputLabel value="Zip Code" for="searchZipCode" style="font-size: 15px" />
+                                            <p:inputText id="searchZipCode" value="#{OpportunityController.searchZipCodeField}" label="Zip Code" style="font-size: 15px"/>   
+                                        </h:panelGrid>
+<!--                                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0" columnClasses="searchZipCodeFieldColumn,searchZipCodeRadiusFieldColumn">  
                                             <p:outputLabel value="Zip Code" for="searchZipCode" style="font-size: 15px" />
                                             <p:outputLabel value="Miles" for="searchZipCodeRadius" style="font-size: 15px" />
-                                            
-                                            <p:inputText id="searchZipCode" value="#{OpportunityController.searchZipCodeField}" label="Zip Code" required="true" style="width: 70px; font-size: 15px"/>   
-
+                                            <p:inputText id="searchZipCode" value="#{OpportunityController.searchZipCodeField}" label="Zip Code" style="width: 70px; font-size: 15px"/>   
                                             <p:selectOneMenu id="searchZipCodeRadius" label="Mile Radius"  style="width: 40px; font-size: 15px;"
-                                                             value="#{OpportunityController.searchZipCodeRadiusField}" required="true" >
+                                                             value="#{OpportunityController.searchZipCodeRadiusField}" >
                                                 <f:selectItems value="#{OpportunityController.zipCodeRadiuses}"/>
                                             </p:selectOneMenu>                            
-                                        </h:panelGrid>
-                                            
+                                        </h:panelGrid>-->
+                                        
                                         <p:commandButton value="Filter History" id="searchButton" style="width: 178px; height: 100%" icon="fa fa-sign-in" styleClass="searchButton"
-                                                         action="#{OpportunityController.searchVolunteeringHistory(user)}" ajax="false" update="OpportunitySearchForm" />
-
+                                                         ajax="true" update=":ViewActivityForm" />
+                                                         <!-- Interesting note! When updating only 'opportunityHistoryList', the searchVolunteeringHistory function is called twice -->
                                     </h:panelGrid>
                                     <br/>
-                                    <br/>-->
+                                    <br/>
                                     
                                     <!--<div style="width: 60%">-->
                                     <div onbeforeunload="#{OpportunityController.leaving()}">
-                                                    <!--value="#{OpportunityController.searchVolunteeringHistory(UsersController.selectedUser.userID)}" The controller would change based on which page is calling this function-->
                                         <p:dataTable id="opportunityHistoryList" value="#{OpportunityController.searchVolunteeringHistory(user)}" var="opportunity"
                                                          selectionMode="single" selection="#{OpportunityController.selectedHistoryOpportunity}"
                                                          paginator="false" disabledSelection="false"

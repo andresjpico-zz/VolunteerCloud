@@ -236,26 +236,26 @@ public class VolunteeringOpportunitiesFacade extends AbstractFacade<Volunteering
         return opportunities;
     }
   
-    public List<VolunteeringOpportunities> SearchHistoryOpportunities(int userID, List<Integer> opportunitiesID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID) {
+    public List<VolunteeringOpportunities> SearchHistoryOpportunities(int userID, List<Integer> opportunitiesID, String zipCode, String title, String keyword, String organizationName, String volunteeringAreaID) {
         
         List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
         
         if (!opportunitiesID.isEmpty())
-            opportunities = SearchVolunteerHistoryOpportunities(opportunitiesID, zipCodesList, title, keyword, organizationName, volunteeringAreaID);
+            opportunities = SearchVolunteerHistoryOpportunities(opportunitiesID, zipCode, title, keyword, organizationName, volunteeringAreaID);
         else
-            opportunities = SearchOrganizationHistoryOpportunities(userID, zipCodesList, title, keyword, organizationName, volunteeringAreaID);
+            opportunities = SearchOrganizationHistoryOpportunities(userID, zipCode, title, keyword, organizationName, volunteeringAreaID);
 
         return opportunities;
     }
     
-    public List<VolunteeringOpportunities> SearchHistoryOpportunitiesWithinDateRange(int userID, List<Integer> opportunitiesID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID, Date dateStart, Date dateEnd) {
+    public List<VolunteeringOpportunities> SearchHistoryOpportunitiesWithinDateRange(int userID, List<Integer> opportunitiesID, String zipCode, String title, String keyword, String organizationName, String volunteeringAreaID, Date dateStart, Date dateEnd) {
         
         List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
         
         if (!opportunitiesID.isEmpty())
-            opportunities = SearchVolunteerHistoryOpportunitiesWithinDateRange(opportunitiesID, zipCodesList, title, keyword, organizationName, volunteeringAreaID, dateStart, dateEnd);
+            opportunities = SearchVolunteerHistoryOpportunitiesWithinDateRange(opportunitiesID, zipCode, title, keyword, organizationName, volunteeringAreaID, dateStart, dateEnd);
         else
-            opportunities = SearchOrganizationHistoryOpportunitiesWithinDateRange(userID, zipCodesList, title, keyword, organizationName, volunteeringAreaID, dateStart, dateEnd);
+            opportunities = SearchOrganizationHistoryOpportunitiesWithinDateRange(userID, zipCode, title, keyword, organizationName, volunteeringAreaID, dateStart, dateEnd);
 
         return opportunities;
     }
@@ -283,54 +283,54 @@ public class VolunteeringOpportunitiesFacade extends AbstractFacade<Volunteering
         return opportunities;
     }
     
-    public List<VolunteeringOpportunities> SearchVolunteerHistoryOpportunities(List<Integer> opportunitiesID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID) {
+    public List<VolunteeringOpportunities> SearchVolunteerHistoryOpportunities(List<Integer> opportunitiesID, String zipCode, String title, String keyword, String organizationName, String volunteeringAreaID) {
             
         volunteeringAreaID = (volunteeringAreaID == null) ? "%%" : volunteeringAreaID;
-        if (zipCodesList.isEmpty()) zipCodesList.add("c.zipCode");
-        
+        zipCode = (zipCode.equals("")) ? null : zipCode; //This is done because if the zipCode is passed as an empty string then MYSQL does not recognize it as NULL
+
         List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
         opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.opportunityID IN :opportunityID AND c.title LIKE :title AND c.description LIKE :description AND c.ownerID.organizationName LIKE :organizationName "
-                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND c.zipCode IN :zipCode AND c.active = :active ORDER BY c.dateOccurrence DESC")
+                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND (c.zipCode = :zipCode OR :zipCode is NULL) AND c.active = :active ORDER BY c.dateOccurrence DESC")
                     .setParameter("opportunityID", opportunitiesID)
                     .setParameter("title", "%" + title + "%")
                     .setParameter("description", "%" + keyword + "%")
                     .setParameter("organizationName", "%" + organizationName + "%")
                     .setParameter("volunteeringAreaID", volunteeringAreaID)
-                    .setParameter("zipCode", zipCodesList)
+                    .setParameter("zipCode", zipCode)
                     .setParameter("active", 'Y')
                     .getResultList();
 
         return opportunities;
     }
 
-    public List<VolunteeringOpportunities> SearchOrganizationHistoryOpportunities(int organizationID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID) {
+    public List<VolunteeringOpportunities> SearchOrganizationHistoryOpportunities(int organizationID, String zipCode, String title, String keyword, String organizationName, String volunteeringAreaID) {
             
         volunteeringAreaID = (volunteeringAreaID == null) ? "%%" : volunteeringAreaID;
-        if (zipCodesList.isEmpty()) zipCodesList.add("c.zipCode");
+        zipCode = (zipCode.equals("")) ? null : zipCode; //This is done because if the zipCode is passed as an empty string then MYSQL does not recognize it as NULL
         
         List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
         opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.ownerID.userID = :organizationID AND c.title LIKE :title AND c.description LIKE :description AND c.ownerID.organizationName LIKE :organizationName "
-                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND c.zipCode IN :zipCode AND c.active = :active ORDER BY c.dateOccurrence DESC")
+                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND (c.zipCode = :zipCode OR :zipCode is NULL) AND c.active = :active ORDER BY c.dateOccurrence DESC")
                     .setParameter("organizationID", organizationID)
                     .setParameter("title", "%" + title + "%")
                     .setParameter("description", "%" + keyword + "%")
                     .setParameter("organizationName", "%" + organizationName + "%")
                     .setParameter("volunteeringAreaID", volunteeringAreaID)
-                    .setParameter("zipCode", zipCodesList)
+                    .setParameter("zipCode", zipCode)
                     .setParameter("active", 'Y')
                     .getResultList();
 
         return opportunities;
     }
     
-    public List<VolunteeringOpportunities> SearchVolunteerHistoryOpportunitiesWithinDateRange(List<Integer> opportunitiesID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID, Date dateStart, Date dateEnd) {
+    public List<VolunteeringOpportunities> SearchVolunteerHistoryOpportunitiesWithinDateRange(List<Integer> opportunitiesID, String zipCode, String title, String keyword, String organizationName, String volunteeringAreaID, Date dateStart, Date dateEnd) {
             
         volunteeringAreaID = (volunteeringAreaID == null) ? "%%" : volunteeringAreaID;
-        if (zipCodesList.isEmpty()) zipCodesList.add("c.zipCode");
+        zipCode = (zipCode.equals("")) ? null : zipCode; //This is done because if the zipCode is passed as an empty string then MYSQL does not recognize it as NULL
         
         List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
         opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.opportunityID IN :opportunityID AND c.title LIKE :title AND c.description LIKE :description AND c.ownerID.organizationName LIKE :organizationName "
-                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND c.dateOccurrence >= :dateStart AND c.dateOccurrence <= :dateEnd AND c.zipCode IN :zipCode AND c.active = :active")
+                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND c.dateOccurrence >= :dateStart AND c.dateOccurrence <= :dateEnd AND (c.zipCode = :zipCode OR :zipCode is NULL) AND c.active = :active")
                     .setParameter("opportunityID", opportunitiesID)
                     .setParameter("title", "%" + title + "%")
                     .setParameter("description", "%" + keyword + "%")
@@ -338,21 +338,21 @@ public class VolunteeringOpportunitiesFacade extends AbstractFacade<Volunteering
                     .setParameter("volunteeringAreaID", volunteeringAreaID)
                     .setParameter("dateStart", dateStart)
                     .setParameter("dateEnd", dateEnd)
-                    .setParameter("zipCode", zipCodesList)
+                    .setParameter("zipCode", zipCode)
                     .setParameter("active", 'Y')
                     .getResultList();
 
         return opportunities;
     }
 
-    public List<VolunteeringOpportunities> SearchOrganizationHistoryOpportunitiesWithinDateRange(int organizationID, List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID, Date dateStart, Date dateEnd) {
+    public List<VolunteeringOpportunities> SearchOrganizationHistoryOpportunitiesWithinDateRange(int organizationID, String zipCode, String title, String keyword, String organizationName, String volunteeringAreaID, Date dateStart, Date dateEnd) {
             
         volunteeringAreaID = (volunteeringAreaID == null) ? "%%" : volunteeringAreaID;
-        if (zipCodesList.isEmpty()) zipCodesList.add("c.zipCode");
-        
+        zipCode = (zipCode.equals("")) ? null : zipCode; //This is done because if the zipCode is passed as an empty string then MYSQL does not recognize it as NULL
+
         List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
         opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.ownerID.userID = :organizationID AND c.title LIKE :title AND c.description LIKE :description AND c.ownerID.organizationName LIKE :organizationName "
-                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND c.dateOccurrence >= :dateStart AND c.dateOccurrence <= :dateEnd AND c.zipCode IN :zipCode AND c.active = :active")
+                + "AND c.volunteeringAreaID LIKE :volunteeringAreaID AND c.dateOccurrence >= :dateStart AND c.dateOccurrence <= :dateEnd AND (c.zipCode = :zipCode OR :zipCode is NULL) AND c.active = :active")
                     .setParameter("organizationID", organizationID)
                     .setParameter("title", "%" + title + "%")
                     .setParameter("description", "%" + keyword + "%")
@@ -360,7 +360,7 @@ public class VolunteeringOpportunitiesFacade extends AbstractFacade<Volunteering
                     .setParameter("volunteeringAreaID", volunteeringAreaID)
                     .setParameter("dateStart", dateStart)
                     .setParameter("dateEnd", dateEnd)
-                    .setParameter("zipCode", zipCodesList)
+                    .setParameter("zipCode", zipCode)
                     .setParameter("active", 'Y')
                     .getResultList();
 
