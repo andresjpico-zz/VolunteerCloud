@@ -71,6 +71,15 @@ public class Volunteer extends Users implements Serializable {
     }
     
     @Override
+    public Integer getVolunteerMatchID() {
+        return null;
+    }
+
+    @Override
+    public void setVolunteerMatchID(Integer volunteerMatchID) {
+    }
+    
+    @Override
     public String getOrganizationName() {
         return null;
     }
@@ -78,14 +87,14 @@ public class Volunteer extends Users implements Serializable {
     @Override
     public void setOrganizationName(String organizationName) {
     }
-
+    
     @Override
-    public Integer getVolunteerMatchID() {
+    public String getOrganizationVmName() {
         return null;
     }
 
     @Override
-    public void setVolunteerMatchID(Integer volunteerMatchID) {
+    public void setOrganizationVmName(String organizationVmName) {
     }
     
 }

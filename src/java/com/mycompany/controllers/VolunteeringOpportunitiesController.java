@@ -12,6 +12,7 @@ import com.mycompany.entityclasses.Photo;
 import com.mycompany.entityclasses.Users;
 import com.mycompany.entityclasses.Volunteer;
 import com.mycompany.entityclasses.VolunteeringHistory;
+import com.mycompany.entityclasses.VolunteerMatchAPI;
 import com.mycompany.sessionbeans.VolunteeringOpportunitiesFacade;
 import com.mycompany.sessionbeans.VolunteerFacade;
 import com.mycompany.sessionbeans.OrganizationFacade;
@@ -21,7 +22,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,6 +47,7 @@ import javax.faces.event.ComponentSystemEvent;
 import org.primefaces.json.JSONArray;
 import org.primefaces.json.JSONObject;
 import org.primefaces.component.export.PDFExporter;
+import org.primefaces.json.JSONException;
 
 @Named("OpportunityController")
 @SessionScoped
@@ -54,6 +58,14 @@ public class VolunteeringOpportunitiesController implements Serializable {
     Instance Variables (Properties)
     ===============================
      */
+    private final String ExampleVolunteerMatchAPI = "https://www.volunteermatch.org/api/call?action=#action&query=#query";
+    private final String VolunteerMatchAPI1="https://www.volunteermatch.org/api/call";
+    private final String VM_AccountName = "Virginia_Tech";
+    private final String VM_Key = "b96937968674ff450af8d622d3681197";
+    private final String VM_SearchOpportunities = "searchOpportunities";
+    private final String VM_SearchOrganizations = "searchOrganizations";
+    private final String VM_HelloWorld = "helloWorld";
+    
     private final String ExampleZipCodeAPI = "https://www.zipcodeapi.com/rest/s9oXbWODlgevBgpUCBlFQKi0ytTGunSc8sycGwSHvJyvc5Ruo8x7jcRIFOvZ7CiK/radius.<result_format>/<zip_code>/<radius>/<distance_unit>?minimal";
     private final String ZipCodeAPI1 = "https://www.zipcodeapi.com/rest/s9oXbWODlgevBgpUCBlFQKi0ytTGunSc8sycGwSHvJyvc5Ruo8x7jcRIFOvZ7CiK/radius.json/";
     private final String ZipCodeAPI2 = "/miles?minimal";
@@ -93,12 +105,13 @@ public class VolunteeringOpportunitiesController implements Serializable {
     private Map<String, Object> volunteeringAreas;
 
     private String statusMessage;
+    private VolunteerMatchAPI volunteerMatch = new VolunteerMatchAPI();
 
     private VolunteeringOpportunities selectedOpportunity;
     private VolunteeringOpportunities selectedHistoryOpportunity;
     private List<VolunteeringOpportunities> opportunities;
     private List<VolunteeringOpportunities> historyOpportunities;
-
+    private List<VolunteeringOpportunities> vmOpportunities;
     
     private boolean participation;
     private VolunteeringHistory selectedRecord;
@@ -441,6 +454,14 @@ public class VolunteeringOpportunitiesController implements Serializable {
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
     }
+    
+    public VolunteerMatchAPI getVolunteerMatch() {
+        return volunteerMatch;
+    }
+    
+    public void setVolunteerMatch(VolunteerMatchAPI volunteerMatch) {
+        this.volunteerMatch = volunteerMatch;
+    }
 
     public VolunteeringOpportunities getSelectedOpportunity() {
         return selectedOpportunity;
@@ -467,13 +488,19 @@ public class VolunteeringOpportunitiesController implements Serializable {
     }
 
     public List<VolunteeringOpportunities> getHistoryOpportunities() {
-//        if (historyOpportunities == null) {
-//            historyOpportunities = searchAllVolunteeringHistory(selectedParticipant);
         return historyOpportunities;
     }
 
     public void setHistoryOpportunities(List<VolunteeringOpportunities> historyOpportunities) {
         this.historyOpportunities = historyOpportunities;
+    }
+    
+    public List<VolunteeringOpportunities> getVmOpportunities() {
+        return vmOpportunities;
+    }
+
+    public void setVmOpportunities(List<VolunteeringOpportunities> vmOpportunities) {
+        this.vmOpportunities = vmOpportunities;
     }
             
     public Volunteer getSelectedParticipant() {
@@ -750,6 +777,37 @@ public class VolunteeringOpportunitiesController implements Serializable {
 
     }
     
+    public void searchOpportunities() {
+
+        if (searchDateStartField == null ^ searchDateEndField == null) { // XOR -> '^'
+            statusMessage = "Please fill both date fields or leave them empty.";
+            return;
+        }
+        
+        visible = "visible";
+        opportunities = null;
+        statusMessage = "";
+        
+        // Get list of Zip Codes
+        List<String> zipCodesList = getZipCodesList();
+        
+        //Use this instead to get list of Zip Codes when testing
+//        List<String> zipCodesList = new ArrayList<String>();
+//        zipCodesList.add("24060");
+//        zipCodesList.add("24061");
+        
+        // If no search fields then show all
+        if(searchDateStartField == null && searchDateEndField == null) 
+            opportunities = opportunityFacade.SearchOpportunities(zipCodesList, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField);
+        else if(!searchDateStartField.after(searchDateEndField))
+            opportunities = opportunityFacade.SearchOpportunitiesWithinDateRange(zipCodesList, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField, searchDateStartField, searchDateEndField); // , searchVolunteeringAreaField)
+        else
+            statusMessage = "Start Date cannot be later than End Date.";
+            
+        return;
+        
+    }
+    
     // Without Filters
     public List<VolunteeringOpportunities> searchAllVolunteeringHistory(Users user) {
 
@@ -791,34 +849,135 @@ public class VolunteeringOpportunitiesController implements Serializable {
         
     }
     
-    public void searchOpportunities() {
+    public List<VolunteeringOpportunities> DsearchVMOpportunities() throws UnsupportedEncodingException {
+        
+        try {
+            // Get ID of user creating the opportunity
+            ownerID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
+            Users owner = organizationFacade.findByID(ownerID);
 
-        if (searchDateStartField == null ^ searchDateEndField == null) { // XOR -> '^'
-            statusMessage = "Please fill both date fields or leave them empty.";
-            return;
+            // fieldsToDisplay:  title, type, location, availability, parentOrg, beneficiary, description, plaintextDescription, skillsNeeded,
+            //                   plaintextSkillsNeeded, volunteersNeeded, spacesAvailable, minimumAge, numReferred, requiresAddress, categoryIds, referralFields,
+            //                   imageUrl, created, updated, allowGroupInvitations, allowGroupReservation, hasWaitList, status, tags, virtual, vmUrl, requirements
+            JSONObject query = new JSONObject()
+                    .put("organizationType", "public")
+//                    .put("orgNames", new JSONArray().put("Blacksburg Museum & Cultural Foundation"))
+//                    .put("location", "24060")
+                    .put("orgNames", new JSONArray().put(owner.getOrganizationVmName()))
+                    .put("location", owner.getZipCode())
+                    .put("pageNumber", 1)
+                    .put("virtual", false)
+                    .put("fieldsToDisplay", new JSONArray().put("id").put("title").put("plaintextDescription").put("location").put("type").put("imageUrl"))
+                    .put("sortCriteria", "eventdate")
+                    .put("sortOrder", "desc");
+            if (false) query.put("orgIds", new JSONArray().put(712002));
+
+            String[] urlContent = volunteerMatch.callAPI(VM_SearchOpportunities, query.toString(), "GET", VM_AccountName, VM_Key).split("\n");
+            
+            if (urlContent.length > 1) {
+                JSONObject resultsJsonObject = new JSONObject(urlContent[1]);
+                JSONArray jsonArray = resultsJsonObject.getJSONArray("opportunities");
+                vmOpportunities = new ArrayList<VolunteeringOpportunities>();
+                
+                for (int index = 0; jsonArray.length() > index; index++) {
+
+                    JSONObject jsonObject = jsonArray.getJSONObject(index);
+                    
+                    //Gets basic information about movie from TMDB
+                    int volunteerMatchID = jsonObject.optInt("id");
+                    String title = jsonObject.optString("title");
+                    String description = jsonObject.optString("plaintextDescription");
+                    //JSONObject availabilityObject = jsonObject.optJSONObject("availability");
+                    //Date dateOccurrence = availabilityObject.optString("startDate");
+                    JSONObject locationObject = jsonObject.optJSONObject("location");
+                    String city = locationObject.optString("city");
+                    String state = locationObject.optString("region");
+                    statesAbbrv = getStatesAbbrv();
+                    int stateID = (int) statesAbbrv.get(state);
+                    String zipCode = locationObject.optString("postalCode");
+                    String encodedImageURL = jsonObject.optString("imageUrl");
+                    String imageURL = URLDecoder.decode(encodedImageURL, "US-ASCII");
+                    
+                    // Add the newly created movie object to the list of Moviea
+                    VolunteeringOpportunities opportunity = new VolunteeringOpportunities(volunteerMatchID, title, description, city, stateID, zipCode, imageURL);
+                    vmOpportunities.add(opportunity);
+                }
+                return vmOpportunities;
+
+            } else {
+                statusMessage = "VolunteerMatchAPI is unreachable!";
+                return null;
+            }
+        
+        } catch (JSONException ex) {
+            Logger.getLogger(UsersController.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        visible = "visible";
-        opportunities = null;
-        statusMessage = "";
+        return null;
+    }
+    
+    public void searchVMOpportunities() throws UnsupportedEncodingException {
         
-        // Get list of Zip Codes
-        List<String> zipCodesList = getZipCodesList();
-        
-        //Use this instead to get list of Zip Codes when testing
-//        List<String> zipCodesList = new ArrayList<String>();
-//        zipCodesList.add("24060");
-//        zipCodesList.add("24061");
-        
-        // If no search fields then show all
-        if(searchDateStartField == null && searchDateEndField == null) 
-            opportunities = opportunityFacade.SearchOpportunities(zipCodesList, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField);
-        else if(!searchDateStartField.after(searchDateEndField))
-            opportunities = opportunityFacade.SearchOpportunitiesWithinDateRange(zipCodesList, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField, searchDateStartField, searchDateEndField); // , searchVolunteeringAreaField)
-        else
-            statusMessage = "Start Date cannot be later than End Date.";
+        try {
+            // Get ID of user creating the opportunity
+            ownerID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
+            Users owner = organizationFacade.findByID(ownerID);
+
+            // fieldsToDisplay:  title, type, location, availability, parentOrg, beneficiary, description, plaintextDescription, skillsNeeded,
+            //                   plaintextSkillsNeeded, volunteersNeeded, spacesAvailable, minimumAge, numReferred, requiresAddress, categoryIds, referralFields,
+            //                   imageUrl, created, updated, allowGroupInvitations, allowGroupReservation, hasWaitList, status, tags, virtual, vmUrl, requirements
+            JSONObject query = new JSONObject()
+                    .put("organizationType", "public")
+//                    .put("orgNames", new JSONArray().put(owner.getOrganizationVmName()))
+                    .put("orgIds", new JSONArray().put(owner.getVolunteerMatchID()))
+                    .put("location", owner.getZipCode())
+                    .put("pageNumber", 1)
+                    .put("virtual", false)
+                    .put("fieldsToDisplay", new JSONArray().put("id").put("title").put("plaintextDescription").put("location").put("type").put("imageUrl"))
+                    .put("sortCriteria", "eventdate")
+                    .put("sortOrder", "desc");
+//            if (true) query.put("orgIds", new JSONArray().put(1095101)); // Soccer Without Borders Seattle
+
+            String[] urlContent = volunteerMatch.callAPI(VM_SearchOpportunities, query.toString(), "GET", VM_AccountName, VM_Key).split("\n");
             
-        return;
+            if (urlContent.length > 1) {
+                JSONObject resultsJsonObject = new JSONObject(urlContent[1]);
+                JSONArray jsonArray = resultsJsonObject.getJSONArray("opportunities");
+                vmOpportunities = new ArrayList<VolunteeringOpportunities>();
+                
+                for (int index = 0; jsonArray.length() > index; index++) {
+
+                    JSONObject jsonObject = jsonArray.getJSONObject(index);
+                    
+                    //Gets basic information about movie from TMDB
+                    int volunteerMatchID = jsonObject.optInt("id");
+                    String title = jsonObject.optString("title");
+                    String description = jsonObject.optString("plaintextDescription");
+                    //JSONObject availabilityObject = jsonObject.optJSONObject("availability");
+                    //Date dateOccurrence = availabilityObject.optString("startDate");
+                    JSONObject locationObject = jsonObject.optJSONObject("location");
+                    String city = locationObject.optString("city");
+                    String state = locationObject.optString("region");
+                    statesAbbrv = getStatesAbbrv();
+                    int stateID = (int) statesAbbrv.get(state);
+                    String zipCode = locationObject.optString("postalCode");
+                    String encodedImageURL = jsonObject.optString("imageUrl");
+                    String imageURL = URLDecoder.decode(encodedImageURL, "US-ASCII");
+                    
+                    // Add the newly created movie object to the list of Moviea
+                    VolunteeringOpportunities opportunity = new VolunteeringOpportunities(volunteerMatchID, title, description, city, stateID, zipCode, imageURL);
+                    vmOpportunities.add(opportunity);
+                }
+                return;
+
+            } else {
+                statusMessage = "VolunteerMatchAPI is unreachable!";
+                return;
+            }
+        
+        } catch (JSONException ex) {
+            Logger.getLogger(UsersController.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
   
@@ -1105,8 +1264,8 @@ public class VolunteeringOpportunitiesController implements Serializable {
     }
     
     public void showOpportunityInfo() {
-        statusMessage = null;
         try {
+            statusMessage = null;
             getOpportunityParticipants();
             FacesContext.getCurrentInstance().getExternalContext().redirect("OpportunityInfo.xhtml?faces-redirect=true");
         } 
@@ -1126,11 +1285,36 @@ public class VolunteeringOpportunitiesController implements Serializable {
         
         }
     }
+ 
+    public void showCreateOpportunity() {
+        try {
+            statusMessage = null;
+            FacesContext.getCurrentInstance().getExternalContext().redirect("CreateOpportunity.xhtml?faces-redirect=true");
+        } 
+        catch(IOException e) { 
+        
+        }
+    }
+    
+    public void showCreateOpportunity(VolunteeringOpportunities selectedVmOpportunity) {
+        try {
+            statusMessage = null;
+            title = selectedVmOpportunity.getTitle();
+            description = selectedVmOpportunity.getDescription();
+            volunteerMatchID = selectedVmOpportunity.getVolunteerMatchID();
+            city = selectedVmOpportunity.getCity();
+            stateID = selectedVmOpportunity.getState();
+            zipCode = selectedVmOpportunity.getZipCode();
+            FacesContext.getCurrentInstance().getExternalContext().redirect("CreateOpportunity.xhtml?faces-redirect=true");
+        } 
+        catch(IOException e) { 
+        
+        }
+    }
     
     public void showEditOpportunity() {
-        statusMessage = null;
         try {
-            // CallMethodForVolunteerInfo();
+            statusMessage = null;
             FacesContext.getCurrentInstance().getExternalContext().redirect("EditOpportunity.xhtml?faces-redirect=true");
         } 
         catch(IOException e) { 
@@ -1147,6 +1331,18 @@ public class VolunteeringOpportunitiesController implements Serializable {
             return "ChangeOpportunityPhoto?faces-redirect=true";
         } else {
             return showIndexPage();
+        }
+    }
+    
+    public String showImportOpportunity() {
+
+        statusMessage = null;
+        try {
+            searchVMOpportunities();
+            return "ImportOpportunity?faces-redirect=true";
+        } 
+        catch(UnsupportedEncodingException e) {
+            return "";
         }
     }
         

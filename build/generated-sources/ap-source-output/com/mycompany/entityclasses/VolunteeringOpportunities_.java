@@ -6,7 +6,7 @@ import javax.annotation.Generated;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2018-02-15T23:59:16")
+@Generated(value="EclipseLink-2.5.2.v20140319-rNA", date="2018-02-19T00:08:48")
 @StaticMetamodel(VolunteeringOpportunities.class)
 public class VolunteeringOpportunities_ { 
 
@@ -19,8 +19,8 @@ public class VolunteeringOpportunities_ {
     public static volatile SingularAttribute<VolunteeringOpportunities, String> description;
     public static volatile SingularAttribute<VolunteeringOpportunities, Character> active;
     public static volatile SingularAttribute<VolunteeringOpportunities, Integer> state;
-    public static volatile SingularAttribute<VolunteeringOpportunities, String> title;
     public static volatile SingularAttribute<VolunteeringOpportunities, Users> ownerID;
+    public static volatile SingularAttribute<VolunteeringOpportunities, String> title;
     public static volatile SingularAttribute<VolunteeringOpportunities, String> volunteeringAreaID;
 
 }

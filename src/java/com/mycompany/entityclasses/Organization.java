@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 /**
  *
@@ -54,89 +55,27 @@ import javax.persistence.MappedSuperclass;
 
 public class Organization extends Users implements Serializable {
     
-//    private static final long serialVersionUID = 1L;
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Basic(optional = false)
-//    @Column(name = "USER_ID")
-//    private Integer userID;
-//    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
-//    @Basic(optional = false)
-//    @NotNull
-//    @Size(min = 1, max = 255)
-//    @Column(name = "EMAIL")
-//    private String email;
-//    @Basic(optional = false)
-//    @NotNull
-//    @Size(min = 1, max = 255)
-//    @Column(name = "USERNAME")
-//    private String username;
-//    @Basic(optional = false)
-//    @NotNull
-//    @Size(min = 1, max = 255)
-//    @Column(name = "PASSWORD")
-//    private String password;
-//    @Basic(optional = false)
-//    @NotNull
-//    @Column(name = "USER_ROLE_ID")
-//    private int userRole;
-//    @Basic(optional = false)
-//    @NotNull
-//    @Column(name = "SECURITY_QUESTION")
-//    private int securityQuestion;
-//    @Basic(optional = false)
-//    @NotNull
-//    @Size(min = 1, max = 255)
-//    @Column(name = "SECURITY_ANSWER")
-//    private String securityAnswer;
-//    @Size(max = 255)
-//    @Column(name = "PHONE_NUMBER")
-//    private String phoneNumber;
-//    @Size(max = 255)
-//    @Column(name = "FIRST_NAME")
-//    private String firstName;
-//    @Size(max = 255)
-//    @Column(name = "LAST_NAME")
-//    private String lastName;
-//    @Size(max = 255)
-//    @Column(name = "ORGANIZATION_NAME")
-//    private String organizationName;
-//    @Size(max = 255)
-//    @Column(name = "MISSION")
-//    private String mission;
-//    @Size(max = 255)
-//    @Column(name = "WEBSITE")
-//    private String website;
-//    @Size(max = 255)
-//    @Column(name = "ADDRESS")
-//    private String address;
-//    @Size(max = 255)
-//    @Column(name = "CITY")
-//    private String city;
-//    @Basic(optional = false)
-//    @NotNull
-//    @Column(name = "STATE")
-//    private int state;
-//    @Basic(optional = false)
-//    @NotNull
-//    @Column(name = "ZIP_CODE")
-//    private int zipCode;
-    @Column(name = "VOLUNTEER_MATCH_ID")
-    private Integer volunteerMatchID;
-//    @Basic(optional = false)
-//    @NotNull
-//    @Column(name = "ACTIVE")
-//    private Character active;
-
+    @Transient
+    private String imageURL;
+    
     public Organization() {
     }
 
-    public Organization(Integer organizationID) {
+    public Organization(Integer userID) {
         this.userID = userID;
     }
+    
+    public Organization(Integer volunteerMatchID, String organizationVmName, String mission, String city, int state, String zipCode, String imageURL) {
+        this.volunteerMatchID = volunteerMatchID;
+        this.organizationVmName = organizationVmName;
+        this.mission = mission;
+        this.city = city;
+        this.state = state;
+        this.zipCode = zipCode;
+        this.imageURL = imageURL;
+    }
 
-    public Organization(Integer organizationID, String email, String username, String password, int securityQuestion, String securityAnswer, int state, String zipCode, Character active) {
-        this.userID = userID;
+    public Organization(int organizationID, String email, String username, String password, int securityQuestion, String securityAnswer, int state, String zipCode, Character active) {
         this.email = email;
         this.username = username;
         this.password = password;
@@ -146,6 +85,15 @@ public class Organization extends Users implements Serializable {
         this.zipCode = zipCode;
         this.active = active;
     }
+    
+    public String getImageURL() {
+        if (imageURL == null || imageURL.isEmpty()) 
+            imageURL = Constants.STORAGE_DIRECTORY + "no_image_1.png";
+        return imageURL;
+    }
 
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
 }
 

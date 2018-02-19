@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created by Andres Pico on 2016.11.16 
+Copyright © 2016 Osman Balci. All rights reserved.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:h="http://java.sun.com/jsf/html" 
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core" 
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" >
+    
+    <!-- 
+         The file SearchMovie.xhtml is used to display the results about the searched movie
+    -->
+    
+    <!-- This page is constructed based on the siteTemplate -->
+    <ui:composition template="/template/siteTemplate.xhtml">
+        
+        <ui:define name="title">
+            <h:outputText value="Import Opportunity"></h:outputText>
+        </ui:define>
+
+        <!-- Create the content for this page below -->
+        <ui:define name="editableContent">
+
+            <div align="center" style="padding-top: 30px">
+            <div align="center" style="width: 60%">
+
+                <!-- The different elements of data are displayed/included under this form -->
+                <h:form id="VM_OppSearchForm">
+
+                    <!-- Results Table -->
+                    <!--<div style="width: 60%">-->
+                    <div id="divID">
+                        <p:dataTable id="datalist" value="#{OpportunityController.vmOpportunities}" var="opportunity"
+                                         selectionMode="single" selection="#{OpportunityController.selectedOpportunity}"
+                                         paginator="false" lazy="true" emptyMessage="No records related to this organization were found."
+                                         rowKey="#{opportunity.volunteerMatchID}"
+                                         rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight"
+                                         >
+
+                            <p:ajax event="rowSelect" listener="#{OpportunityController.showCreateOpportunity(OpportunityController.selectedOpportunity)}" />
+                            <p:ajax event="rowUnselect" listener="#{OpportunityController.showCreateOpportunity(OpportunityController.selectedOpportunity)}" />
+
+                            <p:column style="font-size: 24px" headerText="Import Opportunity" width="100%" >
+                                <h:panelGrid border="0" columns="2" cellpadding="5" style="width:100%" columnClasses="searchRecordPhotoColumn,detail1" styleClass="ui-datascroller-item" > 
+
+                                    <h:graphicImage id="vmOpportunityImage" url="#{opportunity.imageURL}" style="padding-left: 5%" styleClass="searchRecordPhoto"/>
+                                    <p:outputPanel>
+                                        <h:panelGrid columns="1" cellpadding="5">
+                                            <h:outputText style=" font-weight: bold; font-size: 20px" value="#{opportunity.title}" />
+                                            <h:outputText style="font-size: 20px" value="#{opportunity.city}, #{opportunity.stateName} #{opportunity.zipCode}"/>
+                                            <div style="line-height: 5px"><br/></div>
+                                            <h:outputText style="font-size: 18px" value="Description:"/>
+                                            <h:outputText style="font-size: 18px" value="#{opportunity.description}" />
+                                        </h:panelGrid>
+                                    </p:outputPanel>       
+
+                                </h:panelGrid>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </h:form>
+            </div>
+            </div>
+        </ui:define>                
+    </ui:composition>
+</html>

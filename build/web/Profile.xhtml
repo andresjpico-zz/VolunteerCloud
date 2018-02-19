@@ -29,6 +29,10 @@
             <div align="center" style="width:70%; margin:0 auto;">
 
                 <h:form id="CustomerViewForm">
+                    
+                    <!-- Error messages will be shown here if any  -->
+                    <p:messages id="msgs" showIcon="false"/>
+                    <h:outputLabel id="form-error-message"  class="errorMessages" value="#{UsersController.statusMessage}"/>
 
                     <c:if test="#{UsersController.isLoggedIn() == true}">
 
@@ -45,6 +49,11 @@
 
                         <p:button outcome="#{UsersController.showEditProfile()}" value="Edit Profile" icon="fa fa-pencil" styleClass="commandButton"></p:button>
                         <p:button outcome="ChangePhoto" value="Change Photo" icon="fa fa-camera" styleClass="commandButton"></p:button>
+                        <c:if test="#{UsersController.isOrganization() == true}">
+                            <p:commandButton id="linkToVm" icon="fa fa-sign-in" styleClass="commandButton" action="#{UsersController.showLinkToVM()}" ajax="false" 
+                                             value="#{UsersController.isLinkedToVM() ? 'Linked To VM' : 'Link To VM'}" disabled="#{UsersController.isLinkedToVM()}" >
+                            </p:commandButton>
+                        </c:if>
                         <p:growl id="message" showDetail="true" />
 
                         <p:commandButton id="deactivate" value="Deactivate Account" update=":ConfirmPasswordForm" 

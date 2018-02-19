@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Users.findByFirstName", query = "SELECT u FROM Users u WHERE u.firstName = :firstName")
     , @NamedQuery(name = "Users.findByLastName", query = "SELECT u FROM Users u WHERE u.lastName = :lastName")
     , @NamedQuery(name = "Users.findByOrganizationName", query = "SELECT u FROM Users u WHERE u.organizationName = :organizationName")
+    , @NamedQuery(name = "Users.findByOrganizationVmName", query = "SELECT u FROM Users u WHERE u.organizationVmName = :organizationVmName")
     , @NamedQuery(name = "Users.findByMission", query = "SELECT u FROM Users u WHERE u.mission = :mission")
     , @NamedQuery(name = "Users.findByWebsite", query = "SELECT u FROM Users u WHERE u.website = :website")
     , @NamedQuery(name = "Users.findByAddress", query = "SELECT u FROM Users u WHERE u.address = :address")
@@ -62,7 +63,6 @@ public class Users implements Serializable {
     @Basic(optional = false)
     @Column(name = "USER_ID")
     protected Integer userID;
-    // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
@@ -99,7 +99,7 @@ public class Users implements Serializable {
     @Size(max = 255)
     @Column(name = "ORGANIZATION_NAME")
     protected String organizationName;
-    @Size(max = 255)
+    @Size(max = 500)
     @Column(name = "MISSION")
     protected String mission;
     @Size(max = 255)
@@ -121,6 +121,9 @@ public class Users implements Serializable {
     protected String zipCode;
     @Column(name = "VOLUNTEER_MATCH_ID")
     protected Integer volunteerMatchID;
+    @Size(max = 255)
+    @Column(name = "ORGANIZATION_VM_NAME")
+    protected String organizationVmName;
     @Basic(optional = false)
     @NotNull
     @Column(name = "ACTIVE")
@@ -302,6 +305,14 @@ public class Users implements Serializable {
 
     public void setVolunteerMatchID(Integer volunteerMatchID) {
         this.volunteerMatchID = volunteerMatchID;
+    }
+    
+    public String getOrganizationVmName() {
+        return organizationVmName;
+    }
+
+    public void setOrganizationVmName(String organizationVmName) {
+        this.organizationVmName = organizationVmName;
     }
     
     public Character getActive() {

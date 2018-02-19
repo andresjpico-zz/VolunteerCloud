@@ -29,6 +29,7 @@ import com.mycompany.sessionbeans.OrganizationFacade;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SecondaryTable;
+import javax.persistence.Transient;
 
 /**
  *
@@ -66,10 +67,10 @@ public class VolunteeringOpportunities implements Serializable {
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer opportunityID;
-//    @Basic(optional = false)
-//    @NotNull
-//    @Column(name = "OWNER_ID")
-//    private int ownerID;
+    @NotNull
+    @JoinColumn(name = "OWNER_ID", referencedColumnName = "USER_ID")
+    @ManyToOne
+    private Users ownerID;
     @Basic(optional = false)
     @NotNull
     @Column(name = "VOLUNTEERING_AREA_ID")
@@ -79,7 +80,7 @@ public class VolunteeringOpportunities implements Serializable {
     @Size(min = 1, max = 255)
     @Column(name = "TITLE")
     private String title;
-    @Size(max = 255)
+    @Size(max = 500)
     @Column(name = "DESCRIPTION")
     private String description;
     @Size(max = 255)
@@ -107,26 +108,24 @@ public class VolunteeringOpportunities implements Serializable {
     @NotNull
     @Column(name = "ACTIVE")
     private Character active;
-//    @Basic(optional = false)
-//    @Column(name = "ORGANIZATION_NAME", table = "USERS", insertable = false, updatable = false)
-//    private String organizationName;
-
-//    @ManyToOne
-//    @JoinColumn(name = "USER_ID", referencedColumnName = "OWNER_ID")
-//    private int userID;
-//    @Basic(optional = false)
-
-    @NotNull
-    @JoinColumn(name = "OWNER_ID", referencedColumnName = "USER_ID")
-    @ManyToOne
-    private Users ownerID;
-
+    @Transient
+    private String imageURL;
     
     public VolunteeringOpportunities() {
     }
 
     public VolunteeringOpportunities(Integer opportunityID) {
         this.opportunityID = opportunityID;
+    }
+    
+    public VolunteeringOpportunities(Integer volunteerMatchID, String title, String description, String city, int state, String zipCode, String imageURL) {
+        this.volunteerMatchID = volunteerMatchID;
+        this.title = title;
+        this.description = description;
+        this.city = city;
+        this.state = state;
+        this.zipCode = zipCode;
+        this.imageURL = imageURL;
     }
 
     public VolunteeringOpportunities(Integer opportunityID, String volunteeringAreaID, String title, String description, String address, String city, int state, String zipCode, Date dateOccurrence, Character active) {
@@ -239,6 +238,16 @@ public class VolunteeringOpportunities implements Serializable {
         this.active = active;
     }
     
+    public String getImageURL() {
+        if (imageURL == null || imageURL.isEmpty()) 
+            imageURL = Constants.STORAGE_DIRECTORY + "no_image_1.png";
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+    
     public String getStateName() {
         return Constants.STATES[state];
     }
@@ -246,14 +255,6 @@ public class VolunteeringOpportunities implements Serializable {
     public String getVolunteeringArea() {
         return Constants.VOLUNTEERING_AREA[Integer.parseInt(volunteeringAreaID)];
     }
-    
-//    public String getOrganizationName() {
-//        return organizationName;
-//    }
-    
-//    public int getUserID() {
-//        return userID;
-//    }
     
     @Override
     public int hashCode() {

@@ -90,18 +90,25 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                         <h:outputText style="font-size: 18px" value="#{user.mission}" />
                                     </h:panelGrid>
                                     <br/>
-                                    <p:separator />                                    
-                                    <h:outputText style="font-size: 18px; font-weight: bold" value="Areas of Interest" />
-                                    <c:if test="#{!UsersController.modeEditInterestAreas}">
-                                       <p:commandButton oncomplete=":ViewActivityForm" update=":ViewActivityForm" value="Edit" 
-                                                        actionListener="#{UsersController.enterModeEditInterestAreas()}" icon="ui-icon-pencil">
-                                        </p:commandButton>
-                                    </c:if>
-                                    <c:if test="#{UsersController.modeEditInterestAreas}">
-                                        <p:commandButton oncomplete=":ViewActivityForm" update=":ViewActivityForm" value="Save" 
-                                                         actionListener="#{UsersController.updateVolunteeringInterestAreas()}" icon="ui-icon-pencil">
-                                        </p:commandButton>
-                                    </c:if>
+                                    <p:separator />     
+                                    
+                                    <h:panelGrid border="0" columns="2" columnClasses="columnTwo,columnOne" cellpadding="0" style="width:100%; background: white">
+                                        <h:outputText style="font-size: 18px; font-weight: bold" value="Areas of Interest" />
+                                        <h:panelGrid columns="1">
+                                            <c:if test="#{!UsersController.modeEditInterestAreas}">
+                                               <p:commandButton oncomplete=":ViewActivityForm" update=":ViewActivityForm" value="Edit" 
+                                                                style="width: 150px; height: 30px; font-size: 15px; float: right; margin-right: 20px"
+                                                                actionListener="#{UsersController.enterModeEditInterestAreas()}" icon="ui-icon-pencil">
+                                                </p:commandButton>
+                                            </c:if>
+                                            <c:if test="#{UsersController.modeEditInterestAreas}">
+                                                <p:commandButton oncomplete=":ViewActivityForm" update=":ViewActivityForm" value="Save" 
+                                                                 style="width: 150px; height: 30px; font-size: 15px; float: right; margin-right: 20px"
+                                                                 actionListener="#{UsersController.updateVolunteeringInterestAreas()}" icon="ui-icon-pencil">
+                                                </p:commandButton>
+                                            </c:if>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
                                     <!--<div onbeforeunload="#{UsersController.exitModeEditInterestAreas()}">-->
                                     <div>
                                         <h:panelGrid border="0" columns="1" cellpadding="0" style="width: 100%; background: white">
@@ -116,7 +123,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     <br/>
                                     <p:separator />
                                     
-                                    <h:outputText style="font-size: 18px; font-weight: bold" value="Volunteering Activities" />
+                                    <h:outputText style="font-size: 18px; font-weight: bold" value="Volunteering History" />
                                     
                                     <!-- Error messages will be shown here if any  -->
                                     <h:panelGrid columns="1" styleClass="panelGridCenter" > 

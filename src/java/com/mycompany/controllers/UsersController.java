@@ -4,8 +4,10 @@ import com.mycompany.entityclasses.Users;
 import com.mycompany.entityclasses.Volunteer;
 import com.mycompany.entityclasses.Organization;
 import com.mycompany.entityclasses.UserVolunteeringInterest;
+import com.mycompany.entityclasses.VolunteeringOpportunities; //HERE
 import com.mycompany.entityclasses.Constants;
 import com.mycompany.entityclasses.Photo;
+import com.mycompany.entityclasses.VolunteerMatchAPI;
 import com.mycompany.controllers.util.JsfUtil;
 import com.mycompany.controllers.util.JsfUtil.PersistAction;
 import com.mycompany.sessionbeans.UsersFacade;
@@ -17,6 +19,9 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
@@ -33,6 +38,9 @@ import javax.inject.Named;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.primefaces.json.JSONArray;
+import org.primefaces.json.JSONException;
+import org.primefaces.json.JSONObject;
 
 /**
  *
@@ -46,9 +54,17 @@ public class UsersController implements Serializable {
     
     /*
     ===============================
-    Instance Variables (Properties)
+     INSTANCE VARIABLES
     ===============================
      */
+    private final String ExampleVolunteerMatchAPI = "https://www.volunteermatch.org/api/call?action=#action&query=#query";
+    private final String VolunteerMatchAPI1="https://www.volunteermatch.org/api/call";
+    private final String VM_AccountName = "Virginia_Tech";
+    private final String VM_Key = "b96937968674ff450af8d622d3681197";
+    private final String VM_SearchOpportunities = "searchOpportunities";
+    private final String VM_SearchOrganizations = "searchOrganizations";
+    private final String VM_HelloWorld = "helloWorld";
+
     private String username;
     private String loginUsername;
     private String email;
@@ -74,6 +90,11 @@ public class UsersController implements Serializable {
     private String state;
     private String zipCode;
     
+    private String searchOrganizationNameField = "";
+    private String searchKeywordField = "";
+    private String searchZipCodeField = "";
+    private String visible = "hidden";
+    
     private Map<String, Object> securityQuestions;
     private Map<String, Object> userRoles;
     private Map<String, Object> statesNames;
@@ -81,21 +102,23 @@ public class UsersController implements Serializable {
     private Map<String, Object> volunteeringAreas;
     private List<String> userAreasOfInterest;
 
-
     private String statusMessage;
     private boolean modeEditInterestAreas;
+    private VolunteerMatchAPI volunteerMatch = new VolunteerMatchAPI();
 
     private Users selectedUser;
     private List<Users> users;
-    private List<Users> usersButMe;
     
     private Volunteer selectedVolunteer;
     private List<Volunteer> volunteers;
-    private List<Volunteer> volunteersButMe;
     
     private Organization selectedOrganization;
     private List<Organization> organizations;
-    private List<Organization> organizationsButMine;
+    private List<Organization> vmOrganizations;
+    
+    // HERE
+    private VolunteeringOpportunities selectedOpportunity;
+    private List<VolunteeringOpportunities> vmOpportunities;
 
     /*
     The @EJB annotation implies that the EJB container will perform an injection of the object
@@ -121,9 +144,9 @@ public class UsersController implements Serializable {
     }
 
     /*
-    =========================
-    Getter and Setter Methods
-    =========================
+    ============================
+     GETTER AND SETTER METHODS
+    ============================
      */
     public String getUsername() {
         return username;
@@ -317,6 +340,38 @@ public class UsersController implements Serializable {
         this.active = active;
     }
     
+    public String getVisible() {
+        return visible;
+    }
+
+    public void setVisible(String visible) {
+        this.visible = visible;
+    }
+    
+    public String getSearchOrganizationNameField() {
+        return searchOrganizationNameField;
+    }
+
+    public void setSearchOrganizationNameField(String searchOrganizationNameField) {
+        this.searchOrganizationNameField = searchOrganizationNameField;
+    }
+    
+    public String getSearchKeywordField() {
+        return searchKeywordField;
+    }
+
+    public void setSearchKeywordField(String searchKeywordField) {
+        this.searchKeywordField = searchKeywordField;
+    }
+    
+    public String getSearchZipCodeField() {
+        return searchZipCodeField;
+    }
+
+    public void setSearchZipCodeField(String searchZipCodeField) {
+        this.searchZipCodeField = searchZipCodeField;
+    }
+    
     /*
     private Map<String, Object> security_questions;
         String      int
@@ -437,6 +492,14 @@ public class UsersController implements Serializable {
     public void setModeEditInterestAreas(boolean modeEditInterestAreas) {
         this.modeEditInterestAreas = modeEditInterestAreas;
     }
+    
+    public VolunteerMatchAPI getVolunteerMatch() {
+        return volunteerMatch;
+    }
+    
+    public void setVolunteerMatch(VolunteerMatchAPI volunteerMatch) {
+        this.volunteerMatch = volunteerMatch;
+    }
             
     public Users getSelectedUser() {
         return selectedUser;
@@ -452,14 +515,6 @@ public class UsersController implements Serializable {
 
     public void setUsers(List<Users> users) {
         this.users = users;
-    }
-    
-    public List<Users> getUsersButMe() {
-        return usersButMe;
-    }
-
-    public void setUsersButMe(List<Users> usersButMe) {
-        this.usersButMe = usersButMe;
     }
     
     public Volunteer getSelectedVolunteer() {
@@ -478,14 +533,6 @@ public class UsersController implements Serializable {
         this.volunteers = volunteers;
     }
     
-    public List<Volunteer> getVolunteersButMe() {
-        return volunteersButMe;
-    }
-
-    public void setVolunteersButMe(List<Volunteer> volunteersButMe) {
-        this.volunteersButMe = volunteersButMe;
-    }
-
     public Organization getSelectedOrganization() {
         return selectedOrganization;
     }
@@ -502,12 +549,29 @@ public class UsersController implements Serializable {
         this.organizations = organizations;
     }
     
-    public List<Organization> getOrganizationButMine() {
-        return organizationsButMine;
+    public List<Organization> getVmOrganizations() {
+        return vmOrganizations;
     }
 
-    public void setOrganizationsButMine(List<Organization> organizationsButMine) {
-        this.organizationsButMine = organizationsButMine;
+    public void setVmOrganizations(List<Organization> vmOrganizations) {
+        this.vmOrganizations = vmOrganizations;
+    }
+    
+    // HERE
+    public VolunteeringOpportunities getSelectedOpportunity() {
+        return selectedOpportunity;
+    }
+
+    public void setSelectedOpportunity(VolunteeringOpportunities selectedOpportunity) {
+        this.selectedOpportunity = selectedOpportunity;
+    }
+    
+    public List<VolunteeringOpportunities> getVmOpportunities() {
+        return vmOpportunities;
+    }
+
+    public void setVmOpportunities(List<VolunteeringOpportunities> vmOpportunities) {
+        this.vmOpportunities = vmOpportunities;
     }
 
     // EL in Profile.xhtml invokes this method to obtain the constant value
@@ -622,7 +686,7 @@ public class UsersController implements Serializable {
 
     /*
     ===============================
-     Users Methods
+     USER ACCOUNT METHODS
     ===============================
      */
     
@@ -635,12 +699,16 @@ public class UsersController implements Serializable {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userRole") == "Volunteer";
     }
     
+    public boolean isOrganization() {
+        return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userRole") == "Organization";
+    }
+    
     public boolean isUserSameAsUserLoggedIn(int userID) {
         return selectedUser.getUserID() == userID;
     }
     
-    public boolean isOrganization() {
-        return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userRole") == "Organization";
+    public boolean isLinkedToVM() {
+        return selectedUser.getVolunteerMatchID() != null;
     }
     
     // Initialize the session map for the Roommate object
@@ -1260,7 +1328,7 @@ public class UsersController implements Serializable {
 
     /*
     ===============================
-     VOLUNTEERING INTERESTS METHODS GO HERE!
+     VOLUNTEERING INTERESTS METHODS
     ===============================
      */    
     public void enterModeEditInterestAreas() {
@@ -1280,10 +1348,130 @@ public class UsersController implements Serializable {
         }
     }
     
+    /*
+    ===============================
+     VOLUNTEER MATCH METHODS
+    ===============================
+     */    
+    public boolean testVMConnection() {
+        
+        try {
+            String query = new JSONObject()
+                    .put("name", "Andres").toString();
+            
+            String[] urlContent = volunteerMatch.callAPI(VM_HelloWorld, query, "GET", VM_AccountName, VM_Key).split("\n");
+            
+            if (urlContent.length > 1) {
+                JSONObject json = new JSONObject(urlContent[1]);
+                return true;
+            
+            } else {
+                statusMessage = "VolunteerMatchAPI is unreachable!";
+                return false;
+            }
+        
+        } catch (JSONException ex) {
+            Logger.getLogger(UsersController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return false;
+    }
+    
+    public void searchVMOrganization() throws UnsupportedEncodingException {
+       
+        try {
+            // Get page ready for new search
+            visible = "visible";
+            statusMessage = "";
+
+            // fieldsToDisplay: name, url, location, description, plaintextDescription, mission, plaintextMission, imageUrl, created, updated,
+            //                  numReviews, avgRating, contact, categoryIds, vmUrl, type
+            JSONObject query = new JSONObject()
+                    .put("organizationType", "public")
+                    .put("location", searchZipCodeField)
+                    .put("pageNumber", 1)
+                    .put("fieldsToDisplay", new JSONArray().put("id").put("name").put("plaintextDescription").put("location").put("imageUrl"))
+                    .put("sortCriteria", "name")
+                    .put("sortOrder", "asc");
+            if (!searchOrganizationNameField.isEmpty()) query.put("names", new JSONArray().put(searchOrganizationNameField));
+            if (!searchKeywordField.isEmpty()) query.put("descriptions", new JSONArray().put(searchKeywordField));
+
+            String[] urlContent = volunteerMatch.callAPI(VM_SearchOrganizations, query.toString(), "GET", VM_AccountName, VM_Key).split("\n");
+            
+            if (urlContent.length > 1) {
+                JSONObject resultsJsonObject = new JSONObject(urlContent[1]);
+                JSONArray jsonArray = resultsJsonObject.getJSONArray("organizations");
+                vmOrganizations = new ArrayList<Organization>();
+                
+                for (int index = 0; jsonArray.length() > index; index++) {
+
+                    JSONObject jsonObject = jsonArray.getJSONObject(index);
+                    
+                    //Gets basic information about movie from TMDB
+                    int volunteerMatchID = jsonObject.optInt("id");
+                    String name = jsonObject.optString("name");
+                    String description = jsonObject.optString("plaintextDescription");
+                    JSONObject locationObject = jsonObject.optJSONObject("location");
+                    String city = locationObject.optString("city");
+                    String state = locationObject.optString("region");
+                    statesAbbrv = getStatesAbbrv();
+                    int stateID = (int) statesAbbrv.get(state);
+                    String zipCode = locationObject.optString("postalCode");
+                    String encodedImageURL = jsonObject.optString("imageUrl");
+                    String imageURL = URLDecoder.decode(encodedImageURL, "US-ASCII");
+                    
+                    // Add the newly created movie object to the list of Moviea
+                    Organization organization = new Organization(volunteerMatchID, name, description, city, stateID, zipCode, imageURL);
+                    vmOrganizations.add(organization);
+                }
+
+            } else {
+                statusMessage = "VolunteerMatchAPI is unreachable!";
+                return;
+            }
+        
+        } catch (JSONException ex) {
+            Logger.getLogger(UsersController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void linkToVM() {
+        
+        if(selectedOrganization == null) {
+            statusMessage = "Please select an organization.";
+            return;
+        }
+        
+        if (statusMessage == null || statusMessage.isEmpty()) {
+            try {
+                // Instantiate a new Task object
+                selectedUser.setVolunteerMatchID(selectedOrganization.getVolunteerMatchID());
+                selectedUser.setOrganizationVmName(selectedOrganization.getOrganizationVmName());
+                usersFacade.edit(selectedUser);
+                selectedOrganization = null;
+                vmOrganizations = null;
+                statusMessage = "Your account has been linked successfully!";
+                showProfileAfterLinkingToVM();
+                
+            } catch (Exception e) {
+                statusMessage = "Something went wrong while linking your account to the Organization!";
+                return;
+            }
+        }
+    }
+    
+    //Method hides table with data when exiting the page
+    public void leaving() {
+        searchOrganizationNameField = "";
+        searchKeywordField = "";
+        searchZipCodeField = "";
+        visible = "hidden";
+    }
+    
     
     /*
     ===============================
-     Navigation Methods
+     NAVIGATION METHODS
     ===============================
      */
     
@@ -1329,12 +1517,32 @@ public class UsersController implements Serializable {
             return showIndexPage();
         }
     }
+    
+    public void showProfileAfterLinkingToVM() {
+
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("Profile.xhtml?faces-redirect=true");
+        } 
+        catch(IOException e) { 
+        
+        }
+    }
 
     public String showEditProfile() {
 
         statusMessage = null;
         if (isLoggedIn()) {
             return "EditProfile?faces-redirect=true";
+        } else {
+            return showIndexPage();
+        }
+    }
+    
+    public String showLinkToVM() {
+
+        statusMessage = null;
+        if (isLoggedIn()) {
+            return "LinkToVM?faces-redirect=true";
         } else {
             return showIndexPage();
         }
@@ -1395,6 +1603,16 @@ public class UsersController implements Serializable {
         statusMessage = null;
         if (isLoggedIn()) {
             return "CreateOpportunity?faces-redirect=true";
+        } else {
+            return showIndexPage();
+        }
+    }
+    
+    public String showImportOpportunity() {
+
+        statusMessage = null;
+        if (isLoggedIn()) {
+            return "ImportOpportunity?faces-redirect=true";
         } else {
             return showIndexPage();
         }
