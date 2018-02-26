@@ -396,6 +396,10 @@ public class OrganizationController implements Serializable {
         organizationAreasOfInterest = volunteeringInterestFacade.getListInterestAreaIDsFromUser(selectedOrganization.getUserID());
         return organizationAreasOfInterest;
     }
+    
+    public void setOrganizationAreasOfInterest(List<Integer> organizationAreasOfInterest) {
+        this.organizationAreasOfInterest = organizationAreasOfInterest;
+    }
         
     public String getStatusMessage() {
         return statusMessage;

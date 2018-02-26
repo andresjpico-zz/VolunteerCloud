@@ -619,6 +619,20 @@ Thumbnails, description and the arrow button
     white-space: nowrap;
 }
 
+.webchatInputTextColumn {
+    text-align: left;
+    vertical-align: central;
+    white-space: nowrap;
+    width: 90%;
+}
+
+.webchatSendButtonColumn {
+    text-align: left;
+    vertical-align: central;
+    white-space: nowrap;
+    width: 10%;
+}
+
 /*Details below are from Movies*/
 .detail1 {
     width: 60%;
@@ -643,26 +657,11 @@ Thumbnails, description and the arrow button
     font-size: 24px;
 }
 
-
 .ui-dataGrid {
     background-color: white !important;
     color: #09242C !important;
     font-size: 40px;
 }
-
-/*Apartmates*/
-/*.ui-datascroller-item td {
-    border: none !important;
-    margin: 0px !important;
-    text-align: left;
-}*/
-
-/*Movies*/
-/*.ui-datascroller-item td {
-    border: none !important;
-    margin: 0px !important;
-    padding: 0px !important;
-}*/
 
 /*VolunteerCloud*/
 /*Comment to see lines of table per record*/
@@ -697,7 +696,7 @@ Thumbnails, description and the arrow button
     color: #09242C !important;
 }
 
-/*Apartmates*/
+/*Colored even row*/
 /*.ui-datatable-even {
     background-color: #ddf4f4 !important;
     transition: all .125s ease-in-out !important;
@@ -708,6 +707,47 @@ Thumbnails, description and the arrow button
     background-color: white !important;
     color: #09242C !important;
 }
+
+/* Being hidden with jQuery where needed as this hides it everywhere!*/ 
+/*.ui-datatable-empty-message {
+    display: none;
+}*/
+
+.ui-datatable-scrollable-body {
+    background-color: rgb(255,255,255) !important;
+    background: rgba(255,255,255,0.9) !important;
+    color: white !important;
+    border: black !important;
+    border-width: 5px !important;
+}
+
+.ui-datatable-footer {
+   height: 50px !important;
+}
+
+/*SCROLLBAR BEGINS*/
+ ::-webkit-scrollbar {
+    width: 12px !important;
+ }
+
+::-webkit-scrollbar-track {
+   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3) !important; 
+   -webkit-border-radius: 10px !important;
+   border-radius: 10px !important;
+ }
+
+ ::-webkit-scrollbar-thumb {
+   -webkit-border-radius: 10px !important;
+   border-radius: 10px !important;
+   background: rgba(175,175,175,0.8) !important; 
+   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5) !important; 
+ }
+
+ ::-webkit-scrollbar-thumb:window-inactive {
+   background: rgba(175,175,175,0.4) !important; 
+ }
+/*SCROLLBAR ENDS*/
+
 
 /*Apartmates*/
 /*Color of row when you hover over it*/
@@ -858,4 +898,8 @@ font-weight: lighter !important;
 
 .myTable thead {
     display:none;
+}
+
+.noupdate {
+    
 }

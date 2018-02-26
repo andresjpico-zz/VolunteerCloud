@@ -77,6 +77,8 @@
                                     <p:menuitem value="Import Opportunity" action="#{OpportunityController.showImportOpportunity()}" ajax="false" />
                                 </c:if>
                             </p:submenu>
+                            
+                            <p:menuitem value="Your Chats" action="#{WebchatController.showActiveWebchats()}" icon="fa fa-user" ajax="false" />
 
                             <p:menuitem value="Sign Out" action="#{UsersController.logout()}" icon="fa fa-sign-out" ajax="false" />
                         </p:menubar>

@@ -45,32 +45,34 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                          >
                                          
                             <p:column style="font-size: 24px;" headerText="Volunteer Account" width="100%" >
-                                  
                                 <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%" styleClass="ui-datascroller-item" >
-                                    
                                     <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="logo,detail2" styleClass="ui-datascroller-item"> 
-                                    
+                                        
                                         <h:graphicImage id="volunteerPhoto" value="#{VolunteerController.photoStorageDirectoryName()}#{VolunteerController.accountPhoto(volunteer)}" style="padding-left: 10%"/>
                                         
                                         <p:outputPanel style="padding: 0">
-                                            <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
-
-                                                <h:outputText style="font-weight: bold; font-size: 20px" value="#{organization.firstName} #{organization.lastName}" />
-
-                                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
-                                                    <h:outputText style="font-size: 18px" value="#{volunteer.email}" />
-                                                    <h:outputText style="font-size: 18px" value="#{volunteer.website}" />
-                                                </h:panelGrid>
-
-                                                <h:outputText style="font-size: 20px" value="#{volunteer.phoneNumber}" />
-                                                
+                                            <h:panelGrid columns="2" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
                                                 <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
-                                                    <h:outputText style="font-size: 20px" value="Address" />
-                                                    <h:outputText style="font-size: 20px" value="#{volunteer.address}" />
-                                                    <h:outputText style="font-size: 20px" value="#{volunteer.city}, #{volunteer.getStateName()}" />
-                                                    <h:outputText style="font-size: 20px" value="#{volunteer.zipCode}" />
-                                                </h:panelGrid>
+                                                    <h:outputText style="font-weight: bold; font-size: 20px" value="#{volunteer.firstName} #{volunteer.lastName}" />
+                                                    <h:panelGrid columns="2" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                        <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                            <h:outputText style="font-size: 18px" value="#{volunteer.email}" />
+                                                            <h:outputText style="font-size: 18px" value="#{volunteer.phoneNumber}" />
+                                                        </h:panelGrid>
+                                                        <c:if test="#{WebchatController.isOrganization()}">
+                                                            <p:commandButton action="#{WebchatController.showWebchat(volunteer.getUsername())}" value="Chat" icon="ui-icon-comment" style="width: 120px; font-size: 20px; margin-left: 20px" />
+                                                        </c:if>
+                                                    </h:panelGrid>
+                                                    
+                                                    <h:outputText style="font-size: 18px" value="#{volunteer.website}" />
 
+                                                    <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                        <h:outputText style="font-size: 20px" value="Address" />
+                                                        <h:outputText style="font-size: 20px" value="#{volunteer.address}" />
+                                                        <h:outputText style="font-size: 20px" value="#{volunteer.city}, #{volunteer.getStateName()}" />
+                                                        <h:outputText style="font-size: 20px" value="#{volunteer.zipCode}" />
+                                                    </h:panelGrid>
+                                                </h:panelGrid>
                                             </h:panelGrid>
                                         </p:outputPanel>
                                         

@@ -41,6 +41,10 @@ import java.util.logging.Logger;
 import org.primefaces.json.JSONArray;
 import org.primefaces.json.JSONException;
 import org.primefaces.json.JSONObject;
+import com.twilio.Twilio;
+import com.twilio.base.ResourceSet;
+import com.twilio.rest.chat.v2.Service;
+import com.twilio.rest.chat.v2.service.User;
 
 /**
  *
@@ -64,6 +68,12 @@ public class UsersController implements Serializable {
     private final String VM_SearchOpportunities = "searchOpportunities";
     private final String VM_SearchOrganizations = "searchOrganizations";
     private final String VM_HelloWorld = "helloWorld";
+    
+    private final String Twilio_API_URL = "https://chat.twilio.com/v2";
+    private final String Twilio_Account_SID = "AC3c09366829bd06a96b2cc607873e9fce";
+    private final String Twilio_Service_SID = "IS4732387b4a864b7481c1722d65941b79";
+    private final String Twilio_API_Key_SID = "SKc67b29116e35278d4dd6931d529ab6ac";
+    private final String Twilio_API_key_Secret = "UfMOOJpfWKdiMwTYUkrfgUOyAFdu2b5R";
 
     private String username;
     private String loginUsername;
@@ -877,6 +887,7 @@ public class UsersController implements Serializable {
             loginPassword = password;
             selectedUser = user;
             initializeSessionMap(user);
+            linkToTwilio();
 
         } catch (EJBException e) {
             email = "";
@@ -1326,6 +1337,7 @@ public class UsersController implements Serializable {
         }
     }
 
+    
     /*
     ===============================
      VOLUNTEERING INTERESTS METHODS
@@ -1347,6 +1359,28 @@ public class UsersController implements Serializable {
             statusMessage = "Something went wrong while updating your volunteering interests!";
         }
     }
+    
+
+    /*
+    ===============================
+     TWILIO API METHODS
+    ===============================
+     */  
+    public void linkToTwilio() {
+        
+        try {
+            // Initialize the client
+            Twilio.init(Twilio_API_Key_SID, Twilio_API_key_Secret, Twilio_Account_SID);
+
+            // Add user to service
+            User.creator(Twilio_Service_SID, selectedUser.getUsername()).setFriendlyName(selectedUser.getUsername()).create();
+
+        } catch (Exception e) {
+            statusMessage = "Something went wrong while linking your account to Twilio!";
+            return;
+        }
+    }
+    
     
     /*
     ===============================
