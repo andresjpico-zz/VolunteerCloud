@@ -91,7 +91,7 @@ public class WebchatController implements Serializable {
     private final AtomicBoolean isChatting = new AtomicBoolean(false);
     private ChatPollingThread chatPollingThread;
     private final Service service;
-    private Channel channel;
+    private Channel selectedChannel;
     private List<Channel> channels;
     private ResourceSet<UserChannel> channelsUserBelongsTo;
     private String inputMessage;
@@ -128,11 +128,11 @@ public class WebchatController implements Serializable {
     }
     
     public Channel getChannel() {
-        return channel;
+        return selectedChannel;
     }
     
-    public void setChannel(Channel channel) {
-        this.channel = channel;
+    public void setChannel(Channel selectedChannel) {
+        this.selectedChannel = selectedChannel;
     }
     
     public List<Channel> getChannels() {
@@ -280,7 +280,7 @@ public class WebchatController implements Serializable {
         String chatUniqueIdentity = getChatUniqueIdentity(username, recipientUsername);
 
         // Get Chat Channel
-        channel = getChatChannel(chatUniqueIdentity);
+        selectedChannel = getChatChannel(chatUniqueIdentity);
 
         // Update messages of chat
         updateMessages();
@@ -302,7 +302,7 @@ public class WebchatController implements Serializable {
             String username = getSenderUsername();
 
             // Send message
-            lastMessage = Message.creator(Twilio_Service_SID, channel.getSid())
+            lastMessage = Message.creator(Twilio_Service_SID, selectedChannel.getSid())
                     .setFrom(username)
                     .setBody(inputMessage)
                     .create();
@@ -339,7 +339,7 @@ public class WebchatController implements Serializable {
     }
     
     public void updateMessages() {
-        twilioMessages = Message.reader(Twilio_Service_SID, channel.getSid()).read();
+        twilioMessages = Message.reader(Twilio_Service_SID, selectedChannel.getSid()).read();
         messages = new ArrayList<Message>();
         
         // Get messages of chat as a list of Strings
