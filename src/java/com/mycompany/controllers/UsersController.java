@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.event.ComponentSystemEvent;
@@ -44,7 +45,9 @@ import org.primefaces.json.JSONObject;
 import com.twilio.Twilio;
 import com.twilio.base.ResourceSet;
 import com.twilio.rest.chat.v2.Service;
+import com.twilio.rest.chat.v2.service.Channel;
 import com.twilio.rest.chat.v2.service.User;
+import com.twilio.rest.chat.v2.service.user.UserChannel;
 
 /**
  *
@@ -52,7 +55,7 @@ import com.twilio.rest.chat.v2.service.User;
  */
 
 @Named(value = "UsersController")
-@SessionScoped
+@ApplicationScoped
 public class UsersController implements Serializable {
 //public class UsersController implements Serializable {  Could be called AccountController Later!
     
@@ -627,6 +630,41 @@ public class UsersController implements Serializable {
          */
         return photo.getThumbnailName();
     }
+    
+    public String accountPhoto(String username) {
+
+        Users user = usersFacade.findByUsername(username);
+
+        /*
+        Roommate photo files are not stored in the database. Only the primary key (id) of the
+        Roommate's photo is stored in the database.
+        
+        When Roommate uploads a photo, a thumbnail (small) version of the file is created
+        in the saveThumbnail() method of FileManager by using the Scalr.resize method provided
+        in the imgscalr (Java Image Scaling Library) imported as imgscalr-lib-4.2.jar
+
+        Both uploaded and thumbnail photo files are named after the primary key (id) of the
+        Roommate's photo and are stored in the PizzaHutStorageLocation. For example,
+        for the primary key (id) = 25 and file extension = jpeg, the files are named as:
+            e.g., 25.jpeg
+            e.g., 25_thumbnail.jpeg
+         */
+        // Obtain a list of photo files (e.g., 25.jpeg and 25_thumbnail.jpeg) associated
+        // with the logged-in Roommate whose database primary key is roommate.getId()
+        Photo photo = photoFacade.findPhotoByUserID(user.getUserID());
+
+        if (photo == null) {
+            // No Roommate photo exists. Return the default Roommate photo image.
+            return "defaultPhoto.png";
+        }
+
+        /*
+        photoList.get(0) returns the object reference of the first Photo object in the list.
+        getThumbnailName() message is sent to that Photo object to retrieve its
+        thumbnail image file name, e.g., 25_thumbnail.jpeg
+         */
+        return photo.getThumbnailName();
+    }
 
     public String accountPhoto(Users user) {
 
@@ -992,9 +1030,13 @@ public class UsersController implements Serializable {
         
         if (statusMessage == null || statusMessage.isEmpty()) {
             
-            // Obtain the username of the logged-in Roommate
+            // Obtain the username of the logged-in User
             String userEmail = (String) FacesContext.getCurrentInstance().
                     getExternalContext().getSessionMap().get("userEmail");
+
+            // Obtain the first name of the logged-in User
+            String userFirstName = (String) FacesContext.getCurrentInstance().
+                    getExternalContext().getSessionMap().get("firstName");
         
             // If changes to the email address have been made
             if (!userEmail.equals(this.selectedUser.getEmail())) {
@@ -1037,11 +1079,15 @@ public class UsersController implements Serializable {
                 }
 
                 // The changes are stored in the database
-                usersFacade.edit(user);
-                state = Constants.STATES[this.selectedUser.getState()];
-                // Initialize the session map with roommate properties of interest
-                initializeSessionMap(user);
-
+                usersFacade.edit(user); 
+                
+                // If changes to the first name have been made update Twilio
+                if (!userFirstName.equals(this.selectedUser.getFirstName()))  
+                    updateUserNameInTwilio();
+                
+                state = Constants.STATES[this.selectedUser.getState()]; 
+                initializeSessionMap(user);  
+                
             } catch (EJBException e) {
                 email = "";
                 statusMessage = "Something went wrong while editing your profile!";
@@ -1379,6 +1425,25 @@ public class UsersController implements Serializable {
             statusMessage = "Something went wrong while linking your account to Twilio!";
             return;
         }
+    }
+    
+    public void updateUserNameInTwilio() {
+
+        Channel channel;
+        JSONObject attributes;
+        String userType = (isVolunteer()) ? "volunteer" : "organization";
+        ResourceSet<UserChannel> channelsUserBelongsTo = UserChannel.reader(Twilio_Service_SID, selectedUser.getUsername()).read();
+        
+        // Get messages of chat as a list of Strings
+        for (UserChannel userChannel : channelsUserBelongsTo) {
+            channel = Channel.fetcher(Twilio_Service_SID, userChannel.getChannelSid()).fetch();
+            attributes = new JSONObject(channel.getAttributes());
+            attributes.put(userType, selectedUser.getFirstName());
+            Channel.updater(Twilio_Service_SID, userChannel.getChannelSid())
+                .setAttributes(attributes.toString())
+                .update();
+        }
+        return;
     }
     
     

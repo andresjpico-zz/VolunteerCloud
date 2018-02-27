@@ -47,7 +47,8 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                 </f:facet>
 
                                 <p:column style="font-size: 18px" headerText="Chat" width="100%" exportable="false" >
-                                    <h:panelGrid id="webchatMessageListDataBody" border="0" columns="3" cellpadding="5" style="width:100%; height: 45px" styleClass="ui-datascroller-item"> 
+                                    <h:panelGrid id="webchatMessageListDataBody" border="0" columns="1" cellpadding="5" style="width:100%; height: 45px" 
+                                                 styleClass="#{WebchatController.isSentByRecipient(message.getFrom()) ? 'ui-datascroller-item' : 'ui-datascroller-item-chat-sender'}" > 
                                         <p:outputPanel>
                                             <h:panelGrid columns="1" cellpadding="5">
                                                 <h:outputText style=" font-weight: bold; font-size: 18px" value="#{message.getFrom()}" />
@@ -70,7 +71,6 @@ Copyright © 2016 Osman Balci. All rights reserved.
                             </p:dataTable>
                             <p:poll interval="2" listener="#{WebchatController.updateMessages()}" update=":WebchatForm:webchatMessageList:webchatMessageListDataBody" oncomplete="setScrollToBottom()" />
                             <h:inputHidden id="scrollPos" />
-                        
                         </div>
                     </h:form>
                     <script src="resources/js/chatScroller.js" type="text/javascript"></script>

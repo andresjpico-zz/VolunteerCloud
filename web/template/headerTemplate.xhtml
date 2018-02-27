@@ -18,7 +18,7 @@
 
     <!-- Do not enter tags before the composition line since they are ignored by JSF -->
     <ui:composition>
-        <h:form>  
+        <h:form id='HeaderForm'>  
             <h:panelGrid columns="2" columnClasses="leftTopCornerAlign, rightTopCornerAlign">
 
                 <!-- Use absolute path for the image file since it will be accessed from all pages -->
@@ -31,7 +31,7 @@
                         alt="VolunteerCloud Logo"/>-->
                 </h:link>
 
-                <h:panelGrid columns="3">
+                <h:panelGrid id='rightTopCornerGrid' columns="4" cellpadding="0" cellspacing="0">
                     <!-- 
                     =============================================================================
                     * PrimeFaces Menubar UI Component: Horizontal Cascading Navigation Menu Bar *
@@ -54,8 +54,7 @@
                     </p:menubar>
 
                     <c:if test="#{UsersController.isLoggedIn() == true}">
-                        <p:menubar styleClass="menubar">
-                            
+                        <p:menubar id='headerLoggedInMenuItemsOne' styleClass="menubar">
                             <p:menuitem value="Dashboard" action="#{UsersController.homePageDestination()}" icon="fa fa-th-large" ajax="false" />
                             <p:menuitem value="Profile" action="#{UsersController.showProfile()}" icon="fa fa-user" ajax="false" />
                             
@@ -77,11 +76,13 @@
                                     <p:menuitem value="Import Opportunity" action="#{OpportunityController.showImportOpportunity()}" ajax="false" />
                                 </c:if>
                             </p:submenu>
-                            
-                            <p:menuitem value="Your Chats" action="#{WebchatController.showActiveWebchats()}" icon="fa fa-user" ajax="false" />
-
+                        </p:menubar>
+                        <p:menubar id='headerLoggedInMenuItemsTwo' styleClass="menubar">
+                            <p:menuitem id='messagesMenuItem' value="Messages" action="#{WebchatController.showActiveWebchats()}" icon="#{WebchatController.unreadMessages ? 'fa fa-envelope' : 'fa fa-envelope-o'}" 
+                                        styleClass="#{WebchatController.unreadMessages ? 'ui-unread-messages' : ''}" ajax="false" />
                             <p:menuitem value="Sign Out" action="#{UsersController.logout()}" icon="fa fa-sign-out" ajax="false" />
                         </p:menubar>
+                        <!--<p:poll interval="5" listener="#{WebchatController.updateUserChannels()}" update=":HeaderForm:headerLoggedInMenuItemsTwo" />-->
                     </c:if>
                     &nbsp;&nbsp;
                 </h:panelGrid>

@@ -60,7 +60,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                                             <h:outputText style="font-size: 18px" value="#{volunteer.phoneNumber}" />
                                                         </h:panelGrid>
                                                         <c:if test="#{WebchatController.isOrganization()}">
-                                                            <p:commandButton action="#{WebchatController.showWebchat(volunteer.getUsername())}" value="Chat" icon="ui-icon-comment" style="width: 120px; font-size: 20px; margin-left: 20px" />
+                                                            <p:commandButton action="#{WebchatController.showWebchat(volunteer)}" value="Chat" icon="ui-icon-comment" style="width: 120px; font-size: 20px; margin-left: 20px" />
                                                         </c:if>
                                                     </h:panelGrid>
                                                     

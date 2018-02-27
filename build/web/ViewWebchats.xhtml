@@ -36,29 +36,36 @@ Copyright © 2016 Osman Balci. All rights reserved.
 
                     <!-- The different elements of data are displayed/included under this form -->
                     <h:form id="ViewWebchatsForm">
-                        <p:dataTable id="activeWebchatsList" value="#{WebchatController.channels}" var="channel" class="ui-datatable-scrollable-body"
-                                     paginator="false" disabledSelection="true" scrollable="true" scrollHeight="400" emptyMessage="Don't be shy! You can make a difference! Talk to someone :)"
-                                     rowKey="#{channel.getSid()}" styleClass="myTable" liveScroll="false" scrollRows="5"
+                        <p:dataTable id="activeWebchatsList" value="#{WebchatController.chatRecipients}" var="chatRecipient" class="ui-datatable-scrollable-body" 
+                                     paginator="false" selection="#{WebchatController.selectedChatRecipient}" sortBy="#{chatRecipient.myOwnChatChannel.channel.getDateUpdated()}"
+                                     emptyMessage="Don't be shy! You can make a difference! Talk to someone :)" sortOrder="descending"
+                                     rowKey="#{chatRecipient.myOwnChatChannel.channel.getSid()}" selectionMode="single" styleClass="myTable"
                                      >
 
+                            <p:ajax event="rowSelect" listener="#{WebchatController.showWebchatFromWebchatList(WebchatController.selectedChatRecipient)}"/>
+                            <p:ajax event="rowUnselect" listener="#{WebchatController.showWebchatFromWebchatList(WebchatController.selectedChatRecipient)}"/> 
+                            
                             <f:facet name="header">
-                                <h:outputText value="Your Active Chats" style="vertical-align: central; text-align: center; font-size: 18px"/>
+                                <h:outputText value="Your Conversations" style="vertical-align: central; text-align: center; font-size: 18px"/>
                             </f:facet>
 
-                            <p:column style="font-size: 18px" headerText="Your Active Chats" width="100%" exportable="false" >
-                                <h:panelGrid id="activeWebchatsListDataBody" border="0" columns="3" cellpadding="5" style="width:100%; height: 45px" styleClass="ui-datascroller-item"> 
+                            <p:column style="font-size: 18px" headerText="Your Conversations" width="100%" exportable="false" >
+                                <h:panelGrid id="activeWebchatsListDataBody" border="0" columns="2" cellpadding="5" style="width:100%" columnClasses="webchatPhotoColumn,detail5" styleClass="ui-datascroller-item"> 
+                                    <h:graphicImage id="recipientImage" value="#{UsersController.photoStorageDirectoryName()}#{UsersController.accountPhoto(chatRecipient.recipientUsername)}" 
+                                                    style="padding-left: 5%" styleClass="webchatPhoto"/>
                                     <p:outputPanel>
-                                        <h:panelGrid columns="1" cellpadding="5">
-                                            <!--<h:outputText style=" font-weight: bold; font-size: 18px" value="#{channel.getRecipient()}" />-->
-                                            <!--<h:outputText style="font-size: 16px" value="#{message.getLastMessageBody()}" />-->
+                                        <h:panelGrid columns="1" cellpadding="5" style="margin-top: 10px">
+                                            <h:outputText style="font-size: 18px" value="#{chatRecipient.recipientName}" 
+                                                          styleClass="#{chatRecipient.myOwnChatChannel.upToDate ? '' : 'ui-unread-messages'}" />
+                                            <div style="line-height: 8px"><br/></div>
+                                            <h:outputText style="font-size: 18px" value="#{chatRecipient.lastMessage}" />
                                         </h:panelGrid>
                                     </p:outputPanel>         
                                 </h:panelGrid>
                             </p:column>
                         </p:dataTable>
-<!--                        <p:poll interval="2" listener="#{WebchatController.updateMessages()}" update=":WebchatForm:webchatMessageList:webchatMessageListDataBody" oncomplete="setScrollToBottom()" />
-                        <p:poll interval="5" listener="#{WebchatController.testPoll()}" />-->
-
+<!--                        NOT UPDATING THIS PAGE FOR THE MOMENT - BE CAREFUL TO SEE WHAT HAPPENS WHEN YOU SELECT ONE OF THESE CHANNELS AFTER myOwnChannels HAS BEEN UPDATED
+                        INTERESTED IN NOTIFYING THE USER THAT HE'S RECEIVED NEW MESSAGES FOR NOW-->
                     </h:form>
                     <script src="resources/js/chatScroller.js" type="text/javascript"></script>
                 </div>

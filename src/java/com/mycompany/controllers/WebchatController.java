@@ -1,31 +1,12 @@
 package com.mycompany.controllers;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.PageSize;
-import com.mycompany.entityclasses.VolunteeringOpportunities;
+import com.mycompany.entityclasses.Users;
+import com.mycompany.entityclasses.Photo;
+import com.mycompany.entityclasses.Constants;
+import com.mycompany.sessionbeans.UsersFacade;
 import com.mycompany.controllers.util.JsfUtil;
 import com.mycompany.controllers.util.JsfUtil.PersistAction;
-import com.mycompany.entityclasses.Constants;
-import com.mycompany.entityclasses.Photo;
-import com.mycompany.entityclasses.Users;
-import com.mycompany.entityclasses.Volunteer;
-import com.mycompany.entityclasses.VolunteeringHistory;
-import com.mycompany.entityclasses.VolunteerMatchAPI;
-import com.mycompany.sessionbeans.VolunteeringOpportunitiesFacade;
-import com.mycompany.sessionbeans.VolunteerFacade;
-import com.mycompany.sessionbeans.OrganizationFacade;
-import com.mycompany.sessionbeans.PhotoFacade;
-import com.mycompany.sessionbeans.VolunteeringHistoryFacade;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,17 +20,10 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
-import javax.faces.event.ComponentSystemEvent;
-import org.primefaces.json.JSONArray;
 import org.primefaces.json.JSONObject;
-import org.primefaces.component.export.PDFExporter;
-import org.primefaces.json.JSONException;
-
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.primefaces.context.RequestContext;
 
 import com.twilio.Twilio;
 import com.twilio.base.ResourceSet;
@@ -62,10 +36,12 @@ import com.twilio.rest.chat.v2.service.user.UserChannel;
 import com.twilio.rest.chat.v2.service.Role;
 import com.twilio.rest.chat.v2.Credential;
 import com.twilio.exception.ApiException;
-import java.util.LinkedList;
-import java.util.concurrent.atomic.AtomicBoolean;
-import org.primefaces.context.RequestContext;
+import java.io.IOException;
 
+/**
+ *
+ * @author Andres
+ */
 
 @Named("WebchatController")
 @SessionScoped
@@ -76,7 +52,7 @@ public class WebchatController implements Serializable {
     Instance Variables (Properties)
     ===============================
      */
-    
+
     // Twilio Console: https://www.twilio.com/console
     // Auth Tokens: https://support.twilio.com/hc/en-us/articles/223136027-Auth-Tokens-and-how-to-change-them
     // API Credentials: https://www.twilio.com/docs/api/rest/request
@@ -92,17 +68,30 @@ public class WebchatController implements Serializable {
     private ChatPollingThread chatPollingThread;
     private final Service service;
     private Channel selectedChannel;
+    private MyOwnChannel selectedOwnChannel;
     private List<Channel> channels;
+    private List<MyOwnChannel> myOwnChannels;
     private ResourceSet<UserChannel> channelsUserBelongsTo;
     private String inputMessage;
     private Message lastMessage;
     private List<Message> messages;
     private ResourceSet<Message> twilioMessages;
+    private ChatRecipient selectedChatRecipient;
+    private List<ChatRecipient> chatRecipients;
     
+    private boolean unreadMessages = false;
+    private String senderName;
     private String senderUsername;
+    private String recipientName;
     private String recipientUsername;
     private String statusMessage;
     
+    /*
+    The @EJB annotation implies that the EJB container will perform an injection of the object
+    reference of the <file_name>Facade object into <file_name>Facade when it is created at runtime.
+     */
+    @EJB
+    private UsersFacade usersFacade;
     
     // Constructor method instantiating an instance of WebchatController
     public WebchatController() {
@@ -116,7 +105,6 @@ public class WebchatController implements Serializable {
         service = Service.fetcher(Twilio_Service_SID).fetch();
     }
     
-    
     /*
     =========================
     Getter and Setter Methods
@@ -127,12 +115,20 @@ public class WebchatController implements Serializable {
         return service;
     }
     
-    public Channel getChannel() {
+    public Channel getSelectedChannel() {
         return selectedChannel;
     }
     
-    public void setChannel(Channel selectedChannel) {
+    public void setSelectedChannel(Channel selectedChannel) {
         this.selectedChannel = selectedChannel;
+    }
+    
+    public MyOwnChannel getSelectedOwnChannel() {
+        return selectedOwnChannel;
+    }
+    
+    public void setSelectedOwnChannel(MyOwnChannel selectedOwnChannel) {
+        this.selectedOwnChannel = selectedOwnChannel;
     }
     
     public List<Channel> getChannels() {
@@ -141,6 +137,14 @@ public class WebchatController implements Serializable {
     
     public void setChannels(List<Channel> channels) {
         this.channels = channels;
+    }
+    
+    public List<MyOwnChannel> getMyOwnChannels() {
+        return myOwnChannels;
+    }
+    
+    public void setMyOwnChannels(List<MyOwnChannel> myOwnChannels) {
+        this.myOwnChannels = myOwnChannels;
     }
     
     public ResourceSet<UserChannel> getChannelsUserBelongsTo() {
@@ -183,6 +187,42 @@ public class WebchatController implements Serializable {
         this.twilioMessages = twilioMessages;
     }
     
+    public ChatRecipient getSelectedChatRecipient() {
+        return selectedChatRecipient;
+    }
+    
+    public void setSelectedChatRecipient(ChatRecipient selectedChatRecipient) {
+        this.selectedChatRecipient = selectedChatRecipient;
+    }
+    
+    public List<ChatRecipient> getChatRecipients() {
+        return chatRecipients;
+    }
+    
+    public void setChatRecipients(List<ChatRecipient> chatRecipients) {
+        this.chatRecipients = chatRecipients;
+    }
+    
+    public boolean getUnreadMessages() {
+        return unreadMessages;
+    }
+    
+    public void setUnreadMessages(boolean unreadMessages) {
+        this.unreadMessages = unreadMessages;
+    }
+    
+    public String getSenderName() {
+        if (isVolunteer())
+            senderName = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("firstName");
+        else
+            senderName = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("organizationName");
+        return senderName;
+    }
+    
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
+    
     public String getSenderUsername() {
         if (senderUsername == null || senderUsername.isEmpty())
             senderUsername = (String) FacesContext.getCurrentInstance().
@@ -192,6 +232,14 @@ public class WebchatController implements Serializable {
     
     public void setSenderUsername(String senderUsername) {
         this.senderUsername = senderUsername;
+    }
+    
+    public String getRecipientName() {
+        return recipientName;
+    }
+    
+    public void setRecipientName(String recipientName) {
+        this.recipientName = recipientName;
     }
     
     public String getRecipientUsername() {
@@ -230,6 +278,35 @@ public class WebchatController implements Serializable {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userRole") == "Organization";
     }
     
+    public boolean isSentByRecipient(String messageSender) {
+        return (!messageSender.equals(getSenderName())) ? true : false;
+    }
+    
+    public boolean isSentByRecipient(Message message) {
+        
+        JSONObject jsonObject = new JSONObject(message.getAttributes()); 
+        String messageSender = jsonObject.optString("username");
+        return (!messageSender.equals(senderUsername)) ? true : false;
+    }
+    
+    public String getRecipientName(JSONObject attributes) {
+
+        // Returns the name of the recipient
+        if (isVolunteer())
+            return attributes.optString("organization");
+        else
+            return attributes.optString("volunteer");
+    }
+    
+    public String getRecipientUsername(String chatUniqueIdentity) {
+
+        // Returns the username of the recipient
+        if (isVolunteer())
+            return chatUniqueIdentity.split("-")[1];
+        else
+            return chatUniqueIdentity.split("-")[0];
+    }
+    
     public String getChatUniqueIdentity(String senderUsername, String recipientUsername) {
       
         // Chat unique identity template: volunteerUsername-organizationUsername
@@ -237,38 +314,6 @@ public class WebchatController implements Serializable {
             return senderUsername + "-" + recipientUsername;
         else
             return recipientUsername + "-" + senderUsername;
-    }
-    
-    public void getUserChannels() {
-
-        updateUserChannels();
-        return;
-    }
-    
-    public Channel getChatChannel(String chatUniqueIdentity) {
-        
-        Channel channel = null;
-        try {
-            // Try to retrieve Channel
-            channel = Channel.fetcher(Twilio_Service_SID, chatUniqueIdentity).fetch();
-            
-        }
-        catch (ApiException ex) {
-            Integer code = ex.getCode(); // Twilio's not found code: 20404
-            String message = ex.getMessage();
-            
-            // Create Channel
-            channel = Channel.creator(Twilio_Service_SID)
-                .setFriendlyName(chatUniqueIdentity)
-                .setUniqueName(chatUniqueIdentity)
-                .setType(Channel.ChannelType.PRIVATE)
-                .create();
-            
-            // Add chat members to Channel
-            Member.creator(Twilio_Service_SID, channel.getSid(), getSenderUsername()).create();
-            Member.creator(Twilio_Service_SID, channel.getSid(), recipientUsername).create();
-        }
-        return channel;
     }
     
     public void startConversation() {
@@ -298,13 +343,14 @@ public class WebchatController implements Serializable {
         // Only send message the user has written something
         if (inputMessage != null && !inputMessage.isEmpty()) {
 
-            // Obtain the username of the logged-in User
-            String username = getSenderUsername();
-
+        JSONObject attributes = new JSONObject()
+                .put("username", senderUsername);
+                        
             // Send message
             lastMessage = Message.creator(Twilio_Service_SID, selectedChannel.getSid())
-                    .setFrom(username)
+                    .setFrom(getSenderName())
                     .setBody(inputMessage)
+                    .setAttributes(attributes.toString())
                     .create();
 
             // Update messages of chat
@@ -313,6 +359,9 @@ public class WebchatController implements Serializable {
             //To avoid keep sending messages to the API
             //Message message = messages.get(0);
             //messages.add(message);
+            
+            // Update sender's last message read
+            updateLastMessageRead();
 
             // Reset input text
             inputMessage = "";
@@ -338,34 +387,230 @@ public class WebchatController implements Serializable {
                 .create();
     }
     
-    public void updateMessages() {
-        twilioMessages = Message.reader(Twilio_Service_SID, selectedChannel.getSid()).read();
-        messages = new ArrayList<Message>();
+    public Channel getChatChannel(String chatUniqueIdentity) {
         
-        // Get messages of chat as a list of Strings
-        for (Message message : twilioMessages)
-            messages.add(message);
-        
+        Channel channel = null;
+        try {
+            // Try to retrieve Channel
+            channel = Channel.fetcher(Twilio_Service_SID, chatUniqueIdentity).fetch();
+        }
+        catch (ApiException ex) {
+            Integer code = ex.getCode(); // Twilio's not found code: 20404
+            String message = ex.getMessage();
+            String volunteerName = (isVolunteer()) ? senderName : recipientName;
+            String organizationName = (isOrganization()) ? senderName : recipientName;
+            
+            // CREATE ATTRIBUTES JSON HERE!
+            JSONObject jsonObject = new JSONObject()
+                    .put("volunteer", volunteerName)
+                    .put("organization", organizationName)
+                    .put("lastMessage", "")
+                    .put(senderUsername, 0)
+                    .put(recipientUsername, 0);
+            String attributes = jsonObject.toString();
+            
+            // Create Channel
+            channel = Channel.creator(Twilio_Service_SID)
+                .setFriendlyName(chatUniqueIdentity)
+                .setUniqueName(chatUniqueIdentity)
+                .setType(Channel.ChannelType.PRIVATE)
+                .setAttributes(attributes)
+                .create();
+            
+            // Add chat members to Channel
+            Member.creator(Twilio_Service_SID, channel.getSid(), getSenderUsername()).create();
+            Member.creator(Twilio_Service_SID, channel.getSid(), recipientUsername).create();
+        }
+        return channel;
+    }
+    
+    public void getUserChannels() {
+        updateUserChannels();
+        getUserChatInfo();
         return;
     }
     
     public void updateUserChannels() {
+
+        boolean isUpToDate;
         Channel channel;
-        channels = new ArrayList<Channel>();
+        MyOwnChannel myOwnChannel;
+        myOwnChannels = new ArrayList<MyOwnChannel>();
+        unreadMessages = false;
         channelsUserBelongsTo = UserChannel.reader(Twilio_Service_SID, getSenderUsername()).read();
-        List<Member> members = new ArrayList<Member>();
         
         // Get messages of chat as a list of Strings
         for (UserChannel userChannel : channelsUserBelongsTo) {
             channel = Channel.fetcher(Twilio_Service_SID, userChannel.getChannelSid()).fetch();
-            channels.add(channel);
-            members.add(Member.fetcher(Twilio_Service_SID, userChannel.getChannelSid(), "andresjp").fetch()); // Can parse recipient's username
-            // Here each member has a lastMessageConsumedMessageIndex that can be used to retrieve that last message to show in the list
+            isUpToDate = checkForUnreadMessages(channel);
+            myOwnChannel = new MyOwnChannel(channel, isUpToDate);
+            myOwnChannels.add(myOwnChannel);
+        }
+        return;
+    }
+
+    public void updateMessages() {
+ 
+        twilioMessages = Message.reader(Twilio_Service_SID, selectedChannel.getSid()).read();
+        messages = new ArrayList<Message>();
+
+        for (Message message : twilioMessages)
+            messages.add(message);
+        
+        updateLastMessageRead();
+        return;
+    }
+    
+    public void updateLastMessageRead() {
+        selectedChannel = Channel.fetcher(Twilio_Service_SID, selectedChannel.getSid()).fetch(); //I could retrieve the updated channel from Twilio like this
+        JSONObject attributes = new JSONObject(selectedChannel.getAttributes()); 
+        attributes.put("lastMessage", messages.get(messages.size() - 1).getBody());
+        attributes.put(senderUsername, messages.size());
+        
+        // Update the channel
+        Channel.updater(Twilio_Service_SID, selectedChannel.getSid())
+            .setAttributes(attributes.toString())
+            .update();
+        
+        return;
+    }
+    
+    // Returns whether user is up to date with channel
+    public boolean checkForUnreadMessages(Channel channel) {
+
+        JSONObject jsonObject  = new JSONObject(channel.getAttributes());
+        Integer senderLastMessageRead = jsonObject.optInt(getSenderUsername());
+        
+        if (senderLastMessageRead != channel.getMessagesCount()) {
+            unreadMessages = true;
+            return false;
+        }
+        return true;
+    }
+    
+    // Returns whether user is up to date with channel
+    public void getUserChatInfo() {
+
+        String recipientName;
+        String recipientUsername;
+        String lastMessage;
+        JSONObject attributes;
+        ChatRecipient chatRecipient;
+        chatRecipients = new ArrayList<ChatRecipient>();
+        
+        for (MyOwnChannel myOwnChannel : myOwnChannels) {
+            attributes = new JSONObject(myOwnChannel.getChannel().getAttributes());
+            recipientName = getRecipientName(attributes);
+            recipientUsername = getRecipientUsername(myOwnChannel.getChannel().getUniqueName());
+            lastMessage = attributes.optString("lastMessage");
+            chatRecipient = new ChatRecipient(recipientName, recipientUsername, myOwnChannel, lastMessage);
+            chatRecipients.add(chatRecipient);
         }
         return;
     }
     
+    // Implementing my own channel class to keep track of webchats with new messages
+    public class MyOwnChannel {
+        
+        private Channel channel;
+        private boolean upToDate;
+        
+        public MyOwnChannel() {
+        
+        }
+
+        public MyOwnChannel(Channel channel) {
+            this.channel = channel;
+        }
+        
+        public MyOwnChannel(Channel channel, boolean upToDate) {
+            this.channel = channel;
+            this.upToDate = upToDate;
+        }
+        
+        public Channel getChannel() {
+            return channel;
+        }
+
+        public void setChannel(Channel channel) {
+            this.channel = channel;
+        }
+        
+        public boolean getUpToDate() {
+            return upToDate;
+        }
+
+        public void setUpToDate(boolean upToDate) {
+            this.upToDate = upToDate;
+        }
+        
+    }
+    
+    // Implementing my own chat recipient class to display user information in the ViewWebchats screen
+    public class ChatRecipient {
+        
+        private String recipientName;
+        private String recipientUsername;
+        private Users chatRecipient;
+        private MyOwnChannel myOwnChatChannel;
+        private String lastMessage;
+        
+        public ChatRecipient() {
+        
+        }
+
+        public ChatRecipient(String recipientName, String recipientUsername, MyOwnChannel myOwnChatChannel, String lastMessage) {
+            this.recipientName = recipientName;
+            this.recipientUsername = recipientUsername;
+            this.myOwnChatChannel = myOwnChatChannel;
+            this.lastMessage = lastMessage;
+        }
+        
+        public String getRecipientName() {
+            return recipientName;
+        }
+
+        public void setRecipientName(String recipientName) {
+            this.recipientName = recipientName;
+        }
+        
+        public String getRecipientUsername() {
+            return recipientUsername;
+        }
+
+        public void setRecipientUsername(String recipientUsername) {
+            this.recipientUsername = recipientUsername;
+        }
+        
+        public Users getChatRecipient() {
+            return chatRecipient;
+        }
+
+        public void setChatRecipient(Users chatRecipient) {
+            this.chatRecipient = chatRecipient;
+        }
+        
+        public MyOwnChannel getMyOwnChatChannel() {
+            return myOwnChatChannel;
+        }
+
+        public void setMyOwnChatChannel(MyOwnChannel myOwnChatChannel) {
+            this.myOwnChatChannel = myOwnChatChannel;
+        }
+        
+            public String getLastMessage() {
+            return lastMessage;
+        }
+
+        public void setLastMessage(String lastMessage) {
+            this.lastMessage = lastMessage;
+        }
+        
+    }
+    
     // Thread that will update messages when user is in chat
+    // Due to the way application servers work, we won't be able to obtain anything from RequestContext
+    // The thread could be created bu <poll> would still be needed for updating the page
     public class ChatPollingThread extends Thread {
         public void run() {
             try {
@@ -388,10 +633,6 @@ public class WebchatController implements Serializable {
         return;
     }
     
-    // Prepares controller to leave chat
-    public void testPoll() {
-        return;
-    }
     
     /*
     ===============================
@@ -442,15 +683,29 @@ public class WebchatController implements Serializable {
         }
     }
     
-    public String showWebchat(String recipientUsername) {
+    public String showWebchat(Users recipientUser) {
 
         statusMessage = null;
         if (isLoggedIn()) {
-            this.recipientUsername = recipientUsername;
+            this.recipientName = (recipientUser.getUserRole() == 0) ? recipientUser.getFirstName() : recipientUser.getOrganizationName();
+            this.recipientUsername = recipientUser.getUsername();
             startConversation();
             return "Webchat?faces-redirect=true";
         } else {
             return showIndexPage();
+        }
+    }
+    
+    public void showWebchatFromWebchatList(ChatRecipient chatRecipient) {
+
+        try {
+            this.recipientName = chatRecipient.getRecipientName();
+            this.recipientUsername = chatRecipient.getRecipientUsername();
+            startConversation();
+            FacesContext.getCurrentInstance().getExternalContext().redirect("Webchat.xhtml?faces-redirect=true");
+        } 
+        catch(IOException e) { 
+        
         }
     }
     
