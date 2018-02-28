@@ -22,10 +22,6 @@
             <c:if test="#{UsersController.isLoggedIn() == true}">
                 <div style="width: 80%;margin-top: 140px;margin-bottom: 0; margin-left: auto; margin-right: auto; display: block;min-width: 1500px;">
                     
-                    <h:form id="WebchatForm">
-                        <p:commandButton id="WebChat" styleClass="commandButton" value="Web Chat" action="#{WebchatController.showWebchat('shpe')}" ajax="false" icon="fa fa-wrench" />
-                    </h:form>
-                    
                     <p:dashboard id="board" model="#{dashboardView.model}" style="display: block;min-height: 500px; width:1500px; margin: 0 auto; overflow: hidden">
 
                         <p:panel id="user" header="Your Account" style="margin: 0 0;width:350px;display: block;min-height: 450px;">

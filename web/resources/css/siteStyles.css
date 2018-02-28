@@ -299,7 +299,10 @@ in headerTemplate.xhtml
     right: 0;
     top: 0px;
     padding: 5px;
+    border: black !important;
+    border-width: 5px !important;
 }
+
 /* Movies 
 Place the navigation menu bar on the right top corner per reference
 <h:panelGrid columns="2" columnClasses="leftTopCornerAlign, rightTopCornerAlign">
@@ -585,6 +588,15 @@ Thumbnails, description and the arrow button
     width: 13%;
 }
 
+.webchatPhotoColumn {
+    align-content: center;
+    alignment-baseline: central;
+    align-items: center;
+    alignment-adjust: central;
+    align-self: center;
+    width: 9%;
+}
+
 .opportunityInfoPhotoColumn {
     align-content: center;
     alignment-baseline: central;
@@ -657,6 +669,13 @@ Thumbnails, description and the arrow button
     font-size: 24px;
 }
 
+.detail5 {
+    width: 60%;
+    padding-left: 0px;
+    vertical-align: top;
+    /*margin needs to be done from panelGrid row*/
+}
+
 .ui-dataGrid {
     background-color: white !important;
     color: #09242C !important;
@@ -669,6 +688,13 @@ Thumbnails, description and the arrow button
     border: none !important;
     margin: 0px !important;
     text-align: left;
+    padding: 0px !important;
+}
+
+.ui-datascroller-item-chat-sender td {
+    border: none !important;
+    margin: 0px !important;
+    text-align: right;
     padding: 0px !important;
 }
 
@@ -896,10 +922,28 @@ font-weight: lighter !important;
     background-size: cover;
 }
 
+.webchatPhoto {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%; /*Makes picture round*/
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
 .myTable thead {
     display:none;
 }
 
+.updateClass {
+    
+}
+
 .noupdate {
     
+}
+
+.ui-unread-messages {
+    font-weight: bold;
 }
