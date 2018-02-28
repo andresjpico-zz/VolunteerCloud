@@ -37,6 +37,7 @@ import com.twilio.rest.chat.v2.service.Role;
 import com.twilio.rest.chat.v2.Credential;
 import com.twilio.exception.ApiException;
 import java.io.IOException;
+import java.util.stream.StreamSupport;
 
 /**
  *
@@ -277,14 +278,16 @@ public class WebchatController implements Serializable {
     public boolean isOrganization() {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userRole") == "Organization";
     }
-    
-    public boolean isSentByRecipient(String messageSender) {
+  
+    // Checks if sent by recipient by comparing name of sender
+    public boolean isSentByRecipient_ByName(String messageSender) {
         return (!messageSender.equals(getSenderName())) ? true : false;
     }
     
-    public boolean isSentByRecipient(Message message) {
+    // Checks if sent by recipient by comparing name of sender
+    public boolean isSentByRecipient(String attributes) {
         
-        JSONObject jsonObject = new JSONObject(message.getAttributes()); 
+        JSONObject jsonObject = new JSONObject(attributes); 
         String messageSender = jsonObject.optString("username");
         return (!messageSender.equals(senderUsername)) ? true : false;
     }
@@ -450,7 +453,8 @@ public class WebchatController implements Serializable {
     }
 
     public void updateMessages() {
- 
+        // There is no way to get size of iterator without iterating :(
+        // I could still make a dummyMessages list and compare its size with the messages list, and then only update the page if new messages have been received
         twilioMessages = Message.reader(Twilio_Service_SID, selectedChannel.getSid()).read();
         messages = new ArrayList<Message>();
 
@@ -464,7 +468,7 @@ public class WebchatController implements Serializable {
     public void updateLastMessageRead() {
         selectedChannel = Channel.fetcher(Twilio_Service_SID, selectedChannel.getSid()).fetch(); //I could retrieve the updated channel from Twilio like this
         JSONObject attributes = new JSONObject(selectedChannel.getAttributes()); 
-        attributes.put("lastMessage", messages.get(messages.size() - 1).getBody());
+        if (messages.size() > 0) attributes.put("lastMessage", messages.get(messages.size() - 1).getBody());
         attributes.put(senderUsername, messages.size());
         
         // Update the channel
@@ -701,6 +705,7 @@ public class WebchatController implements Serializable {
         try {
             this.recipientName = chatRecipient.getRecipientName();
             this.recipientUsername = chatRecipient.getRecipientUsername();
+            this.selectedChannel = chatRecipient.getMyOwnChatChannel().getChannel();
             startConversation();
             FacesContext.getCurrentInstance().getExternalContext().redirect("Webchat.xhtml?faces-redirect=true");
         } 

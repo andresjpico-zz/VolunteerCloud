@@ -631,7 +631,7 @@ public class UsersController implements Serializable {
         return photo.getThumbnailName();
     }
     
-    public String accountPhoto(String username) {
+    public String accountPhotoByUsername(String username) {
 
         Users user = usersFacade.findByUsername(username);
 
@@ -1034,10 +1034,6 @@ public class UsersController implements Serializable {
             String userEmail = (String) FacesContext.getCurrentInstance().
                     getExternalContext().getSessionMap().get("userEmail");
 
-            // Obtain the first name of the logged-in User
-            String userFirstName = (String) FacesContext.getCurrentInstance().
-                    getExternalContext().getSessionMap().get("firstName");
-        
             // If changes to the email address have been made
             if (!userEmail.equals(this.selectedUser.getEmail())) {
 
@@ -1082,8 +1078,7 @@ public class UsersController implements Serializable {
                 usersFacade.edit(user); 
                 
                 // If changes to the first name have been made update Twilio
-                if (!userFirstName.equals(this.selectedUser.getFirstName()))  
-                    updateUserNameInTwilio();
+                updateUsersNameInTwilio();
                 
                 state = Constants.STATES[this.selectedUser.getState()]; 
                 initializeSessionMap(user);  
@@ -1427,24 +1422,61 @@ public class UsersController implements Serializable {
         }
     }
     
-    public void updateUserNameInTwilio() {
-
-        Channel channel;
-        JSONObject attributes;
-        String userType = (isVolunteer()) ? "volunteer" : "organization";
-        ResourceSet<UserChannel> channelsUserBelongsTo = UserChannel.reader(Twilio_Service_SID, selectedUser.getUsername()).read();
+    public void updateUsersNameInTwilio() {
         
-        // Get messages of chat as a list of Strings
-        for (UserChannel userChannel : channelsUserBelongsTo) {
-            channel = Channel.fetcher(Twilio_Service_SID, userChannel.getChannelSid()).fetch();
-            attributes = new JSONObject(channel.getAttributes());
-            attributes.put(userType, selectedUser.getFirstName());
-            Channel.updater(Twilio_Service_SID, userChannel.getChannelSid())
-                .setAttributes(attributes.toString())
-                .update();
+        String oldName;
+        String newName;
+        String userType;
+        
+        if(isVolunteer()) {
+            oldName = (String) FacesContext.getCurrentInstance().
+                    getExternalContext().getSessionMap().get("firstName");
+            newName = selectedUser.getFirstName();
+            userType = "volunteer";
+        
+        } else {
+            oldName = (String) FacesContext.getCurrentInstance().
+                    getExternalContext().getSessionMap().get("organizationName");
+            newName = selectedUser.getOrganizationName();
+            userType = "organization";
+        }
+        
+        if (!oldName.equals(newName)) {
+            Channel channel;
+            JSONObject attributes;
+            ResourceSet<UserChannel> channelsUserBelongsTo = UserChannel.reader(Twilio_Service_SID, selectedUser.getUsername()).read();
+
+            // Get messages of chat as a list of Strings
+            for (UserChannel userChannel : channelsUserBelongsTo) {
+                channel = Channel.fetcher(Twilio_Service_SID, userChannel.getChannelSid()).fetch();
+                attributes = new JSONObject(channel.getAttributes());
+                attributes.put(userType, newName);
+                Channel.updater(Twilio_Service_SID, userChannel.getChannelSid())
+                    .setAttributes(attributes.toString())
+                    .update();
+            }
         }
         return;
     }
+    
+//    public void updateUsersNameInTwilio() {
+//
+//        Channel channel;
+//        JSONObject attributes;
+//        //String userType = (isVolunteer()) ? "volunteer" : "organization";
+//        ResourceSet<UserChannel> channelsUserBelongsTo = UserChannel.reader(Twilio_Service_SID, selectedUser.getUsername()).read();
+//        
+//        // Get messages of chat as a list of Strings
+//        for (UserChannel userChannel : channelsUserBelongsTo) {
+//            channel = Channel.fetcher(Twilio_Service_SID, userChannel.getChannelSid()).fetch();
+//            attributes = new JSONObject(channel.getAttributes());
+//            attributes.put("volunteer", selectedUser.getFirstName());
+//            Channel.updater(Twilio_Service_SID, userChannel.getChannelSid())
+//                .setAttributes(attributes.toString())
+//                .update();
+//        }
+//        return;
+//    }
     
     
     /*

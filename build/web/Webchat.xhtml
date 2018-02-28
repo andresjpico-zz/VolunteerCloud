@@ -46,9 +46,9 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     <h:outputText value="Chat" style="vertical-align: central; text-align: center; font-size: 18px"/>
                                 </f:facet>
 
-                                <p:column style="font-size: 18px" headerText="Chat" width="100%" exportable="false" >
-                                    <h:panelGrid id="webchatMessageListDataBody" border="0" columns="1" cellpadding="5" style="width:100%; height: 45px" 
-                                                 styleClass="#{WebchatController.isSentByRecipient(message.getFrom()) ? 'ui-datascroller-item' : 'ui-datascroller-item-chat-sender'}" > 
+                                <p:column id='webchatMessageList' style="font-size: 18px" headerText="Chat" width="100%" exportable="false" class="ui-datatable-data">
+                                    <h:panelGrid id="webchatMessageListDataBody" border="0" columns="2" cellpadding="5" style="width:100%; height: 45px" class="ui-datatable-data"
+                                                 styleClass="#{WebchatController.isSentByRecipient(message.getAttributes()) ? 'ui-datascroller-item' : 'ui-datascroller-item-chat-sender'}" > 
                                         <p:outputPanel>
                                             <h:panelGrid columns="1" cellpadding="5">
                                                 <h:outputText style=" font-weight: bold; font-size: 18px" value="#{message.getFrom()}" />
@@ -57,19 +57,22 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                         </p:outputPanel>         
                                     </h:panelGrid>
                                 </p:column>
-                                    
+                            </p:dataTable>
+                            
+                            <p:dataTable id="webchatMessageListFooter" value="" styleClass="myTable" scrollable="false" emptyMessage=""> 
                                 <f:facet name="footer">
                                     <h:panelGrid border="0" columns="2" cellpadding="5" style="width:100%" columnClasses="webchatInputTextColumn, webchatSendButtonColumn" styleClass="ui-datascroller-item"> 
-                                        <h:panelGrid id="myGrid" columns="1" > 
-                                            <p:inputText id="inputMessage" value="#{WebchatController.inputMessage}" label="Input Message" required="false" style="width: 97%; height: 100%" autocomplete="off" styleClass="noupdate" /> 
+                                        <h:panelGrid id="myGrid" columns="1"> 
+                                            <p:inputText id="inputMessage" value="#{WebchatController.inputMessage}" label="Input Message" required="false" style="width: 97%; height: 100%" autocomplete="off" /> 
                                             <p:watermark for="inputMessage" value="Enter text.." />
                                         </h:panelGrid>
-                                        <p:commandButton value="Send" id="sendMessageButton" style="width: 100%; height: 100%; margin-bottom: 15px" update=":WebchatForm:webchatMessageList" oncomplete="setScrollToBottom()" styleClass="searchButton" 
+                                        <p:commandButton value="Send" id="sendMessageButton" style="width: 100%; height: 100%; margin-bottom: 15px" update=":WebchatForm:webchatMessageList,:WebchatForm:webchatMessageListFooter" oncomplete="setScrollToBottom()" styleClass="searchButton" 
                                                          action="#{WebchatController.sendMessage()}" ajax="true" />
                                     </h:panelGrid>
                                 </f:facet>
                             </p:dataTable>
-                            <p:poll interval="2" listener="#{WebchatController.updateMessages()}" update=":WebchatForm:webchatMessageList:webchatMessageListDataBody" oncomplete="setScrollToBottom()" />
+                            
+                            <p:poll interval="2" listener="#{WebchatController.updateMessages()}" update=":WebchatForm:webchatMessageList" oncomplete="setScrollToBottom()" />
                             <h:inputHidden id="scrollPos" />
                         </div>
                     </h:form>

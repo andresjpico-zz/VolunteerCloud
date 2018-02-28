@@ -51,7 +51,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
 
                             <p:column style="font-size: 18px" headerText="Your Conversations" width="100%" exportable="false" >
                                 <h:panelGrid id="activeWebchatsListDataBody" border="0" columns="2" cellpadding="5" style="width:100%" columnClasses="webchatPhotoColumn,detail5" styleClass="ui-datascroller-item"> 
-                                    <h:graphicImage id="recipientImage" value="#{UsersController.photoStorageDirectoryName()}#{UsersController.accountPhoto(chatRecipient.recipientUsername)}" 
+                                    <h:graphicImage id="recipientImage" value="#{UsersController.photoStorageDirectoryName()}#{UsersController.accountPhotoByUsername(chatRecipient.recipientUsername)}" 
                                                     style="padding-left: 5%" styleClass="webchatPhoto"/>
                                     <p:outputPanel>
                                         <h:panelGrid columns="1" cellpadding="5" style="margin-top: 10px">
