@@ -44,6 +44,8 @@ import org.primefaces.json.JSONException;
 import org.primefaces.json.JSONObject;
 import com.twilio.Twilio;
 import com.twilio.base.ResourceSet;
+import com.twilio.jwt.accesstoken.AccessToken;
+import com.twilio.jwt.accesstoken.ChatGrant;
 import com.twilio.rest.chat.v2.Service;
 import com.twilio.rest.chat.v2.service.Channel;
 import com.twilio.rest.chat.v2.service.User;
@@ -115,6 +117,7 @@ public class UsersController implements Serializable {
     private Map<String, Object> volunteeringAreas;
     private List<String> userAreasOfInterest;
 
+    private AccessToken clientToken;
     private String statusMessage;
     private boolean modeEditInterestAreas;
     private VolunteerMatchAPI volunteerMatch = new VolunteerMatchAPI();
@@ -488,6 +491,14 @@ public class UsersController implements Serializable {
 
     public void setUserAreasOfInterest(List<String> userAreasOfInterest) {
         this.userAreasOfInterest = userAreasOfInterest;
+    }
+    
+    public AccessToken getClientToken() {
+        return clientToken;
+    }
+    
+    public void setClientToken(AccessToken clientToken) {
+        this.clientToken = clientToken;
     }
     
     public String getStatusMessage() {
@@ -1009,6 +1020,9 @@ public class UsersController implements Serializable {
             
             // Initialize the session map with Roommate properties of interest
             initializeSessionMap(user);
+            
+            // Authenticates user and gives access to Twilio by sending an access token
+//            generateTwilioAccessToken(user);
 
             // Redirect to show the Profile page
             return showDashboard();
@@ -1420,6 +1434,17 @@ public class UsersController implements Serializable {
             statusMessage = "Something went wrong while linking your account to Twilio!";
             return;
         }
+    }
+    
+    public void generateTwilioAccessToken(Users user) {
+        
+        ChatGrant grant = new ChatGrant();
+        grant.setServiceSid(Twilio_Service_SID);
+
+        AccessToken token = new AccessToken.Builder(Twilio_Account_SID, Twilio_API_Key_SID, Twilio_API_key_Secret)
+            .identity(user.getUsername()).grant(grant).ttl(3600 * 24).build();
+        
+        return;
     }
     
     public void updateUsersNameInTwilio() {

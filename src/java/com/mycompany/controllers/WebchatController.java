@@ -36,6 +36,8 @@ import com.twilio.rest.chat.v2.service.user.UserChannel;
 import com.twilio.rest.chat.v2.service.Role;
 import com.twilio.rest.chat.v2.Credential;
 import com.twilio.exception.ApiException;
+import com.twilio.jwt.accesstoken.AccessToken;
+import com.twilio.jwt.accesstoken.ChatGrant;
 import java.io.IOException;
 import java.util.stream.StreamSupport;
 
@@ -67,6 +69,7 @@ public class WebchatController implements Serializable {
     
     private final AtomicBoolean isChatting = new AtomicBoolean(false);
     private ChatPollingThread chatPollingThread;
+    private String clientToken;
     private final Service service;
     private Channel selectedChannel;
     private MyOwnChannel selectedOwnChannel;
@@ -111,6 +114,14 @@ public class WebchatController implements Serializable {
     Getter and Setter Methods
     =========================
      */ 
+    
+    public String getClientToken() {
+        return clientToken;
+    }
+    
+    public void setClientToken(String clientToken) {
+        this.clientToken = clientToken;
+    }
     
     public Service getService() {
         return service;
@@ -319,6 +330,18 @@ public class WebchatController implements Serializable {
             return recipientUsername + "-" + senderUsername;
     }
     
+    public void generateTwilioAccessToken() {
+        
+        ChatGrant grant = new ChatGrant();
+        grant.setServiceSid(Twilio_Service_SID);
+
+        AccessToken token = new AccessToken.Builder(Twilio_Account_SID, Twilio_API_Key_SID, Twilio_API_key_Secret)
+            .identity("andresjp").grant(grant).ttl(3600).build();
+        
+        clientToken = token.toJwt();
+        return;
+    }
+    
     public void startConversation() {
         
         // Obtain the username of the logged-in User
@@ -335,7 +358,6 @@ public class WebchatController implements Serializable {
         
 //        // Prepare controller for active chat
 //        isChatting.set(true);
-//        
 //        // Launch chat polling thread
 //        chatPollingThread = new ChatPollingThread();
 //        chatPollingThread.start();
@@ -356,15 +378,15 @@ public class WebchatController implements Serializable {
                     .setAttributes(attributes.toString())
                     .create();
 
-            // Update messages of chat
-            updateMessages();
-
-            //To avoid keep sending messages to the API
+            // Use this when testing to avoid making calls to the API
             //Message message = messages.get(0);
             //messages.add(message);
-            
-            // Update sender's last message read
-            updateLastMessageRead();
+  
+            // Update messages no longer needs to be called here thanks to js 'onMessageAdded' event
+//            // Update messages of chat
+//            updateMessages();
+//            // Being called from updateMessages() now - Update sender's last message read
+//            //updateLastMessageRead();
 
             // Reset input text
             inputMessage = "";
@@ -693,6 +715,7 @@ public class WebchatController implements Serializable {
         if (isLoggedIn()) {
             this.recipientName = (recipientUser.getUserRole() == 0) ? recipientUser.getFirstName() : recipientUser.getOrganizationName();
             this.recipientUsername = recipientUser.getUsername();
+            generateTwilioAccessToken();
             startConversation();
             return "Webchat?faces-redirect=true";
         } else {
@@ -706,6 +729,7 @@ public class WebchatController implements Serializable {
             this.recipientName = chatRecipient.getRecipientName();
             this.recipientUsername = chatRecipient.getRecipientUsername();
             this.selectedChannel = chatRecipient.getMyOwnChatChannel().getChannel();
+            generateTwilioAccessToken();
             startConversation();
             FacesContext.getCurrentInstance().getExternalContext().redirect("Webchat.xhtml?faces-redirect=true");
         } 
