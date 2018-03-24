@@ -30,7 +30,7 @@
 
                     <!-- The different elements of data are displayed/included under this form -->
                     <h:form id="RegisterForm">
-                        <h2>Create an Opportunity</h2>
+                        <h1>Create an Opportunity</h1>
                     
                         <!-- f:event allows ComponentSystemEventListener instances on a UI component in a JSF page. 
                         The following f:event assigns an event listener with the UI component "form" - AccountCreationForm.
@@ -40,7 +40,7 @@
                         -->
                         <!--<f:event listener="#{OpportunityController.validateInformation}" type="postValidate"/>-->
 
-                        <p:panelGrid columns="2" columnClasses="columnOne, columnTwo">
+                        <p:panelGrid columns="2" columnClasses="editInputFieldColumnOne,editInputFieldColumnTwo" style="width: 75%">
 
                             <p:outputLabel value="#{bundle.Title}" for="title" />
                             <p:inputText id="title" value="#{OpportunityController.title}" required="true" styleClass="accountInputTextField"
@@ -49,14 +49,14 @@
                             </p:inputText>   
 
                             <p:outputLabel value="#{bundle.VolunteeringArea}" for="volunteeringArea" />
-                            <p:selectOneMenu id="volunteeringArea" label="Volunteering Area" style="width: 125px"
+                            <p:selectOneMenu id="volunteeringArea" label="Volunteering Area" style="width: 86%"
                                              value="#{OpportunityController.volunteeringAreaID}" required="true" >
                                 <f:selectItems value="#{OpportunityController.volunteeringAreas}"/>
                             </p:selectOneMenu>
                             
                             <p:outputLabel value="#{bundle.Date}" for="occurrenceDate" />
                             <p:calendar id="occurrenceDate" value="#{OpportunityController.dateOccurrence}" navigator="true" showButtonPanel="true" effect="slide" 
-                                        mindate="#{OpportunityController.today}" pattern="MM/dd/yyyy" required="true" label="Date" >
+                                        mindate="#{OpportunityController.today}" pattern="MM/dd/yyyy" required="true" label="Date" styleClass="calendarInputTextField">
                             </p:calendar>
                                 
                             <p:outputLabel value="#{bundle.Address}" for="address" />
@@ -68,7 +68,7 @@
                             </p:inputText>
                                                         
                             <p:outputLabel value="#{bundle.State}" for="state" />
-                            <p:selectOneMenu id="state" label="State" style="width: 125px"
+                            <p:selectOneMenu id="state" label="State" style="width: 86%"
                                              value="#{OpportunityController.stateID}" required="true" >
                                 <f:selectItems value="#{OpportunityController.statesNames}"/>
                             </p:selectOneMenu>
@@ -90,8 +90,8 @@
                         </p:panelGrid>
 
                         <br/>
-                        <p:commandButton id="Submit" value="Submit" action="#{OpportunityController.createOpportunity()}" ajax="false" icon="fa fa-share-square" styleClass="commandButton" />
-                        <p:button outcome="Dashboard" value="Cancel" icon="fa fa-ban" styleClass="commandButton"></p:button>
+                        <p:commandButton id="Submit" value="Submit" action="#{OpportunityController.createOpportunity()}" ajax="false" icon="fa fa-pencil-square" styleClass="commandButton" />
+                        <p:button outcome="Dashboard" value="Cancel" icon="fa fa-times-circle" styleClass="commandButton"></p:button>
 
                     </h:form>
                 </div>

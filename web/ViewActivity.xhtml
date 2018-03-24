@@ -28,7 +28,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
         <!-- Create the content for this page below -->
         <ui:define name="editableContent">
 
-            <div align="center" style="padding-top: 30px">
+            <div align="center" style="padding-top: 30px; min-height: 500px">
                 <div align="center" style="width:60%">
                     <!-- Error messages will be shown here if any  -->
 <!--                    <p:messages id="msgs" showIcon="false"/>
@@ -49,9 +49,9 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                   
                                 <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%" styleClass="ui-datascroller-item" >
                                     
-                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="logo,detail2" styleClass="ui-datascroller-item"> 
+                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="detailedInfoPhotoColumn,detail2" styleClass="ui-datascroller-item"> 
                                     
-                                        <h:graphicImage id="userPhoto" value="#{UsersController.photoStorageDirectoryName()}#{UsersController.accountPhoto(user)}" style="padding-left: 10%"/>
+                                        <h:graphicImage id="userPhoto" value="#{UsersController.photoStorageDirectoryName()}#{UsersController.accountPhoto(user)}" style="padding-left: 10%; margin-top: 2%"/>
                                         
                                         <p:outputPanel style="padding: 0">
                                             <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
@@ -132,7 +132,8 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     </h:panelGrid>
                                     <br/>
                                     
-                                     <!--SEARCH FILTER--> 
+                                    <!--SEARCH FILTER--> 
+                                    <div align="center">
                                     <h:panelGrid border="0" columns="4" width="100%" > 
 
                                         <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
@@ -191,6 +192,8 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                                          ajax="true" update=":ViewActivityForm" />
                                                          <!-- Interesting note! When updating only 'opportunityHistoryList', the searchVolunteeringHistory function is called twice -->
                                     </h:panelGrid>
+                                    </div>
+                                    
                                     <br/>
                                     <br/>
                                     
@@ -216,11 +219,11 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                             
                                             <p:column style="font-size: 24px" headerText="Volunteering Activities" width="100%" exportable="false" >
 
-                                                <h:panelGrid border="0" columns="3" cellpadding="5" style="width:100%" columnClasses="searchRecordPhotoColumn,detail1" 
+                                                <h:panelGrid border="0" columns="2" cellpadding="5" style="width:100%" columnClasses="searchRecordPhotoColumn,detail3" 
                                                              styleClass="ui-datascroller-item"> 
 
                                                     <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" 
-                                                                    style="padding-left: 5%" styleClass="searchRecordPhoto" />  <!-- style="padding-left: 20%" />-->
+                                                                    style="padding-left: 5%; margin-top: 3%" styleClass="searchRecordPhoto" />  <!-- style="padding-left: 20%" />-->
 
                                                     <p:outputPanel>
                                                         <h:panelGrid columns="2" cellpadding="5">

@@ -48,12 +48,12 @@ Copyright © 2016 Osman Balci. All rights reserved.
                             <p:column style="font-size: 24px;" headerText="Edit Opportunity" width="100%" >
 
                                 <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%" styleClass="ui-datascroller-item" >
-                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="opportunityInfoPhotoColumn,detail2" styleClass="ui-datascroller-item"> 
+                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="detailedInfoPhotoColumn,detail2" styleClass="ui-datascroller-item"> 
                                     
                                         <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
                                             <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" 
-                                                            style="padding-left: 0%; border-color: black; border-style: solid; border-width: 1px"/>
-                                            <p:button outcome="#{OpportunityController.showChangeOpportunityPhoto()}" value="Change Photo" icon="fa fa-camera" styleClass="commandButton" style="width: 87%"></p:button>
+                                                            style="padding-left: 10%; margin-top: 3%;" /> <!-- style="padding-left: 0%; border-color: black; border-style: solid; border-width: 1px"/> -->
+                                            <p:button outcome="#{OpportunityController.showChangeOpportunityPhoto()}" value="Change Photo" icon="fa fa-camera-retro" styleClass="commandButton" style="width: 200px; margin-left: 10%"></p:button>
                                         </h:panelGrid>
                                             
                                         <p:outputPanel style="padding: 0">
@@ -102,8 +102,8 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     <br/>
                                     
                                     <h:panelGrid border="0" columns="2">
-                                        <p:commandButton id="Submit" value="Save" action="#{OpportunityController.editOpportunity()}" ajax="false" icon="fa fa-pencil" styleClass="commandButton" style="float:right; margin-right: 5px"/>
-                                        <p:button outcome="OpportunityInfo" value="Cancel" icon="fa fa-ban" styleClass="commandButton" style="float:left; margin-left: 5px"></p:button>
+                                        <p:commandButton id="Submit" value="Save" action="#{OpportunityController.editOpportunity()}" ajax="false" icon="fa fa-pencil-square" styleClass="commandButton" style="float:right; margin-right: 5px"/>
+                                        <p:button outcome="OpportunityInfo" value="Cancel" icon="fa fa-times-circle" styleClass="commandButton" style="float:left; margin-left: 5px"></p:button>
                                     </h:panelGrid>
                                         
                                     <br/><br/>

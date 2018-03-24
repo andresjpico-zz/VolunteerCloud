@@ -9,7 +9,8 @@ package com.mycompany.entityclasses;
 public final class Constants {
 
     public static final String ROOT_DIRECTORY = "/Users/andres/NETBEANS_PROJECTS/VolunteerCloudStorageLocation/";
-
+//    public static final String ROOT_DIRECTORY = "/home/juliet/VolunteerCloudStorageLocation/";
+    
     public static final String STORAGE_DIRECTORY = "VolunteerCloudStorageLocation/";
 
     public static final String TEMP_FILE = "tmp_file";

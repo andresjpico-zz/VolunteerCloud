@@ -43,22 +43,22 @@ Copyright © 2016 Osman Balci. All rights reserved.
                     <div style="width: 80%">
                     <h:panelGrid border="0" columns="4" width="100%" > 
 
-                            <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
-                                <p:outputLabel value="Name" for="searchOrganizationName" />
-                                <p:inputText id="searchOrganizationName" value="#{UsersController.searchOrganizationNameField}" label="Organization Name" style="width: 97%; height: 100%; font-size: 20px" />   
-                            </h:panelGrid>
-                            
-                            <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
-                                <p:outputLabel value="Keyword" for="searchKeyword" />
-                                <p:inputText id="searchKeyword" value="#{UsersController.searchKeywordField}" label="Keyword" style="width: 97%; height: 100%; font-size: 20px" />   
-                            </h:panelGrid>
+                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                            <p:outputLabel value="Name" for="searchOrganizationName" />
+                            <p:inputText id="searchOrganizationName" value="#{UsersController.searchOrganizationNameField}" label="Organization Name" style="width: 97%; height: 100%; font-size: 20px" />   
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="1" cellpadding="0" columnClasses="searchFieldColumn"> 
+                            <p:outputLabel value="Keyword" for="searchKeyword" />
+                            <p:inputText id="searchKeyword" value="#{UsersController.searchKeywordField}" label="Keyword" style="width: 97%; height: 100%; font-size: 20px" />   
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="1" cellpadding="0" cellspacing="0" columnClasses="searchFieldColumn">  
+                            <p:outputLabel value="Zip Code" for="searchZipCode" />
+                            <p:inputText id="searchZipCode" value="#{UsersController.searchZipCodeField}" label="Zip Code" style="width: 97%; height: 100%; font-size: 20px" required="true"/>   
+                        </h:panelGrid>
                         
-                            <h:panelGrid columns="1" cellpadding="0" cellspacing="0" columnClasses="searchFieldColumn">  
-                                <p:outputLabel value="Zip Code" for="searchZipCode" />
-                                <p:inputText id="searchZipCode" value="#{UsersController.searchZipCodeField}" label="Zip Code" style="width: 97%; height: 100%; font-size: 20px" required="true"/>   
-                            </h:panelGrid>
-                        
-                            <p:commandButton value="Search" id="searchButton" style="width: 200px; height: 100%" icon="fa fa-sign-in" styleClass="searchButton"
+                        <p:commandButton value="Search" id="searchButton" style="width: 200px; height: 100%" icon="fa fa-search" iconPos="right" styleClass="searchButton"
                                              action="#{UsersController.searchVMOrganization()}" ajax="false" update="VM_OrgSearchForm" />
                 
                     </h:panelGrid>
@@ -92,9 +92,11 @@ Copyright © 2016 Osman Balci. All rights reserved.
                            </p:confirmDialog>
                             
                             <p:column style="font-size: 24px" headerText="Link Your Account" width="100%" >
-                                <h:panelGrid border="0" columns="2" cellpadding="5" style="width:100%" columnClasses="searchRecordPhotoColumn,detail1" styleClass="ui-datascroller-item"> 
+                                <h:panelGrid border="0" columns="3" cellpadding="5" style="width:100%" columnClasses="searchRecordPhotoColumn,detail1,arrow" styleClass="ui-datascroller-item"> 
 
-                                    <h:graphicImage id="vmOrganizationImage" url="#{organization.imageURL}" style="padding-left: 5%" styleClass="searchRecordPhoto"/>
+                                    <h:graphicImage id="vmOrganizationImage" url="#{organization.imageURL}" 
+                                                    style="padding-left: 5%; margin-top: 3%" styleClass="searchRecordPhoto"/>
+                                    
                                     <p:outputPanel>
                                         <h:panelGrid columns="1" cellpadding="5">
                                             <h:outputText style=" font-weight: bold; font-size: 20px" value="#{organization.organizationVmName}" />
@@ -105,6 +107,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                         </h:panelGrid>
                                     </p:outputPanel>       
 
+                                    <i class="fa fa-chevron-circle-right" aria-hidden="true" style="margin-left: 20px"></i>
                                 </h:panelGrid>
                             </p:column>
                         </p:dataTable>

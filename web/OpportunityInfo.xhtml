@@ -47,9 +47,73 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                          
                             <p:column style="font-size: 24px;" headerText="Opportunity Details" width="100%" >
                                   
+                                
+                                <!--Aligned newer version-->
                                 <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%" styleClass="ui-datascroller-item" >
                                     
-                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="opportunityInfoPhotoColumn,detail2" styleClass="ui-datascroller-item"> 
+                                    <h:panelGrid border="0" columns="3" cellpadding="0" style="width:100%" columnClasses="detailedInfoPhotoColumn,detail6,subscriptionColumn" styleClass="ui-datascroller-item"> 
+                                    
+                                        <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" style="padding-left: 10%; margin-top: 2%"/>
+                                        
+                                        <p:outputPanel style="padding: 0">
+                                            <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                <h:outputText style="font-weight: bold; font-size: 20px" value="#{opportunity.title}" />
+
+                                                <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                    <p:commandLink actionListener="#{OrganizationController.showAccountInfo(OpportunityController.selectedOpportunity.ownerID)}" ajax="false" >
+                                                        <h:outputText style="font-size: 20px; color: black" value="#{opportunity.ownerID.getOrganizationName()}" />
+                                                    </p:commandLink> 
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.getVolunteeringArea()}" />
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.getDateOccurrence()}" >
+                                                        <f:convertDateTime type="date" dateStyle="long" /> 
+                                                         <!--short = 1/2/2000 / medium = Mar 20, 2018 / long = March 20, 2018 / full = Tuesday, March 20, 2018 / default = March 20, 2018--> 
+                                                    </h:outputText>
+                                                    <h:outputText style="font-size: 20px" value="Location:" />
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.address}" />
+                                                
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.city}, #{opportunity.getStateName()}" />
+                                                    <h:outputText style="font-size: 20px" value="#{opportunity.zipCode}" />
+                                                </h:panelGrid>
+
+                                            </h:panelGrid>
+                                        </p:outputPanel>
+                                        
+                                        <p:outputPanel style="padding: 0">
+                                            <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
+                                                <c:if test="#{OpportunityController.isVolunteer() == true}">
+                                                    <p:commandButton oncomplete=":OpportunityInfoForm" update=":OpportunityInfoForm" 
+                                                                     styleClass="#{OpportunityController.isVolunteerSubcribed() ? 'ui-state-highlight-command-button' : ''}" 
+                                                                     value="#{OpportunityController.isVolunteerSubcribed() ? 'Subscribed' : 'Subscribe'}"
+                                                                     disabled="#{OpportunityController.today.after(opportunity.dateOccurrence)}" 
+                                                                     actionListener="#{OpportunityController.opportunitySubscription()}" icon="ui-icon-circle-check" iconPos="right"> 
+                                                        <f:setPropertyActionListener value="#{opportunity}" target="#{OpportunityController.selectedOpportunity}" />
+                                                    </p:commandButton>
+                                                </c:if>
+
+                                                <c:if test="#{OpportunityController.isOwner() == true}">
+                                                    <p:commandButton action="#{OpportunityController.showEditOpportunity()}" value="Edit" icon="fa fa-pencil-square" styleClass="opportunityEditCancelButton"
+                                                                     disabled="#{OpportunityController.today.after(opportunity.dateOccurrence)}" >
+                                                    </p:commandButton>
+
+                                                    <p:commandButton action="#{OpportunityController.cancelOpportunity()}" value="Cancel" icon="fa fa-times-circle" styleClass="opportunityEditCancelButton"
+                                                                     disabled="#{OpportunityController.today.after(opportunity.dateOccurrence)}" >
+
+                                                       <p:confirm header="Opportunity Cancelation Confirmation" 
+                                                                  message="Are you sure you want to cancel this volunteering event? This action is not reversible!" 
+                                                                  icon="ui-icon-alert" />
+                                                   </p:commandButton>
+
+                                                   <p:confirmDialog id="confirmDialogBox" global="true" showEffect="fade" hideEffect="fade">
+                                                       <p:commandButton value="YES" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                                       <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                                                   </p:confirmDialog>
+                                                </c:if>
+                                            </h:panelGrid>
+                                        </p:outputPanel>
+                                    </h:panelGrid>
+                                        
+                                    <!--Aligned older version-->
+<!--                                    <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="detailedInfoPhotoColumn,detail2" styleClass="ui-datascroller-item"> 
                                     
                                         <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" 
                                                         style="padding-left: 0%; border-color: black; border-style: solid; border-width: 1px"/>
@@ -63,12 +127,10 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                                         <p:commandLink actionListener="#{OrganizationController.showAccountInfo(OpportunityController.selectedOpportunity.ownerID)}" ajax="false" >
                                                             <h:outputText style="font-size: 20px; color: black" value="#{opportunity.ownerID.getOrganizationName()}" />
                                                         </p:commandLink> 
-<!--                                                        <p:commandLink actionListener="#{OrganizationController.showOrganizationInfo(OpportunityController.selectedOpportunity.ownerID)}" ajax="false" >
-                                                            <h:outputText style="font-size: 20px; color: black" value="#{opportunity.ownerID.getOrganizationName()}" />
-                                                        </p:commandLink> -->
                                                         <h:outputText style="font-size: 20px" value="#{opportunity.getVolunteeringArea()}" />
                                                         <h:outputText style="font-size: 20px" value="#{opportunity.getDateOccurrence()}" >
-                                                            <f:convertDateTime type="date" dateStyle="long" /> <!-- short = 1/2/2000 / medium = Mar 20, 2018 / long = March 20, 2018 / full = Tuesday, March 20, 2018 / default = March 20, 2018 -->
+                                                            <f:convertDateTime type="date" dateStyle="long" /> 
+                                                             short = 1/2/2000 / medium = Mar 20, 2018 / long = March 20, 2018 / full = Tuesday, March 20, 2018 / default = March 20, 2018 
                                                         </h:outputText>
                                                         <h:outputText style="font-size: 20px" value="Location:" />
                                                         <h:outputText style="font-size: 20px" value="#{opportunity.address}" />
@@ -76,7 +138,6 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                                 
                                                     <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
                                                         <c:if test="#{OpportunityController.isVolunteer() == true}">
-                                                            <!--  oncomplete=":OpportunityInfoForm:datalist"   update=":OpportunityInfoForm,datalist,participantslist"  -->
                                                             <p:commandButton oncomplete=":OpportunityInfoForm" update=":OpportunityInfoForm" 
                                                                              styleClass="#{OpportunityController.isVolunteerSubcribed() ? 'ui-state-highlight-command-button' : ''}" 
                                                                              value="#{OpportunityController.isVolunteerSubcribed() ? 'Subscribed' : 'Subscribe'}"
@@ -108,30 +169,21 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                                 </h:panelGrid>
                                                 
                                                 <h:panelGrid columns="1" cellpadding="0" cellspacing="0" class="ui-datascroller-item">
-                                                    <!--<h:outputText style="font-size: 20px" value="Address" />-->
-                                                    <!--<h:outputText style="font-size: 20px" value="#{opportunity.address}" />-->
                                                     <h:outputText style="font-size: 20px" value="#{opportunity.city}, #{opportunity.getStateName()}" />
                                                     <h:outputText style="font-size: 20px" value="#{opportunity.zipCode}" />
                                                 </h:panelGrid>
 
                                             </h:panelGrid>
                                         </p:outputPanel>
-                                        
-                                    </h:panelGrid>
+                                    </h:panelGrid>-->
                                     
                                     <br/>
                                     <h:outputText style="font-size: 18px; font-weight: bold" value="Description" />
                                     <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
                                         <h:outputText style="font-size: 18px" value="#{opportunity.description}" />
                                     </h:panelGrid>
-                                    <br/>
-                                    
-<!--                                    <br/><br/>
-                                    <h:panelGrid border="0" columns="1" cellpadding="5" style="width:100%; align-items: center; text-align: center">
-                                        <h:link style="color: black" outcome="SearchOpportunity"><i class="fa fa-arrow-left"></i>Go Back</h:link>
-                                    </h:panelGrid> -->
+
                                     <br/><br/>
-                                    
 
                                     <div id="divID">
                                         <p:dataTable id="participantslist" value="#{OpportunityController.records}" var="record"
@@ -149,12 +201,12 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                             
                                             <p:column style="font-size: 24px" headerText="Registered Participants" width="100%" >
 
-                                                <h:panelGrid border="0" columns="3" cellpadding="5" style="width:100%" columnClasses="participantPhotoColumn,detail4,participationColumn" 
-                                                             styleClass=""> 
+                                                <h:panelGrid border="0" columns="3" cellpadding="5" style="width:100%" columnClasses="searchRecordPhotoColumn,detail4,participationColumn" 
+                                                             styleClass="ui-datascroller-item"> 
 
                                                     <h:graphicImage id="volunteerPhoto" value="#{VolunteerController.photoStorageDirectoryName()}#{VolunteerController.accountPhoto(record.participant)}" 
-                                                                    style="padding-left: 5%" styleClass="searchRecordPhoto" />  <!-- style="padding-left: 20%" />-->
-
+                                                                    style="padding-left: 5%; margin-top: 3%" styleClass="searchRecordPhoto" />
+                                                    
                                                     <p:outputPanel>
                                                         <h:panelGrid columns="2" cellpadding="5">
 
@@ -180,9 +232,9 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                                                              icon="ui-icon-pencil" style="font-size: 18px">
                                                             </p:commandButton>-->
                                                             <p:tooltip id="participationToolTip" for="changeParticipation" value="Confirm/decline volunteer's participation after event occurs" position="top"/>
-                                                            <p:splitButton id="changeParticipation" value="Change Participation" style="font-size: 16px" disabled="#{!OpportunityController.today.after(opportunity.dateOccurrence)}">
-                                                                <p:menuitem value="Participated" actionListener="#{OpportunityController.confirmVolunteerParticipation(record)}" icon="ui-icon-circle-check" update=":OpportunityInfoForm" />
-                                                                <p:menuitem value="No participation" actionListener="#{OpportunityController.declineVolunteerParticipation(record)}" icon="ui-icon-close"  update=":OpportunityInfoForm" />
+                                                            <p:splitButton id="changeParticipation" value="Change Participation" styleClass="participationButton" disabled="#{!OpportunityController.today.after(opportunity.dateOccurrence)}">
+                                                                <p:menuitem value="Participated" actionListener="#{OpportunityController.confirmVolunteerParticipation(record)}" icon="fa fa-check-circle" iconPos="right" update=":OpportunityInfoForm" />
+                                                                <p:menuitem value="No participation" actionListener="#{OpportunityController.declineVolunteerParticipation(record)}" icon="fa fa-times-circle" iconPos="right"  update=":OpportunityInfoForm" />
                                                             </p:splitButton>
                                                         </c:if>
 

@@ -18,8 +18,8 @@
 
         <!-- Create the content for this page below -->
         <ui:define name="editableContent">
-            <div align="center" style="width:70%; margin:0 auto;">
-                <h2>Sign In</h2>
+            <div align="center" style="height: 400px; width:70%; margin: 0px auto; padding-top: 7%;">
+                <h1>Sign In</h1>
                 <h:form>
                     <div align="center">
                         <!-- Error messages will be shown here if any  -->
@@ -27,7 +27,7 @@
                         <h:outputLabel value="#{UsersController.statusMessage}" style="font-family: Arial, Helvetica, sans-serif; 
                                        font-size: 12pt; font-style: normal; font-weight: normal; color: #FF0000;"/>
                     </div>
-                    <p:panelGrid columns="2" columnClasses="columnOne, columnTwo">
+                    <p:panelGrid columns="2" style="width: 280px" columnClasses="columnOne, columnTwo">
 
                         <h:outputLabel value="Username:" for="username" />
                         <p:inputText id="username" value="#{UsersController.loginUsername}" required="true" 
@@ -40,9 +40,9 @@
 
                     </p:panelGrid>
                     <br/>
-                    <p:commandButton id="login" value="Sign In" action="#{UsersController.loginUser()}" ajax="false" icon="fa fa-sign-in" styleClass="commandButton"/> &nbsp;&nbsp;
-                    <p:commandButton id="retrieve" value="Forgot Password" action="#{UsersController.resetPassword()}" ajax="false" icon="fa fa-key" styleClass="commandButton"/>&nbsp;&nbsp;
-                    <p:button outcome="index" value="Back" icon="fa fa-ban" styleClass="commandButton"></p:button>
+                    <p:commandButton id="login" value="Sign In" action="#{UsersController.loginUser()}" ajax="false" icon="fa fa-arrow-circle-right" styleClass="commandButton"/> &nbsp;&nbsp;
+                    <p:commandButton id="retrieve" value="Forgot Password" action="#{UsersController.resetPassword()}" ajax="false" icon="fa fa-unlock-alt" styleClass="commandButton"/>&nbsp;&nbsp;
+                    <p:button outcome="index" value="Back" icon="fa fa-backward" styleClass="commandButton"></p:button>
                 </h:form>
             </div>
         </ui:define>

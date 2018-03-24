@@ -514,7 +514,7 @@ public class WebchatController implements Serializable {
         return true;
     }
     
-    // Returns whether user is up to date with channel
+    // 
     public void getUserChatInfo() {
 
         String recipientName;

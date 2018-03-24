@@ -27,10 +27,10 @@
                     <h:form id="EditForm">
                         <c:if test="#{UsersController.isLoggedIn() == true}">
                         
-                        <h2>Edit Account Profile</h2>
+                        <h1>Edit Account Profile</h1>
                         <f:event listener="#{UsersController.validatePasswordChange}" type="postValidate"/>
 
-                        <p:panelGrid columns="2" columnClasses="columnOne, columnTwo">
+                        <p:panelGrid columns="2" columnClasses="editInputFieldColumnOne,editInputFieldColumnTwo" style="width: 75%">
 
                             <c:if test="#{UsersController.isOrganization() == true}">
                                 <p:outputLabel value="#{bundle.OrganizationName}" for="organizationName" />
@@ -90,7 +90,7 @@
                             </p:inputText>
                                                         
                             <p:outputLabel value="#{bundle.State}" for="state" />
-                            <p:selectOneMenu id="state" label="State"
+                            <p:selectOneMenu id="state" label="State" style="width: 86%"
                                              value="#{UsersController.selectedUser.state}" required="true" >
                                 <f:selectItems value="#{UsersController.statesNames}"/>
                             </p:selectOneMenu>
@@ -117,8 +117,8 @@
                         </p:panelGrid>
 
                         <br/>
-                        <p:commandButton id="Submit" value="Save" action="#{UsersController.editUser()}" ajax="false" icon="fa fa-pencil" styleClass="commandButton" />&nbsp;
-                        <p:button outcome="Profile" value="Cancel" icon="fa fa-ban" styleClass="commandButton"></p:button>
+                        <p:commandButton id="Submit" value="Save" action="#{UsersController.editUser()}" ajax="false" icon="fa fa-pencil-square" styleClass="commandButton" />&nbsp;
+                        <p:button outcome="Profile" value="Cancel" icon="fa fa-times-circle" styleClass="commandButton"></p:button>
 
                         </c:if>
                         <c:if test="#{UsersController.isLoggedIn() == false}">

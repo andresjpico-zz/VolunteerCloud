@@ -23,8 +23,8 @@
 
                 <!-- Use absolute path for the image file since it will be accessed from all pages -->
                 <h:link outcome="#{UsersController.homePageDestination()}">
-                    <img src="resources/images/MSF.jpeg"
-                        style="width:6.5%;height:6.5%; border: none;"
+                    <img src="resources/images/logos/VolunteerCloud_Logo_2.png"
+                        style="width:60%;height:60%; border: none;"
                         alt="VolunteerCloud Logo"/>
 <!--                    <img src="resources/images/logo.png"
                         style="width:30%;height:30%; border: none;margin-left: 17px"
@@ -59,14 +59,14 @@
                             <p:menuitem value="Profile" action="#{UsersController.showProfile()}" icon="fa fa-user" ajax="false" />
                             
                             <c:if test="#{UsersController.isOrganization() == true}">
-                                <p:menuitem value="Volunteers" action="#{UsersController.showSearchVolunteer()}" icon="fa fa-user" ajax="false" />
+                                <p:menuitem value="Volunteers" action="#{UsersController.showSearchVolunteer()}" icon="fa fa-users" ajax="false" />
                             </c:if>
                             
                             <c:if test="#{UsersController.isVolunteer() == true}">
-                                <p:menuitem value="Organizations" action="#{UsersController.showSearchOrganization()}" icon="fa fa-user" ajax="false" />
+                                <p:menuitem value="Organizations" action="#{UsersController.showSearchOrganization()}" icon="fa fa-users" ajax="false" />
                             </c:if>
                             
-                            <p:submenu label="Opportunities" icon="ui-icon-extlink">
+                            <p:submenu label="Opportunities" icon="fa fa-hand-paper-o">
                                 <p:menuitem value="View Activity" action="#{UsersController.showVolunteeringActivity()}" ajax="false" />
                                 <c:if test="#{UsersController.isOrganization() == true}">
                                     <p:menuitem value="Create Opportunity" action="#{UsersController.showCreateOpportunity()}" ajax="false" />
@@ -80,9 +80,9 @@
                         <p:menubar id='headerLoggedInMenuItemsTwo' styleClass="menubar">
                             <p:menuitem id='messagesMenuItem' value="Messages" action="#{WebchatController.showActiveWebchats()}" icon="#{WebchatController.unreadMessages ? 'fa fa-envelope' : 'fa fa-envelope-o'}" 
                                         styleClass="#{WebchatController.unreadMessages ? 'ui-unread-messages' : ''}" ajax="false" />
-                            <p:menuitem value="Sign Out" action="#{UsersController.logout()}" icon="fa fa-sign-out" ajax="false" />
+                            <p:menuitem value="Sign Out" action="#{UsersController.logout()}" icon="fa fa-external-link-square" ajax="false" />
                         </p:menubar>
-                        <p:poll interval="5" listener="#{WebchatController.updateUserChannels()}" update=":HeaderForm:headerLoggedInMenuItemsTwo" />
+                        <!--<p:poll interval="5" listener="#{WebchatController.updateUserChannels()}" update=":HeaderForm:headerLoggedInMenuItemsTwo" />-->
                     </c:if>
                     &nbsp;&nbsp;
                 </h:panelGrid>

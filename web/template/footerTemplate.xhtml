@@ -3,7 +3,8 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"   
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
 
     <!--
     *********************************************
@@ -20,14 +21,16 @@
             <h:panelGrid id="footerPanelGrid" columns="2" >
 
                 <h:panelGroup>
-                    <a class="social-roll" href="https://www.facebook.com/FoxRidgeApartments/">
+                    <a class="social-roll" href="https://www.facebook.com/">
                         <img src="./resources/images/socialMediaIcons/facebook.png" /></a>
-                    <a class="social-roll" href="https://twitter.com/apartmentscom">
+                    <a class="social-roll" href="https://twitter.com/">
                         <img src="./resources/images/socialMediaIcons/twitter.png" /></a>
                     <a class="social-roll" href="https://plus.google.com/">
                         <img src="./resources/images/socialMediaIcons/googlePlus.png" /></a>
-                    <a class="social-roll" href="https://www.youtube.com/channel/UCQmrIJcoUy6_uIVp_z3uK6A">
+                    <a class="social-roll" href="https://www.youtube.com/">
                         <img src="resources/images/socialMediaIcons/youTube.png" /></a>
+                    <a class="social-roll" href="https://www.linkedin.com/">
+                        <img src="resources/images/socialMediaIcons/linkedIn.png" /></a>
                 </h:panelGroup>
 
                 <h:panelGroup  id="rightAlignPanelGroup">
@@ -38,20 +41,20 @@
                     -->
                     <a href="https://www.volunteermatch.org/"
                        title="VolunteerMatch">
-                        <i class="fa fa-shopping-basket"></i>&nbsp;VolunteerMatch&nbsp;&nbsp;</a>
+                        <i class="fa fa-users"></i>&nbsp;VolunteerMatch&nbsp;&nbsp;</a>
                     <a href="https://www.twilio.com/"
                        title="Twilio">
-                        <i class="fa fa-star-o fa-pulse"></i>&nbsp;Twilio&nbsp;&nbsp;</a>
-                    <a href="https://www.linkedin.com/"
-                       title="Linkedin">
-                        <i class="fa fa-cutlery"></i>&nbsp;Linkedin&nbsp;&nbsp;</a>
+                        <i class="fa fa-comments"></i>&nbsp;Twilio&nbsp;&nbsp;</a>
+                    <a href="https://www.zipcodeapi.com/"
+                       title="Zip Codes">
+                        <i class="fa fa-map-marker"></i>&nbsp;ZipCodes&nbsp;&nbsp;</a>
                 </h:panelGroup>
 
             </h:panelGrid>
-
-            Copyright © 2018. VolunteerCloud
+            <p:outputLabel style="color: white; font-size: 10pt"> Cloud Software Application for Educational Purposes by Andres Pico </p:outputLabel>
+            <!--Cloud Software Application for Educational Purposes by Andres Pico-->
+            <!--Copyright © 2018. VolunteerCloud-->
         </div>
     </ui:composition>
     <!-- Do not enter tags after the composition line since they are ignored by JSF -->
-
 </html>

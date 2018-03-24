@@ -16,7 +16,7 @@
         <!-- Create the content for this page below -->
         <ui:define name="editableContent">
 
-            <div align="center">
+            <div align="center" style="height: 400px; padding-top: 3%">
                 <br/>
                 <br/>
                 <div style="font-family: cursive; font-size: 30px;">
@@ -25,8 +25,8 @@
                 <br/>
                 <br/>
                 <h:form>
-                    <p:commandButton value="Volunteer" action="#{UsersController.registerUser('Volunteer')}" ajax="false" icon="fa fa-sign-in" styleClass="commandButton"/>&nbsp; &nbsp; &nbsp;
-                    <p:commandButton value="Organization" action="#{UsersController.registerUser('Organization')}" ajax="false" icon="fa fa-user-plus" styleClass="commandButton"/>
+                    <p:commandButton value="Volunteer" action="#{UsersController.registerUser('Volunteer')}" ajax="false" icon="fa fa-user" styleClass="commandButton"/>&nbsp; &nbsp; &nbsp;
+                    <p:commandButton value="Organization" action="#{UsersController.registerUser('Organization')}" ajax="false" icon="fa fa-users" styleClass="commandButton"/>
                 </h:form>
                 <br />
             </div>

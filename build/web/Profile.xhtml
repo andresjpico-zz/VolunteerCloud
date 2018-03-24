@@ -37,20 +37,20 @@
                     <c:if test="#{UsersController.isLoggedIn() == true}">
 
                         <c:if test="#{UsersController.isOrganization() == true}">
-                            <h2> #{UsersController.selectedUser.organizationName} </h2>
+                            <h1> #{UsersController.selectedUser.organizationName} </h1>
                         </c:if>
                         <c:if test="#{UsersController.isVolunteer() == true}">
-                            <h2> #{UsersController.selectedUser.getFirstName()} #{UsersController.selectedUser.getLastName()}'s Account Profile </h2>
+                            <h1> #{UsersController.selectedUser.getFirstName()} #{UsersController.selectedUser.getLastName()}'s Account Profile </h1>
                         </c:if>
                         <h:graphicImage id="profilePic" class="profilePhoto"
                                         value="#{UsersController.photoStorageDirectoryName()}#{UsersController.accountPhoto()}" >
                         </h:graphicImage>
                         <br />
 
-                        <p:button outcome="#{UsersController.showEditProfile()}" value="Edit Profile" icon="fa fa-pencil" styleClass="commandButton"></p:button>
-                        <p:button outcome="ChangePhoto" value="Change Photo" icon="fa fa-camera" styleClass="commandButton"></p:button>
+                        <p:button outcome="#{UsersController.showEditProfile()}" value="Edit Profile" icon="fa fa-pencil-square" styleClass="commandButton"></p:button>
+                        <p:button outcome="ChangePhoto" value="Change Photo" icon="fa fa-camera-retro" styleClass="commandButton"></p:button>
                         <c:if test="#{UsersController.isOrganization() == true}">
-                            <p:commandButton id="linkToVm" icon="fa fa-sign-in" styleClass="commandButton" action="#{UsersController.showLinkToVM()}" ajax="false" 
+                            <p:commandButton id="linkToVm" icon="fa fa-link" styleClass="commandButton" action="#{UsersController.showLinkToVM()}" ajax="false" 
                                              value="#{UsersController.isLinkedToVM() ? 'Linked To VM' : 'Link To VM'}" disabled="#{UsersController.isLinkedToVM()}" >
                             </p:commandButton>
                         </c:if>
@@ -76,8 +76,8 @@
                         <!-- ****************** Delete Account End **************************** -->
 
                         <br /><br />
-                        <h:panelGroup id="display">
-                            <p:panelGrid columns="2" columnClasses="columnOne, columnTwo" >
+                        <h:panelGroup id="display" style="width: 100px">
+                            <p:panelGrid columns="2" style="width: 500px; min-width: 100px" columnClasses="profileColumnOne, profileColumnTwo" >
                                 
                                 <c:if test="#{UsersController.isOrganization() == true}">
                                     <h:outputText value="#{bundle.OrganizationName}"/>
@@ -121,7 +121,7 @@
                         </h:panelGroup>
 
                         <br/>
-                        <p:button outcome="#{UsersController.showDashboard()}" value="Go Back" icon="fa fa-step-backward" styleClass="commandButton"></p:button>
+                        <p:button outcome="#{UsersController.showDashboard()}" value="Go Back" icon="fa fa-backward" styleClass="commandButton"></p:button>
 
                     </c:if>
                     <c:if test="#{UsersController.isLoggedIn() == false}">
