@@ -98,7 +98,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                             <c:if test="#{!UsersController.modeEditInterestAreas}">
                                                <p:commandButton oncomplete=":ViewActivityForm" update=":ViewActivityForm" value="Edit" 
                                                                 style="width: 150px; height: 30px; font-size: 15px; float: right; margin-right: 20px"
-                                                                actionListener="#{UsersController.enterModeEditInterestAreas()}" icon="ui-icon-pencil">
+                                                                actionListener="#{UsersController.enterModeEditInterestAreas()}" icon="fa fa-pencil-square">
                                                 </p:commandButton>
                                             </c:if>
                                             <c:if test="#{UsersController.modeEditInterestAreas}">
@@ -188,7 +188,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                             </p:selectOneMenu>                            
                                         </h:panelGrid>-->
                                         
-                                        <p:commandButton value="Filter History" id="searchButton" style="width: 178px; height: 100%" icon="fa fa-sign-in" styleClass="searchButton"
+                                        <p:commandButton value="Filter History" id="searchButton" style="width: 178px; height: 100%" icon="fa fa-search" iconPos="right" styleClass="searchButton"
                                                          ajax="true" update=":ViewActivityForm" />
                                                          <!-- Interesting note! When updating only 'opportunityHistoryList', the searchVolunteeringHistory function is called twice -->
                                     </h:panelGrid>

@@ -190,7 +190,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                                          selectionMode="single" selection="#{OpportunityController.selectedRecord}"
                                                          paginator="false" disabledSelection="false" rowIndexVar="index"
                                                          rowKey="#{record.participant.getUserID()}" emptyMessage="No Participants Found :( !"
-                                                         rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight"
+                                                         rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight" styleClass="myTable"
                                                          >
 
 <!--                                            <p:ajax event="rowSelect" listener="#{VolunteerController.showVolunteerInfo(OpportunityController.selectedRecord.participant)}"/>
@@ -198,6 +198,10 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                             
                                             <p:ajax event="rowSelect" listener="#{VolunteerController.showAccountInfo(OpportunityController.selectedRecord.participant)}"/>
                                             <p:ajax event="rowUnselect" listener="#{VolunteerController.showAccountInfo(OpportunityController.selectedRecord.participant)}"/>
+                                            
+                                            <f:facet name="header">
+                                                <h:outputText value="Registered Participants" style="vertical-align: central; text-align: center"/>
+                                            </f:facet>
                                             
                                             <p:column style="font-size: 24px" headerText="Registered Participants" width="100%" >
 
@@ -233,8 +237,8 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                                             </p:commandButton>-->
                                                             <p:tooltip id="participationToolTip" for="changeParticipation" value="Confirm/decline volunteer's participation after event occurs" position="top"/>
                                                             <p:splitButton id="changeParticipation" value="Change Participation" styleClass="participationButton" disabled="#{!OpportunityController.today.after(opportunity.dateOccurrence)}">
-                                                                <p:menuitem value="Participated" actionListener="#{OpportunityController.confirmVolunteerParticipation(record)}" icon="fa fa-check-circle" iconPos="right" update=":OpportunityInfoForm" />
-                                                                <p:menuitem value="No participation" actionListener="#{OpportunityController.declineVolunteerParticipation(record)}" icon="fa fa-times-circle" iconPos="right"  update=":OpportunityInfoForm" />
+                                                                <p:menuitem value="Participated" actionListener="#{OpportunityController.confirmVolunteerParticipation(record)}" icon="fa fa-check-circle" update=":OpportunityInfoForm" styleClass="submenuItem" />
+                                                                <p:menuitem value="No participation" actionListener="#{OpportunityController.declineVolunteerParticipation(record)}" icon="fa fa-times-circle" update=":OpportunityInfoForm" styleClass="submenuItem" />
                                                             </p:splitButton>
                                                         </c:if>
 

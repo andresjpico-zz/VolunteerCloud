@@ -28,6 +28,12 @@
         <param-name>facelets.SKIP_COMMENTS</param-name>
         <param-value>true</param-value>
     </context-param>
+    
+    <!-- This enables you to use your desired Primefaces theme -->
+    <context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>flick</param-value>
+    </context-param>
   
     <!--
     FacesServlet is a servlet that manages the request processing lifecycle
