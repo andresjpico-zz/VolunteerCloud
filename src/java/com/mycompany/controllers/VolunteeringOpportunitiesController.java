@@ -109,12 +109,17 @@ public class VolunteeringOpportunitiesController implements Serializable {
 
     private VolunteeringOpportunities selectedOpportunity;
     private VolunteeringOpportunities selectedHistoryOpportunity;
+    private VolunteeringOpportunities selectedRecentActivityOpportunity;
+    private VolunteeringOpportunities selectedNewestOpportunity;
     private List<VolunteeringOpportunities> opportunities;
     private List<VolunteeringOpportunities> historyOpportunities;
+    private List<VolunteeringOpportunities> newestOpportunities;
+    private List<VolunteeringOpportunities> recentActivityOpportunities;
     private List<VolunteeringOpportunities> vmOpportunities;
     
     private boolean participation;
     private VolunteeringHistory selectedRecord;
+    private List<Integer> listOpportunityIDsFromUserRecentActivity;
     private List<Integer> listOpportunityIDsFromUserHistory;
     private List<VolunteeringHistory> records;
     
@@ -479,6 +484,22 @@ public class VolunteeringOpportunitiesController implements Serializable {
         this.selectedHistoryOpportunity = selectedHistoryOpportunity;
     }
     
+    public VolunteeringOpportunities getSelectedRecentActivityOpportunity() {
+        return selectedRecentActivityOpportunity;
+    }
+
+    public void setSelectedRecentActivityOpportunity(VolunteeringOpportunities selectedRecentActivityOpportunity) {
+        this.selectedRecentActivityOpportunity = selectedRecentActivityOpportunity;
+    }
+            
+    public VolunteeringOpportunities getSelectedNewestOpportunity() {
+        return selectedNewestOpportunity;
+    }
+
+    public void setSelectedNewestOpportunity(VolunteeringOpportunities selectedNewestOpportunity) {
+        this.selectedNewestOpportunity = selectedNewestOpportunity;
+    }
+    
     public List<VolunteeringOpportunities> getOpportunities() {
         return opportunities;
     }
@@ -493,6 +514,32 @@ public class VolunteeringOpportunitiesController implements Serializable {
 
     public void setHistoryOpportunities(List<VolunteeringOpportunities> historyOpportunities) {
         this.historyOpportunities = historyOpportunities;
+    }
+    
+    public List<VolunteeringOpportunities> getRecentActivityOpportunities() {
+        int userID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
+        
+        if (isVolunteer()) {
+            listOpportunityIDsFromUserRecentActivity = volunteeringHistoryFacade.getOpportunityIDsFromVolunteerRecentActivity(userID);
+            recentActivityOpportunities = opportunityFacade.getVolunteerRecentActivity(listOpportunityIDsFromUserRecentActivity);
+        }
+        else 
+            recentActivityOpportunities = opportunityFacade.getOrganizationRecentActivity(userID);
+        
+        return recentActivityOpportunities;
+    }
+
+    public void seRecentActivityOpportunities(List<VolunteeringOpportunities> recentActivityOpportunities) {
+        this.recentActivityOpportunities = recentActivityOpportunities;
+    }
+    
+    public List<VolunteeringOpportunities> getNewestOpportunities() {
+        newestOpportunities = opportunityFacade.getNewestOpportunities();
+        return newestOpportunities;
+    }
+
+    public void setNewestOpportunities(List<VolunteeringOpportunities> newestOpportunities) {
+        this.newestOpportunities = newestOpportunities;
     }
     
     public List<VolunteeringOpportunities> getVmOpportunities() {
@@ -542,7 +589,14 @@ public class VolunteeringOpportunitiesController implements Serializable {
     public void setSelectedRecord(VolunteeringHistory selectedRecord) {
         this.selectedRecord = selectedRecord;
     }
+    public List<Integer> getListOpportunityIDsFromUserRecentActivity() {
+        return listOpportunityIDsFromUserRecentActivity;
+    }
 
+    public void setListOpportunityIDsFromUserRecentActivity(List<Integer> listOpportunityIDsFromUserRecentActivity) {
+        this.listOpportunityIDsFromUserRecentActivity = listOpportunityIDsFromUserRecentActivity;
+    }
+        
     public List<Integer> getListOpportunityIDsFromUserHistory() {
         return listOpportunityIDsFromUserHistory;
     }
@@ -550,8 +604,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     public void setListOpportunityIDsFromUserHistory(List<Integer> listOpportunityIDsFromUserHistory) {
         this.listOpportunityIDsFromUserHistory = listOpportunityIDsFromUserHistory;
     }
-
-            
+   
     public List<VolunteeringHistory> getRecords() {
         return records;
     }

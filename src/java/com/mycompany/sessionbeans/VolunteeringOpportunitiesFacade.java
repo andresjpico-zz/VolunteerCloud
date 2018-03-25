@@ -16,6 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import javax.persistence.Query;
 
 /**
  *
@@ -195,6 +196,17 @@ public class VolunteeringOpportunitiesFacade extends AbstractFacade<Volunteering
         return opportunity.getActive();
     }
     
+    public List<VolunteeringOpportunities> getNewestOpportunities() {
+            
+        List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
+        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c ORDER BY c.opportunityID DESC") 
+                    .setMaxResults(3)
+                    .getResultList();
+        
+        return opportunities;
+    }
+
+            
     // + "AND ((c.dateOccurrence = :dateOccurrence AND NOT(:dateOccurrence is NULL)) OR :dateOccurrence is NULL) AND c.zipCode IN :zipCode AND c.active = :active")
     public List<VolunteeringOpportunities> SearchOpportunities(List<String> zipCodesList, String title, String keyword, String organizationName, String volunteeringAreaID) {
             
@@ -232,6 +244,27 @@ public class VolunteeringOpportunitiesFacade extends AbstractFacade<Volunteering
                         .setParameter("zipCode", zipCodesList)
                         .setParameter("active", 'Y')
                         .getResultList();
+
+        return opportunities;
+    }
+    
+    public List<VolunteeringOpportunities> getVolunteerRecentActivity(List<Integer> opportunitiesID) {
+            
+        List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
+        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.opportunityID IN :opportunityID ORDER BY c.dateOccurrence DESC")
+                    .setParameter("opportunityID", opportunitiesID)
+                    .getResultList();
+
+        return opportunities;
+    }
+    
+    public List<VolunteeringOpportunities> getOrganizationRecentActivity(int organizationID) {
+            
+        List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
+        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.ownerID.userID = :organizationID ORDER BY c.dateOccurrence DESC")
+                    .setParameter("organizationID", organizationID)
+                    .setMaxResults(3)
+                    .getResultList();
 
         return opportunities;
     }

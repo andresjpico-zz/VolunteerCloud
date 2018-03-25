@@ -455,6 +455,12 @@ public class WebchatController implements Serializable {
         return;
     }
     
+    public List<ChatRecipient> getRecentChats() {
+        if(chatRecipients == null)
+            getUserChannels();
+        return chatRecipients;
+    }
+    
     public void updateUserChannels() {
 
         boolean isUpToDate;
@@ -746,6 +752,16 @@ public class WebchatController implements Serializable {
             return "ViewWebchats?faces-redirect=true";
         } else {
             return showIndexPage();
+        }
+    }
+    
+    public void showActiveWebchatsFromDashboard() {
+
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("ViewWebchats.xhtml?faces-redirect=true");
+        } 
+        catch(IOException e) { 
+        
         }
     }
     

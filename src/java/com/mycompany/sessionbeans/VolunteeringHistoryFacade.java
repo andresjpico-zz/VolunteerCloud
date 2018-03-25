@@ -217,7 +217,7 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
                     .getSingleResult());
         }
     }
-    
+       
     /**
      * @param userID is the username attribute (column) value of the roommate
      * @return object reference of the Roommate entity whose username is username
@@ -232,4 +232,19 @@ public class VolunteeringHistoryFacade extends AbstractFacade<VolunteeringHistor
         return opportunityIDs;
     }
   
+    /**
+     * @param userID is the username attribute (column) value of the roommate
+     * @return object reference of the Roommate entity whose username is username
+     */
+    public List<Integer> getOpportunityIDsFromVolunteerRecentActivity(int userID) {
+
+        List<Integer> opportunityIDs = new ArrayList<Integer>(); 
+        opportunityIDs = em.createQuery("SELECT c.opportunityID FROM VolunteeringHistory c WHERE c.participant.userID = :userID ORDER BY c.recordID")
+                    .setParameter("userID", userID)
+                    .setMaxResults(3)
+                    .getResultList();
+        
+        return opportunityIDs;
+    }
+    
 }

@@ -633,6 +633,15 @@ Thumbnails, description and the arrow button
     padding-left: 0px;
 }
 
+.dashboardRecordPhotoColumn {
+    align-content: center;
+    alignment-baseline: central;
+    align-items: center;
+    alignment-adjust: central;
+    align-self: center;
+    width: 35%;
+}
+
 .searchRecordPhotoColumn {
     align-content: center;
     alignment-baseline: central;
@@ -728,6 +737,11 @@ Thumbnails, description and the arrow button
 
 .detail6 {
     width: 35%;
+    padding-left: 0px;
+}
+
+.detail7 {
+    width: 65%;
     padding-left: 0px;
 }
 
@@ -959,6 +973,15 @@ font-weight: lighter !important;
     background-size: cover;
 }
 
+.dashboardRecordPhoto {
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
 .webchatPhoto {
     display: inline-block;
     width: 80px;
@@ -983,4 +1006,41 @@ font-weight: lighter !important;
 
 .ui-unread-messages {
     font-weight: bold;
+}
+
+.announcement {
+    position: relative;
+    padding: .75rem 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: .6rem;
+
+    
+    /*Green Section*/   
+/*    color: #FCFAFA;
+    background-color: #63C132;
+    border-color: #c3e6cb;*/
+    
+/*    color: #FCFAFA;
+    background-color: #358600;
+    border-color: #c3e6cb;*/
+
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+
+
+    /*Orange Section*/
+/*    color: #FCFAFA;
+    background-color: #F17105;
+    border-color: #c3e6cb;*/
+    
+/*    color: #FCFAFA;
+    background-color: #FF6700;
+    border-color: #c3e6cb;*/
+    
+/*    color: #A04C08;
+    background-color: #F79256;
+    border-color: #c3e6cb;*/
+
 }

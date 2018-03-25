@@ -7,8 +7,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets" 
       xmlns:p="http://primefaces.org/ui" 
       xmlns:f="http://xmlns.jcp.org/jsf/core" 
-      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-      xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions">
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+      <!--xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"-->
 
     <!-- This page is constructed based on the siteTemplate -->
     <ui:composition template="/template/siteTemplate.xhtml">
@@ -20,273 +20,124 @@
         <!-- Create the content for this page below -->
         <ui:define name="editableContent">
             <c:if test="#{UsersController.isLoggedIn() == true}">
-                <div style="width: 80%;margin-top: 140px;margin-bottom: 0; margin-left: auto; margin-right: auto; display: block;min-width: 1500px;">
+                <div style="width: 80%; margin-top: 40px;margin-bottom: 0; margin-left: auto; margin-right: auto; display: block;">
                     
-                    <p:dashboard id="board" model="#{dashboardView.model}" style="display: block;min-height: 500px; width:1500px; margin: 0 auto; overflow: hidden">
+                    <div class="announcement">
+                        <p:outputLabel> Welcome to VolunteerCloud! </p:outputLabel>
+                        <p:outputLabel> New announcements will be posted soon. </p:outputLabel>
+                    </div>
+                    
+                    <br/>
+                    
+                    <p:dashboard id="board" model="#{dashboardView.model}" style="display: block; min-height: 500px; width:100%; margin: 0 auto; overflow: hidden">
 
-                        <p:panel id="user" header="Your Account" style="margin: 0 0;width:350px;display: block;min-height: 450px;">
-                            <h:form id="ProfileForm">
-                                <div align="center">
+                        <p:panel id="activity" header="Recent Activity" style="margin: 0;width:400px;min-height: 430px;">
+                            <h:form id="ActivityForm">
+                                <p:dataTable id="activityDataList" value="#{OpportunityController.recentActivityOpportunities}" var="opportunity"
+                                             selectionMode="single" selection="#{OpportunityController.selectedRecentActivityOpportunity}"
+                                             paginator="false" disabledSelection="false" rowHover="true"
+                                             rowKey="#{opportunity.opportunityID}" emptyMessage="Come on get involved! You can make a difference!"
+                                             rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight" 
+                                             >
+
+                                    <p:ajax event="rowSelect" listener="#{OpportunityController.showOpportunityInfo(OpportunityController.selectedRecentActivityOpportunity)}"/>
+                                    <p:ajax event="rowUnselect" listener="#{OpportunityController.showOpportunityInfo(OpportunityController.selectedRecentActivityOpportunity)}"/> 
                                     
-                                    
-<!--                                    <c:if test="#{RoommateController.hasAnApartment() == true}">
-                                        <p:commandButton id="ViewApartment" styleClass="commandButton" value="Apartment Tools" action="#{ApartmentController.loadApartment()}" ajax="false" icon="fa fa-wrench" />
-                                        <br/>
-                                        <br/>
-                                        <p:dataTable id="roommateList" value="#{RoommateController.apartmentRoommates}" var="roommate"
-                                                     paginator="false" rowKey="#{roommate.roommateID}" rows="50" 
-                                                     rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight">
-                                            <p:column style="font-size: 14px; color: black; font-weight: normal" headerText="Your Roommates" width="100%" >
-                                                <h:panelGrid border="0" columns="2" cellpadding="0" style="width:100%" columnClasses="roommateLogo,roommateDetails" styleClass="ui-datascroller-item"> 
-                                                    <h:graphicImage id="profilePic" style="max-height:100px; max-width:80px; padding:0"
-                                                                    value="#{RoommateController.photoStorageDirectoryName()}#{RoommateController.roommatePhoto(roommate)}" >
-                                                    </h:graphicImage>
-                                                    <p:outputPanel>
-                                                        <h:panelGrid columns="1" cellpadding="0" styleClass="ui-datascroller-item">
-                                                            <h:outputText style=" font-weight: bold; font-size: 12px; text-align: left" value="#{roommate.firstName} #{roommate.lastName}" />
-                                                            <h:outputText style="font-size: 12px; padding-left: 0%" value="#{roommate.email}"/>
-                                                            <h:outputText style="font-size: 12px" value="Points: #{roommate.points}" />
-                                                        </h:panelGrid>
-                                                    </p:outputPanel>         
+                                    <p:column style="font-size: 16px" headerText="Volunteering Opportunities" width="100%" exportable="false" >
+
+                                        <h:panelGrid border="0" columns="2" cellpadding="5" style="width:100%" columnClasses="dashboardRecordPhotoColumn,detail7" 
+                                                     styleClass="ui-datascroller-item"> 
+
+                                            <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" 
+                                                            style="padding-left: 5%; margin-top: 3%" styleClass="dashboardRecordPhoto" />  
+
+                                            <p:outputPanel>
+                                                <h:panelGrid columns="1" cellpadding="5">
+                                                    <h:outputText style=" font-weight: bold; font-size: 15px" value="#{opportunity.title}" />
+                                                    <h:outputText style="font-size: 14px" value="#{opportunity.ownerID.getOrganizationName()}" />
+                                                    <h:outputText style="font-size: 14px" value="#{opportunity.dateOccurrence}" >
+                                                        <f:convertDateTime type="date" dateStyle="long" /> 
+                                                    </h:outputText>
                                                 </h:panelGrid>
-                                            </p:column>
-                                        </p:dataTable>
-                                    </c:if>
-                                    <br/>
-                                    <c:if test="#{RoommateController.hasAnApartment() == true}">
-                                        <h:outputText value="You have earned" style="font-size: 20px; font-family:cursive; font-weight: bold "/>
-                                        <div class="knob-container ui-corner-all">
-                                            <p:knob backgroundColor="#DCDCDC" disabled="true" value="#{sessionScope.points}" max="#{sessionScope.totalPoints + sessionScope.points}" thickness="0.5" foregroundColor="#358465"/>  
-                                        </div>
-                                        <h:outputText value="ApartMate points" style="font-size: 20px; font-family:cursive; font-weight: bold "/>
-                                        <br/><br/>
-                                        <p:commandButton id="BuildGroceryList" styleClass="commandButton" value="Make Grocery List" action="GetRecipes" ajax="false" icon="fa fa-shopping-bag" /><br/><br/>
+                                            </p:outputPanel>         
+                                        </h:panelGrid>
+                                    </p:column>
 
-                                    </c:if>
-                                    <c:if test="#{RoommateController.hasAnApartment() == false}">
-                                        <p:commandButton id="ViewProfile" styleClass="commandButton" value="View Your Profile" action="#{RoommateController.showProfile()}" ajax="false" icon="ui-icon-extlink" />
-                                        <br/><br/>
-                                        <h:outputText value="No apartment is associated with your account yet. Create one now?" style="font-size: 18px; font-family:cursive; font-weight: bold "/>
-                                        <br/><br/>
-                                        <p:commandButton id="CreateApartment" styleClass="commandButton" value="Create Apartment" action="#{ApartmentController.showCreateApartment()}" ajax="false" icon="ui-icon-extlink" />
-                                        <br/><br/>
-                                        <h:outputText value="Or ask an existing Apartmate user to add you to their existing apartment" style="font-size: 18px; font-family:cursive; font-weight: bold "/>
-                                    </c:if>-->
-                                </div>
+                                </p:dataTable>
                             </h:form>
                         </p:panel>
-
-                        <p:panel id="opportunities" header="Your Activities" style="margin: 0 0;width:600px;display: block;min-height: 450px;">
+                        
+                        <p:panel id="opportunities" header="Newest Opportunities" style="margin: 0 0;width:400px;min-height: 430px;">
                             <p:growl id="growl" life="4000" />
-                            <h:form id="OpportunityListForm">
-<!--                                <p:dataTable id="datalist" value="#{taskController.tasks}" var="task"
-                                             selectionMode="single" selection="#{taskController.selected}"
-                                             paginator="false" rowHover="true"
-                                             rowKey="#{task.taskID}">
+                            <h:form id="OpportunityForm">
+                                <p:dataTable id="opportunityDataList" value="#{OpportunityController.newestOpportunities}" var="opportunity"
+                                             selectionMode="single" selection="#{OpportunityController.selectedNewestOpportunity}"
+                                             paginator="false" disabledSelection="false" rowHover="true"
+                                             rowKey="#{opportunity.opportunityID}" emptyMessage="New opportunities coming soon!"
+                                             rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight" 
+                                             >
 
-                                    <p:ajax event="rowSelect"   update="createButton editButton deleteButton viewButton"/>
-                                    <p:ajax event="rowUnselect" update="createButton editButton deleteButton viewButton"/>
-
-                                    <p:column sortBy="#{task.taskName}">
-                                        <f:facet name="header">
-                                            <h:outputText value="Name" styleClass="facetHeader"/>
-                                        </f:facet>
-                                        <h:outputText styleClass="dataFields" value="#{task.taskName}"/>
-                                    </p:column>
-
-                                     Clicking the column header redisplays the table as sorted w.r.t. CITY NAME
-                                    in alphabetical order A to Z. Clicking it again reverses the order to Z to A. 
-                                    <p:column sortBy="#{task.taskLocation}">
-                                        <f:facet name="header">
-                                            <h:outputText value="Location" styleClass="facetHeader"/>
-                                        </f:facet>
-                                        <h:outputText styleClass="dataFields" value="#{task.taskLocation}"/>
-                                    </p:column>
-
-                                     Clicking the column header redisplays the table as sorted w.r.t. STATE NAME
-                                    in alphabetical order A to Z. Clicking it again reverses the order to Z to A. 
-                                    <p:column sortBy="#{task.taskDeadline}">
-                                        <f:facet name="header">
-                                            <h:outputText value="Deadline" styleClass="facetHeader"/>
-                                        </f:facet>
-                                        <h:outputText styleClass="dataFields" value="#{task.taskDeadline}">
-                                            <f:convertDateTime type="date" dateStyle="full"/>
-                                        </h:outputText>
-                                    </p:column>
-
-                                     Clicking the column header redisplays the table as sorted w.r.t. POSTAL CODE
-                                    in alphabetical order A to Z. Clicking it again reverses the order to Z to A. 
-                                    <p:column sortBy="#{task.taskPriority}">
-                                        <f:facet name="header">
-                                            <h:outputText value="Priority" styleClass="facetHeader"/>
-                                        </f:facet>
-                                        <h:outputText styleClass="#{task.taskPriority}" value="#{task.taskPriority}" />
-                                    </p:column>
-
-                                     Clicking the column header redisplays the table as sorted w.r.t. COUNTRY NAME
-                                    in alphabetical order A to Z. Clicking it again reverses the order to Z to A. 
-                                    <p:column sortBy="#{task.taskIsComplete}">
-                                        <f:facet name="header">
-                                            <h:outputText value="Complete" styleClass="facetHeader"/>
-                                        </f:facet>
-                                        <h:outputText styleClass="dataFields" value="#{task.taskIsComplete}"/>
-                                    </p:column>
-
-                                    <p:column style="width:32px;text-align: center">
-                                        <f:facet name="header">
-                                            <h:outputText value="Done?" styleClass="facetHeader"/>
-                                        </f:facet>
-                                        <p:commandButton oncomplete=":TaskListForm:datalist" actionListener="#{taskController.markTask(task)}" icon="ui-icon-circle-check">
-                                            <f:setPropertyActionListener value="#{task}" target="#{taskController.selected}" />
-                                        </p:commandButton>
-                                    </p:column>
-
+                                    <p:ajax event="rowSelect" listener="#{OpportunityController.showOpportunityInfo(OpportunityController.selectedNewestOpportunity)}"/>
+                                    <p:ajax event="rowUnselect" listener="#{OpportunityController.showOpportunityInfo(OpportunityController.selectedNewestOpportunity)}"/> 
                                     
-                                    The "header" and "footer" facets are defined for the p:dataTable. See PrimeFaces
-                                    documentation at http://www.primefaces.org/docs/guide/primefaces_user_guide_5_3.pdf
-                                    
+                                    <p:column style="font-size: 16px" headerText="Volunteering Opportunities" width="100%" exportable="false" >
 
-                                    <f:facet name="footer">
-                                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="Add" 
-                                                         styleClass="commandButton" actionListener="#{taskController.prepareCreate}" 
-                                                         update=":TaskCreateForm" oncomplete="PF('TaskCreateDialog').show()"/>
-                                        <p:commandButton id="viewButton"   icon="ui-icon-document" value="Details" 
-                                                         styleClass="commandButton" update=":TaskViewForm" oncomplete="PF('TaskViewDialog').show()" 
-                                                         disabled="#{empty taskController.selected}"/>
+                                        <h:panelGrid border="0" columns="2" cellpadding="5" style="width:100%" columnClasses="dashboardRecordPhotoColumn,detail7" 
+                                                     styleClass="ui-datascroller-item"> 
 
-                                        <p:commandButton id="editButton"   icon="ui-icon-pencil" value="Edit" 
-                                                         styleClass="commandButton" update=":TaskEditForm" oncomplete="PF('TaskEditDialog').show()" 
-                                                         disabled="#{empty taskController.selected or taskController.selected.taskIsComplete eq 'Yes'}"/>
+                                            <h:graphicImage id="opportunityPhoto" value="#{OpportunityController.photoStorageDirectoryName()}#{OpportunityController.accountPhoto(opportunity)}" 
+                                                            style="padding-left: 5%; margin-top: 3%" styleClass="dashboardRecordPhoto" />  
 
+                                            <p:outputPanel>
+                                                <h:panelGrid columns="1" cellpadding="5">
+                                                    <h:outputText style=" font-weight: bold; font-size: 15px" value="#{opportunity.title}" />
+                                                    <h:outputText style="font-size: 14px" value="#{opportunity.ownerID.getOrganizationName()}" />
+                                                    <h:outputText style="font-size: 14px" value="#{opportunity.dateOccurrence}" >
+                                                        <f:convertDateTime type="date" dateStyle="long" /> 
+                                                    </h:outputText>
+                                                </h:panelGrid>
+                                            </p:outputPanel>         
+                                        </h:panelGrid>
+                                    </p:column>
 
-                                        ***************************************************
-                                            Display a Confirmation dialog for the DELETE button
-                                            *************************************************** 
-
-                                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="Delete" 
-                                                         styleClass="commandButton" actionListener="#{taskController.deleteTask()}" 
-                                                         update=":growl,datalist" disabled="#{empty taskController.selected}">
-
-                                            <p:confirm header="Confirmation" 
-                                                       message="Are you sure you want to permanently delete this task?" 
-                                                       icon="ui-icon-alert" />
-                                        </p:commandButton>
-
-                                        <p:confirmDialog id="confirmDialogBox" global="true" showEffect="fade" hideEffect="fade">
-                                            <div align="center">
-
-                                                <p:commandButton value="No" type="button" 
-                                                                 styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-                                                &nbsp;
-                                                <p:commandButton value="Yes" type="button" 
-                                                                 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-                                            </div>
-                                        </p:confirmDialog>
-
-                                    </f:facet>
-                                </p:dataTable>-->
+                                </p:dataTable>
                             </h:form>
-<!--                            <ui:include src="CreateTask.xhtml"/>
-                            <ui:include src="EditTask.xhtml"/>
-                            <ui:include src="ViewTask.xhtml"/>-->
                         </p:panel>
 
-                        <p:panel id="webchats" header="Your Chats" style="margin: 0 0;width:450px;display: block;min-height: 450px;">                            
+                        <p:panel id="webchats" header="Recent Contacts" style="margin: 0 0;width:315px;min-height: 430px;">                            
                             <p:growl id="expgrowl" life="4000" />
-                            <h:form id="WebChatForm">
-<!--                                <p:dataTable id="expenselist" value="#{expenseController.expenses}" var="expense"
-                                             selectionMode="single" selection="#{expenseController.selectedExpense}"
-                                             paginator="false"
-                                             rowKey="#{expense.expenseID}">
+                            <h:form id="WebchatForm">
+                            <p:dataTable id="webchatsDataList" value="#{WebchatController.getRecentChats()}" var="chatRecipient" class="ui-datatable-scrollable-body" 
+                                         paginator="false" selection="#{WebchatController.selectedChatRecipient}" sortBy="#{chatRecipient.myOwnChatChannel.channel.getDateUpdated()}"
+                                         emptyMessage="Don't be shy! Talk to someone :)" sortOrder="descending" rows="3"
+                                         rowKey="#{chatRecipient.myOwnChatChannel.channel.getSid()}" selectionMode="single"
+                                         >
 
-                                    <p:ajax event="rowSelect"   update="createButton editButton deleteButton viewButton"/>
-                                    <p:ajax event="rowUnselect" update="createButton editButton deleteButton viewButton"/>
+                                <p:ajax event="rowSelect" listener="#{WebchatController.showWebchatFromWebchatList(WebchatController.selectedChatRecipient)}"/>
+                                <p:ajax event="rowUnselect" listener="#{WebchatController.showWebchatFromWebchatList(WebchatController.selectedChatRecipient)}"/> 
+<!--                                <p:ajax event="rowSelect" listener="#{WebchatController.showActiveWebchatsFromDashboard()}"/>
+                                <p:ajax event="rowUnselect" listener="#{WebchatController.showActiveWebchatsFromDashboard()}"/> -->
 
-                                    <p:column sortBy="#{expense.expenseName}">
-                                        <f:facet name="header">
-                                            <h:outputText value="Name" styleClass="facetHeader"/>
-                                        </f:facet>
-                                        <h:outputText styleClass="dataFields" value="#{expense.expenseName}"/>
-                                    </p:column>
-
-                                    <p:column sortBy="#{expense.expenseAmount}">
-                                        <f:facet name="header">
-                                            <h:outputText value="Amount" styleClass="facetHeader"/>
-                                        </f:facet>
-                                        <h:outputText styleClass="dataFields" value="$ #{expense.expenseAmount}"/>
-                                    </p:column>
-
-                                    <c:set var="lendeeList" value="#{expense.expenseLendees}" />
-                                    <c:set var="splitLendeeList" value="${fn:split(lendeeList, ',')}" />
-                                    <c:set var="lengthLendeeList" value="${fn:length(splitLendeeList)}" />
-
-                                    <p:column sortBy="${lengthLendeeList}">
-                                        <f:facet name="header">
-                                            <h:outputText value="Shared by" styleClass="facetHeader"/>
-                                        </f:facet>
-                                        <h:outputText styleClass="dataFields" value="${lengthLendeeList} more"/>
-                                    </p:column>
-
-                                    <p:column sortBy="#{expense.expenseIsSettled}">
-                                        <f:facet name="header">
-                                            <h:outputText value="Settled?" styleClass="facetHeader"/>
-                                        </f:facet>
-                                        <h:outputText styleClass="dataFields" value="#{expense.expenseIsSettled}"/>
-                                    </p:column>
-                                    
-                                    The "header" and "footer" facets are defined for the p:dataTable. See PrimeFaces
-                                    documentation at http://www.primefaces.org/docs/guide/primefaces_user_guide_5_3.pdf
-                                    
-
-                                    <f:facet name="footer">
-                                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="Add" 
-                                                         styleClass="commandButton" actionListener="#{expenseController.prepareCreate()}" 
-                                                         update=":ExpenseCreateForm" oncomplete="PF('ExpenseCreateDialog').show()"/>
-                                        <p:commandButton id="viewButton"   icon="ui-icon-document" value="Details" 
-                                                         styleClass="commandButton" update=":ExpenseViewForm" oncomplete="PF('ExpenseViewDialog').show()" 
-                                                         disabled="#{empty expenseController.selectedExpense}"/>
-
-                                        <p:commandButton id="editButton"   icon="ui-icon-pencil" value="Edit" 
-                                                         styleClass="commandButton" update=":ExpenseEditForm" oncomplete="PF('ExpenseEditDialog').show()" 
-                                                         disabled="#{empty expenseController.selectedExpense or expenseController.selectedExpense.expenseIsSettled eq 'Yes'}"/>
-
-
-                                        ***************************************************
-                                            Display a Confirmation dialog for the DELETE button
-                                            *************************************************** 
-
-                                        <p:commandButton id="deleteButton" icon="ui-icon-trash"  value="Delete" 
-                                                         styleClass="commandButton" actionListener="#{expenseController.deleteExpense()}" 
-                                                         update=":growl,expenselist" disabled="#{empty expenseController.selectedExpense}">
-
-                                            <p:confirm header="Confirmation" 
-                                                       message="Are you sure you want to delete this expense?" 
-                                                       icon="ui-icon-alert" />
-                                        </p:commandButton>
-
-                                        <p:confirmDialog id="confirmDialogBoxExpense" global="true" showEffect="fade" hideEffect="fade">
-                                            <div align="center">
-
-                                                <p:commandButton value="No" type="button" 
-                                                                 styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-                                                &nbsp;
-                                                <p:commandButton value="Yes" type="button" 
-                                                                 styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-                                            </div>
-                                        </p:confirmDialog>
-                                    </f:facet>
-                                </p:dataTable>-->
+                                <p:column style="font-size: 16px" headerText="Chats" width="100%" exportable="false" >
+                                    <h:panelGrid id="webchatsListDataBody" border="0" columns="2" cellpadding="5" style="width:100%" columnClasses="dashboardRecordPhotoColumn,detail7" styleClass="ui-datascroller-item"> 
+                                        <h:graphicImage id="recipientImage" value="#{UsersController.photoStorageDirectoryName()}#{UsersController.accountPhotoByUsername(chatRecipient.recipientUsername)}" 
+                                                        style="padding-left: 5%; margin-top: 3%" styleClass="webchatPhoto"/>
+                                        <p:outputPanel>
+                                            <h:panelGrid columns="1" cellpadding="5">
+                                                <h:outputText style="font-size: 14px" value="#{chatRecipient.recipientName}" />
+                                            </h:panelGrid>
+                                        </p:outputPanel>         
+                                    </h:panelGrid>
+                                </p:column>
+                                
+                            </p:dataTable>
                             </h:form>
-<!--                            <ui:include src="CreateExpense.xhtml"/>
-                            <ui:include src="EditExpense.xhtml"/>
-                            <ui:include src="ViewExpense.xhtml"/>-->
-
                         </p:panel>
                     </p:dashboard>
                 </div>
             </c:if>
-            <c:if test="#{RoommateController.isLoggedIn() == false}">
-                <h:button styleClass="button" outcome="index" value="Please log in  :)" />
+            <c:if test="#{UsersController.isLoggedIn() == false}">
+                <h:button styleClass="commandbutton" outcome="index" value="Please log in  :)" />
             </c:if> 
         </ui:define>                
     </ui:composition>
