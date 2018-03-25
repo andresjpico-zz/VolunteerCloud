@@ -20,7 +20,7 @@
         <!-- Create the content for this page below -->
         <ui:define name="editableContent">
             <c:if test="#{UsersController.isLoggedIn() == true}">
-                <div style="width: 80%; margin-top: 40px;margin-bottom: 0; margin-left: auto; margin-right: auto; display: block;">
+                <div id="primaryDiv" style="width: 80%; margin-top: 40px;margin-bottom: 0px; margin-left: auto; margin-right: auto; display: block;">
                     
                     <div class="announcement">
                         <p:outputLabel> Welcome to VolunteerCloud! </p:outputLabel>
@@ -29,9 +29,9 @@
                     
                     <br/>
                     
-                    <p:dashboard id="board" model="#{dashboardView.model}" style="display: block; min-height: 500px; width:100%; margin: 0 auto; overflow: hidden">
+                    <p:dashboard id="board" model="#{dashboardView.model}" style="display: block; max-height: 500px; min-height: 500px; width:100%; margin: 0 auto 0 0; overflow: hidden;">
 
-                        <p:panel id="activity" header="Recent Activity" style="margin: 0;width:400px;min-height: 430px;">
+                        <p:panel id="activity" header="Recent Activity" style="margin: 0;width:400px;min-height: 430px;" styleClass="ui-dashboard-column">
                             <h:form id="ActivityForm">
                                 <p:dataTable id="activityDataList" value="#{OpportunityController.recentActivityOpportunities}" var="opportunity"
                                              selectionMode="single" selection="#{OpportunityController.selectedRecentActivityOpportunity}"
@@ -66,8 +66,8 @@
                                 </p:dataTable>
                             </h:form>
                         </p:panel>
-                        
-                        <p:panel id="opportunities" header="Newest Opportunities" style="margin: 0 0;width:400px;min-height: 430px;">
+                        <p:spacer width="100" height="10" />
+                        <p:panel id="opportunities" header="Newest Opportunities" style="margin: 0 auto; width:400px;min-height: 430px;" styleClass="ui-dashboard-column">
                             <p:growl id="growl" life="4000" />
                             <h:form id="OpportunityForm">
                                 <p:dataTable id="opportunityDataList" value="#{OpportunityController.newestOpportunities}" var="opportunity"
@@ -104,7 +104,7 @@
                             </h:form>
                         </p:panel>
 
-                        <p:panel id="webchats" header="Recent Contacts" style="margin: 0 0;width:315px;min-height: 430px;">                            
+                        <p:panel id="webchats" header="Recent Contacts" style="margin: 0 auto;width:315px;min-height: 430px;" styleClass="ui-dashboard-column">                            
                             <p:growl id="expgrowl" life="4000" />
                             <h:form id="WebchatForm">
                             <p:dataTable id="webchatsDataList" value="#{WebchatController.getRecentChats()}" var="chatRecipient" class="ui-datatable-scrollable-body" 
