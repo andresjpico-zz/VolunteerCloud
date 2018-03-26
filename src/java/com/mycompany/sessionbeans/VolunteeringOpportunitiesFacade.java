@@ -199,7 +199,8 @@ public class VolunteeringOpportunitiesFacade extends AbstractFacade<Volunteering
     public List<VolunteeringOpportunities> getNewestOpportunities() {
             
         List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
-        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c ORDER BY c.opportunityID DESC") 
+        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.active = :active ORDER BY c.opportunityID DESC") 
+                    .setParameter("active", 'Y')
                     .setMaxResults(3)
                     .getResultList();
         
@@ -251,9 +252,11 @@ public class VolunteeringOpportunitiesFacade extends AbstractFacade<Volunteering
     public List<VolunteeringOpportunities> getVolunteerRecentActivity(List<Integer> opportunitiesID) {
             
         List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
-        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.opportunityID IN :opportunityID ORDER BY c.dateOccurrence DESC")
-                    .setParameter("opportunityID", opportunitiesID)
-                    .getResultList();
+        if (!opportunitiesID.isEmpty())
+            opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.opportunityID IN :opportunityID AND c.active = :active ORDER BY c.dateOccurrence DESC")
+                        .setParameter("opportunityID", opportunitiesID)
+                        .setParameter("active", 'Y')
+                        .getResultList();
 
         return opportunities;
     }
@@ -261,8 +264,9 @@ public class VolunteeringOpportunitiesFacade extends AbstractFacade<Volunteering
     public List<VolunteeringOpportunities> getOrganizationRecentActivity(int organizationID) {
             
         List<VolunteeringOpportunities> opportunities = new ArrayList<VolunteeringOpportunities>(); 
-        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.ownerID.userID = :organizationID ORDER BY c.dateOccurrence DESC")
+        opportunities = em.createQuery("SELECT c FROM VolunteeringOpportunities c WHERE c.ownerID.userID = :organizationID AND c.active = :active ORDER BY c.dateOccurrence DESC")
                     .setParameter("organizationID", organizationID)
+                    .setParameter("active", 'Y')
                     .setMaxResults(3)
                     .getResultList();
 

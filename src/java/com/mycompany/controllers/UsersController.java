@@ -31,6 +31,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.context.FacesContext;
+import javax.faces.application.FacesMessage;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.LinkedHashMap;
@@ -76,7 +77,8 @@ public class UsersController implements Serializable {
     
     private final String Twilio_API_URL = "https://chat.twilio.com/v2";
     private final String Twilio_Account_SID = "AC3c09366829bd06a96b2cc607873e9fce";
-    private final String Twilio_Service_SID = "IS4732387b4a864b7481c1722d65941b79";
+    private final String Twilio_Service_SID = "IS4732387b4a864b7481c1722d65941b79";     // Development Service
+//    private final String Twilio_Service_SID = "ISb7b1e3b29acb47a0b78fde42db7dbe60";     // Production Service
     private final String Twilio_API_Key_SID = "SKc67b29116e35278d4dd6931d529ab6ac";
     private final String Twilio_API_key_Secret = "UfMOOJpfWKdiMwTYUkrfgUOyAFdu2b5R";
 
@@ -767,7 +769,8 @@ public class UsersController implements Serializable {
     }
     
     public boolean isLinkedToVM() {
-        return selectedUser.getVolunteerMatchID() != null;
+        return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("volunteerMatchID") != null;
+//        return selectedUser.getVolunteerMatchID() != null;
     }
     
     // Initialize the session map for the Roommate object
@@ -802,6 +805,9 @@ public class UsersController implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().
                 getSessionMap().put("userRole", getUserRole());
         
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("volunteerMatchID", getVolunteerMatchID());
+        
     }     
 
     // Initialize the session map for the roommate object
@@ -833,6 +839,9 @@ public class UsersController implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().
                 getSessionMap().put("userRole", getUserRole());
 
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("volunteerMatchID", user.getVolunteerMatchID());
+        
     }
     
     /*
@@ -864,6 +873,7 @@ public class UsersController implements Serializable {
             // A Roommate already exists with the username given
             email = "";
             statusMessage = "Email already registered!";
+            throwFacesMessage("Email already registered!");
             return "";
         }
         
@@ -871,6 +881,7 @@ public class UsersController implements Serializable {
             // A Roommate already exists with the username given
             email = "";
             statusMessage = "Username already registered!";
+            throwFacesMessage("Username already registered!");
             return "";
         }
 
@@ -941,6 +952,7 @@ public class UsersController implements Serializable {
         } catch (EJBException e) {
             email = "";
             statusMessage = "Something went wrong while creating your account!";
+            throwFacesMessage("Something went wrong while creating your account!");
             return "";
         }
 
@@ -963,6 +975,7 @@ public class UsersController implements Serializable {
         
         if (user == null) {
             statusMessage = "Entered username " + loginUsername + " does not exist!";
+            throwFacesMessage("Entered username " + loginUsername + " does not exist!");
             return "";
 
         } else {
@@ -973,11 +986,13 @@ public class UsersController implements Serializable {
 
             if (!actualUsername.equals(loginUsername)) {
                 statusMessage = "Invalid Username!";
+                throwFacesMessage("Invalid Username!");
                 return "";
             }
 
             if (!actualPassword.equals(loginPassword)) {
                 statusMessage = "Invalid Password!";
+                throwFacesMessage("Invalid Password!");
                 return "";
             }
             
@@ -988,6 +1003,7 @@ public class UsersController implements Serializable {
                     usersFacade.edit(user);
                 } catch (EJBException e) {
                     username = password = "";
+                    throwFacesMessage("Something went wrong while reactivating your account!");
                     statusMessage = "Something went wrong while reactivating your account!";
                     return "";
                 }
@@ -1056,6 +1072,7 @@ public class UsersController implements Serializable {
                 if (aUser != null) {
                     // A Roommate already exists with the username given
                     email = "";
+                    throwFacesMessage("New email already registered!");
                     statusMessage = "New email already registered!";
                     return "";
                 }
@@ -1099,6 +1116,7 @@ public class UsersController implements Serializable {
                 
             } catch (EJBException e) {
                 email = "";
+                throwFacesMessage("Something went wrong while editing your profile!");
                 statusMessage = "Something went wrong while editing your profile!";
                 return "";
             }
@@ -1129,6 +1147,7 @@ public class UsersController implements Serializable {
 
             } catch (EJBException e) {
                 email = "";
+                throwFacesMessage("Something went wrong while deactivating your account!");
                 statusMessage = "Something went wrong while deactivating your account!";
                 return "";
             }
@@ -1157,6 +1176,7 @@ public class UsersController implements Serializable {
 
             } catch (EJBException e) {
                 userID = -1;
+                throwFacesMessage("Something went wrong while deleting your account!");
                 statusMessage = "Something went wrong while deleting your account!";
                 return "";
             }
@@ -1232,6 +1252,7 @@ public class UsersController implements Serializable {
 
         if (!entered_password.equals(entered_confirm_password)) {
             statusMessage = "Password and Confirm Password must match!";
+            throwFacesMessage("Password and Confirm Password must match!");
         } else {
             statusMessage = "";
         }
@@ -1279,6 +1300,7 @@ public class UsersController implements Serializable {
 
         if (!new_Password.equals(new_ConfirmPassword)) {
             statusMessage = "New Password and New Confirm Password must match!";
+            throwFacesMessage("New Password and New Confirm Password must match!");
         } else {
             /*
             REGular EXpression (regex) for validating password strength:
@@ -1291,6 +1313,12 @@ public class UsersController implements Serializable {
             String regex = "^(?=.{8,31})(?=.*[!@#$%^&*])(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).*$";
 
             if (!new_Password.matches(regex)) {
+                throwFacesMessage("The password must be minimum 8 "
+                        + "characters long, contain at least one special character, "
+                        + "contain at least one uppercase letter, "
+                        + "contain at least one lowercase letter, "
+                        + "and contain at least one number 0 to 9.");
+
                 statusMessage = "The password must be minimum 8 "
                         + "characters long, contain at least one special character, "
                         + "contain at least one uppercase letter, "
@@ -1343,6 +1371,7 @@ public class UsersController implements Serializable {
         }
 
         if (!entered_password.equals(entered_confirm_password)) {
+            throwFacesMessage("Password and Confirm Password must match!");
             statusMessage = "Password and Confirm Password must match!";
         } else {
             // Obtain the logged-in roommate's username
@@ -1356,6 +1385,7 @@ public class UsersController implements Serializable {
                 // entered password = logged-in roommate's password
                 statusMessage = "";
             } else {
+                throwFacesMessage("Incorrect Password!");
                 statusMessage = "Incorrect Password!";
             }
         }
@@ -1379,6 +1409,7 @@ public class UsersController implements Serializable {
                 == null ? "" : uiInputVerifyPassword.getLocalValue().toString();
 
         if (verifyPassword.isEmpty()) {
+            throwFacesMessage("Please enter a password!");
             statusMessage = "Please enter a password!";
             return false;
 
@@ -1387,6 +1418,7 @@ public class UsersController implements Serializable {
             return true;
 
         } else {
+            throwFacesMessage("Invalid password entered!");
             statusMessage = "Invalid password entered!";
             return false;
         }
@@ -1411,6 +1443,7 @@ public class UsersController implements Serializable {
             volunteeringInterestFacade.updateVolunteeringInterestAreas(selectedUser.getUserID(), userAreasOfInterest);
             exitModeEditInterestAreas();
         } catch (EJBException e) {
+            throwFacesMessage("Something went wrong while updating your volunteering interests!");
             statusMessage = "Something went wrong while updating your volunteering interests!";
         }
     }
@@ -1431,6 +1464,7 @@ public class UsersController implements Serializable {
             User.creator(Twilio_Service_SID, selectedUser.getUsername()).setFriendlyName(selectedUser.getUsername()).create();
 
         } catch (Exception e) {
+            throwFacesMessage("Something went wrong while linking your account to Twilio!");
             statusMessage = "Something went wrong while linking your account to Twilio!";
             return;
         }
@@ -1522,6 +1556,7 @@ public class UsersController implements Serializable {
                 return true;
             
             } else {
+                throwFacesMessage("VolunteerMatchAPI is unreachable!");
                 statusMessage = "VolunteerMatchAPI is unreachable!";
                 return false;
             }
@@ -1583,6 +1618,8 @@ public class UsersController implements Serializable {
 
             } else {
                 statusMessage = "VolunteerMatchAPI is unreachable!";
+                throwFacesMessage("VolunteerMatchAPI is unreachable!");
+
                 return;
             }
         
@@ -1595,6 +1632,7 @@ public class UsersController implements Serializable {
         
         if(selectedOrganization == null) {
             statusMessage = "Please select an organization.";
+            throwFacesMessage("Please select an organization.");
             return;
         }
         
@@ -1607,15 +1645,24 @@ public class UsersController implements Serializable {
                 selectedOrganization = null;
                 vmOrganizations = null;
                 statusMessage = "Your account has been linked successfully!";
+                throwFacesMessage("Your account has been linked successfully!");
+
                 showProfileAfterLinkingToVM();
                 
             } catch (Exception e) {
                 statusMessage = "Something went wrong while linking your account to the Organization!";
+                throwFacesMessage("Something went wrong while linking your account to the Organization!");
                 return;
             }
         }
     }
     
+    // Throws desired error message
+    public void throwFacesMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(message));
+    }
+        
     //Method hides table with data when exiting the page
     public void leaving() {
         searchOrganizationNameField = "";

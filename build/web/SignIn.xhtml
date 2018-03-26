@@ -24,14 +24,14 @@
                     <div align="center">
                         <!-- Error messages will be shown here if any  -->
                         <p:messages showIcon="false"/>
-                        <h:outputLabel value="#{UsersController.statusMessage}" style="font-family: Arial, Helvetica, sans-serif; 
+                        <h:outputLabel value="#{UsersController.statusMessage}" style="font-family: Arial, Helvetica, sans-serif;
                                        font-size: 12pt; font-style: normal; font-weight: normal; color: #FF0000;"/>
                     </div>
                     <p:panelGrid columns="2" style="width: 280px" columnClasses="columnOne, columnTwo">
 
                         <h:outputLabel value="Username:" for="username" />
                         <p:inputText id="username" value="#{UsersController.loginUsername}" required="true" 
-                                     requiredMessage="#{bundle.RequiredMessage_Username}" label="Username">
+                                     requiredMessage="Username field is required!" label="Username">
                         </p:inputText>
 
                         <h:outputLabel value="Password:" for="password" />

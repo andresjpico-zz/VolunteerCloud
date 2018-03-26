@@ -39,6 +39,7 @@ import org.primefaces.json.JSONArray;
 import org.primefaces.json.JSONObject;
 import java.io.*;
 import java.net.URL;
+import javax.faces.application.FacesMessage;
 
 /**
  *
@@ -572,6 +573,7 @@ public class VolunteerController implements Serializable {
 
             } else {
                 statusMessage = "ZipCodeAPI is unreachable!";
+                throwFacesMessage("ZipCodeAPI is unreachable!");
                 return null;
             }
             
@@ -631,6 +633,12 @@ public class VolunteerController implements Serializable {
     public List<Integer> getListVolunteerUserIDsInterestedInArea() {
         List<Integer> userIDs = volunteeringInterestFacade.getListUserIDsInterestedInArea(Integer.parseInt(searchVolunteeringAreaField));
         return userIDs;
+    }
+    
+    // Throws desired error message
+    public void throwFacesMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(message));
     }
     
     //Method hides table with data when exiting the page

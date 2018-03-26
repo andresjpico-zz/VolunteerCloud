@@ -7,6 +7,7 @@ import java.io.Serializable;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
@@ -120,6 +121,9 @@ public class PasswordResetController implements Serializable {
         
         FacesContext.getCurrentInstance().getExternalContext().
                 getSessionMap().put("userRole", getUserRole());
+        
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("volunteerMatchID", user.getVolunteerMatchID());
 
     }
 
@@ -130,10 +134,8 @@ public class PasswordResetController implements Serializable {
         Users user = usersFacade.findByEmail(email);
 
         if (user == null) {
-            statusMessage = "Entered email does not exist!";
-
-            // Redirect to show the EnterUsername page
-            return "EnterUsername?faces-redirect=true";
+            throwFacesMessage("Entered email does not exist!");
+            return "";
         } else {
             // Entered username exists
             statusMessage = "";
@@ -150,8 +152,8 @@ public class PasswordResetController implements Serializable {
         Users user = usersFacade.findByUsername(username);
         
         if (user == null) {
-            statusMessage = "Entered username does not exist!";
-            return "EnterUsername?faces-redirect=true";
+            throwFacesMessage("Entered username does not exist!");
+            return "";
         } else {
             // Entered username exists
             statusMessage = "";
@@ -176,10 +178,8 @@ public class PasswordResetController implements Serializable {
             return "ResetPassword?faces-redirect=true";
         } else {
             // Answer to the security question is wrong
-            statusMessage = "Security question answer is incorrect!";
-
-            // Redirect to show the SecurityQuestion page
-            return "SecurityQuestion?faces-redirect=true";
+            throwFacesMessage("Security question answer is incorrect!");
+            return "";
         }
     }
 
@@ -238,7 +238,7 @@ public class PasswordResetController implements Serializable {
         }
 
         if (!entered_password.equals(entered_confirm_password)) {
-            statusMessage = "Password and Confirm Password must match!";
+            throwFacesMessage("Password and Confirm Password must match!");
         } else {
             statusMessage = "";
         }
@@ -262,10 +262,10 @@ public class PasswordResetController implements Serializable {
                 email = username = statusMessage = securityAnswer = password = "";
 
             } catch (EJBException e) {
-                statusMessage = "Something went wrong while resetting your password, please try again!";
+                throwFacesMessage("Something went wrong while resetting your password, please try again!");
                 
                 // Redirect to show the ResetPassword page
-                return "ResetPassword?faces-redirect=true";
+                return "";
             }
 
             //
@@ -281,6 +281,12 @@ public class PasswordResetController implements Serializable {
             // Redirect to show the ResetPassword page
             return "ResetPassword?faces-redirect=true";
         }
+    }
+    
+    // Throws desired error message
+    public void throwFacesMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(message));
     }
 
 }

@@ -79,7 +79,8 @@ Copyright © 2016 Osman Balci. All rights reserved.
                             <!--<p:poll interval="2" listener="#{WebchatController.updateMessages()}" update=":WebchatForm:webchatMessageList" oncomplete="setScrollToBottom()" />-->
                             <h:inputHidden id="scrollPos" />
                             <h:inputHidden id="clientToken" value="#{WebchatController.clientToken}" />
-                            <h:inputHidden id="channelName" value="#{WebchatController.selectedChannel.uniqueName}" />
+                            <h:inputHidden id="channelName" value="#{WebchatController.selectedChannel.getUniqueName()}" />
+                            <!--<p:outputLabel id="channelName" style=" display: none; visibility: hidden" value="#{WebchatController.selectedChannel.getUniqueName()}" />-->
                         </div>
                     </h:form>
                     <h:form id="remoteCommandForm">

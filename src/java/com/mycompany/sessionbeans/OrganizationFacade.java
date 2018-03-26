@@ -254,7 +254,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                 
         List<Organization> organizations = new ArrayList<Organization>();
         if (!zipCodesList.isEmpty())
-            organizations = em.createQuery("SELECT c FROM Organization c WHERE c.organizationName LIKE :organizationName AND c.mission LIKE :keyword "
+            organizations = em.createQuery("SELECT c FROM Organization c WHERE c.organizationName LIKE :organizationName AND (c.mission LIKE :keyword OR c.mission IS NULL) "
                     + "AND c.zipCode IN :zipCode AND c.active = :active")
                         .setParameter("organizationName", "%" + organizationName + "%")
                         .setParameter("keyword", "%" + keyword + "%")
@@ -269,7 +269,7 @@ public class OrganizationFacade extends AbstractFacade<Organization> {
                 
         List<Organization> organizations = new ArrayList<Organization>(); 
         if (!userIDsList.isEmpty() && !zipCodesList.isEmpty())
-            organizations = em.createQuery("SELECT c FROM Organization c WHERE c.organizationName LIKE :organizationName AND c.mission LIKE :keyword "
+            organizations = em.createQuery("SELECT c FROM Organization c WHERE c.organizationName LIKE :organizationName AND (c.mission LIKE :keyword OR c.mission IS NULL) "
                     + "AND c.userID IN :userID AND c.zipCode IN :zipCode AND c.active = :active")
                         .setParameter("organizationName", "%" + organizationName + "%")
                         .setParameter("keyword", "%" + keyword + "%")

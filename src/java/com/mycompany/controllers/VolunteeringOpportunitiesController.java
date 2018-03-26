@@ -38,6 +38,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
@@ -743,7 +744,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
             }
 
         } catch (Exception e) {
-            statusMessage = "Something went wrong while creating your Opportunity!";
+            throwFacesMessage("Something went wrong while creating your Opportunity!");
             return "";
         }
         return "";
@@ -756,7 +757,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     public String editOpportunity() {
         // Check if date only checks calendar day or time as well
         if(selectedOpportunity.getDateOccurrence().before(today)) {
-            statusMessage = "You cannot edit a past event.";
+            throwFacesMessage("You cannot edit a past event.");
             return "";
         }
         
@@ -767,7 +768,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
                 state = Constants.STATES[selectedOpportunity.getState()];
                 opportunities = null;
             } catch (EJBException e) {
-                statusMessage = "Something went wrong while editing your opportunity.";
+                throwFacesMessage("Something went wrong while editing your opportunity.");
                 return "";
             }
         }
@@ -777,7 +778,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     public String cancelOpportunity() {
         // Check if date only checks calendar day or time as well
         if(selectedOpportunity.getDateOccurrence().before(today)) {
-            statusMessage = "You cannot cancel a past event.";
+            throwFacesMessage("You cannot cancel a past event.");
             return "";
         }
         
@@ -787,10 +788,10 @@ public class VolunteeringOpportunitiesController implements Serializable {
                 opportunityFacade.edit(selectedOpportunity);
                 selectedOpportunity = null;
                 opportunities = null;
-                statusMessage = "Your opportunity has been canceled!";
+                throwFacesMessage("Your opportunity has been canceled!");
 
             } catch (EJBException e) {
-                statusMessage = "Something went wrong while cancelling your event";
+                throwFacesMessage("Something went wrong while cancelling your event");
                 return "";
             }
             
@@ -833,7 +834,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     public void searchOpportunities() {
 
         if (searchDateStartField == null ^ searchDateEndField == null) { // XOR -> '^'
-            statusMessage = "Please fill both date fields or leave them empty.";
+            throwFacesMessage("Please fill both date fields or leave them empty.");
             return;
         }
         
@@ -855,7 +856,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
         else if(!searchDateStartField.after(searchDateEndField))
             opportunities = opportunityFacade.SearchOpportunitiesWithinDateRange(zipCodesList, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField, searchDateStartField, searchDateEndField); // , searchVolunteeringAreaField)
         else
-            statusMessage = "Start Date cannot be later than End Date.";
+            throwFacesMessage("Start Date cannot be later than End Date.");
             
         return;
         
@@ -882,7 +883,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     public List<VolunteeringOpportunities> searchVolunteeringHistory(Users user) {
 
         if (searchDateStartField == null ^ searchDateEndField == null) { // XOR -> '^'
-            statusMessage = "Please fill both date fields or leave them empty.";
+            throwFacesMessage("Please fill both date fields or leave them empty.");
             return null;
         }
         
@@ -896,7 +897,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
         else if(!searchDateStartField.after(searchDateEndField))
             opportunities = opportunityFacade.SearchHistoryOpportunitiesWithinDateRange(user.getUserID(), listOpportunityIDsFromUserHistory, searchZipCodeField, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField, searchDateStartField, searchDateEndField);
         else
-            statusMessage = "Start Date cannot be later than End Date.";
+            throwFacesMessage("Start Date cannot be later than End Date.");
         
         return opportunities;
         
@@ -958,7 +959,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
                 return vmOpportunities;
 
             } else {
-                statusMessage = "VolunteerMatchAPI is unreachable!";
+                throwFacesMessage("VolunteerMatchAPI is unreachable!");
                 return null;
             }
         
@@ -1024,7 +1025,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
                 return;
 
             } else {
-                statusMessage = "VolunteerMatchAPI is unreachable!";
+                throwFacesMessage("VolunteerMatchAPI is unreachable!");
                 return;
             }
         
@@ -1067,7 +1068,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
                 }
 
             } else {
-                statusMessage = "ZipCodeAPI is unreachable!";
+                throwFacesMessage("ZipCodeAPI is unreachable!");
                 return null;
             }
             
@@ -1104,7 +1105,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
         
         
         if(selectedOpportunity.getDateOccurrence().before(today)) {
-            statusMessage = "You cannot subscribe to a past event.";
+            throwFacesMessage("You cannot subscribe to a past event.");
             return;
         }
         
@@ -1122,7 +1123,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
                     opportunities = null;    // Empty the items list
                 }
             } catch (Exception e) {
-                statusMessage = "Something went wrong while subscribing to the Opportunity!";
+                throwFacesMessage("Something went wrong while subscribing to the Opportunity!");
                 return;
             }
         }
@@ -1131,7 +1132,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     public void unsubscribeFromOpportunity(int userID) {
 
         if(selectedOpportunity.getDateOccurrence().before(today)) {
-            statusMessage = "You cannot unsubscribe from a past event.";
+            throwFacesMessage("You cannot unsubscribe to a past event.");
             return;
         }
         
@@ -1140,7 +1141,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
                 volunteeringHistoryFacade.deleteRecord(userID, selectedOpportunity.getOpportunityID());
                 opportunities = null;       // Empty the items list
             } catch (EJBException e) {
-                statusMessage = "Something went wrong while unsubscribing from opportunity.";
+                throwFacesMessage("Something went wrong while unsubscribing to the Opportunity!");
             }
         }
     }
@@ -1161,7 +1162,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
         
         // Check if date only checks calendar day or time as well
         if(selectedOpportunity.getDateOccurrence().after(today)) {
-            statusMessage = "You cannot confirm participation of a future event.";
+            throwFacesMessage("You cannot confirm participation of a future event.");
             return;
         }
         
@@ -1173,7 +1174,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
                 //selectedRecord.setParticipated("Y");
                 //volunteeringHistoryFacade.edit(selectedRecord);
             } catch (EJBException e) {
-                statusMessage = "Something went wrong while confirming the volunteer's participation.";
+                throwFacesMessage("Something went wrong while confirming the volunteer's participation.");
             }
         }    
     }
@@ -1182,7 +1183,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
              
         // Check if date only checks calendar day or time as well
         if(selectedOpportunity.getDateOccurrence().after(today)) {
-            statusMessage = "You cannot decline participation of a future event.";
+            throwFacesMessage("You cannot decline participation of a future event.");
             return;
         }
         
@@ -1194,7 +1195,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
                 //selectedRecord.setParticipated("N");
                 //volunteeringHistoryFacade.edit(selectedRecord);
             } catch (EJBException e) {
-                statusMessage = "Something went wrong while declining the volunteer's participation.";
+                throwFacesMessage("Something went wrong while declining the volunteer's participation.");
             }
         }    
     }
@@ -1210,6 +1211,12 @@ public class VolunteeringOpportunitiesController implements Serializable {
         statusMessage = "";
         records = volunteeringHistoryFacade.getOpportunityParticipantsRecords(selectedOpportunity.getOpportunityID());
         return;
+    }
+    
+    // Throws desired error message
+    public void throwFacesMessage(String message) {
+        FacesContext.getCurrentInstance().addMessage(null,
+            new FacesMessage(message));
     }
     
     //Method hides table with data when exiting the page

@@ -82,7 +82,7 @@
                                         styleClass="#{WebchatController.unreadMessages ? 'ui-unread-messages' : ''}" ajax="false" />
                             <p:menuitem value="Sign Out" action="#{UsersController.logout()}" icon="fa fa-external-link-square" ajax="false" />
                         </p:menubar>
-                        <!--<p:poll interval="5" listener="#{WebchatController.updateUserChannels()}" update=":HeaderForm:headerLoggedInMenuItemsTwo" />-->
+                        <p:poll interval="5" listener="#{WebchatController.updateUserChannels()}" update=":HeaderForm:headerLoggedInMenuItemsTwo" />
                     </c:if>
                     &nbsp;&nbsp;
                 </h:panelGrid>
