@@ -525,12 +525,12 @@ public class VolunteerController implements Serializable {
         statusMessage = "";
         
         // Get list of Zip Codes
-//        List<String> zipCodesList = getZipCodesList();
+        List<String> zipCodesList = getZipCodesList();
         
         //Use when testing
-        List<String> zipCodesList = new ArrayList<String>();
-        zipCodesList.add("24060");
-        zipCodesList.add("24061");
+//        List<String> zipCodesList = new ArrayList<String>();
+//        zipCodesList.add("24060");
+//        zipCodesList.add("24061");
         
         // If no search fields then show all
         if(searchVolunteeringAreaField != null) {

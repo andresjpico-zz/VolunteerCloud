@@ -25,7 +25,6 @@ public class PasswordResetController implements Serializable {
     // Instance Variables (Properties)
     private String email;
     private String username;
-    private String userRole;
     private String statusMessage = "";
     private String securityAnswer;
     private String password;
@@ -55,14 +54,6 @@ public class PasswordResetController implements Serializable {
         this.username = username;
     }
     
-    public String getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(String userRole) {
-        this.userRole = userRole;
-    }
-
     public String getStatusMessage() {
         return statusMessage;
     }
@@ -111,6 +102,9 @@ public class PasswordResetController implements Serializable {
                 getSessionMap().put("username", user.getUsername());
         
         FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("fullName", user.getFirstName() + " " + user.getLastName());
+        
+        FacesContext.getCurrentInstance().getExternalContext().
                 getSessionMap().put("firstName", user.getFirstName());
 
         FacesContext.getCurrentInstance().getExternalContext().
@@ -120,11 +114,35 @@ public class PasswordResetController implements Serializable {
                 getSessionMap().put("organizationName", user.getOrganizationName());
         
         FacesContext.getCurrentInstance().getExternalContext().
-                getSessionMap().put("userRole", getUserRole());
+                getSessionMap().put("userRole", Constants.USER_ROLES[user.getUserRole()]);
         
         FacesContext.getCurrentInstance().getExternalContext().
                 getSessionMap().put("volunteerMatchID", user.getVolunteerMatchID());
 
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("mission", user.getMission());
+                
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("phoneNumber", user.getPhoneNumber());
+                
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("website", user.getWebsite());
+                                
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("address", user.getAddress());
+
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("city", user.getCity());
+
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("state", user.getState());
+        
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("stateName", user.getStateName());
+                        
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("zipCode", user.getZipCode());
+        
     }
 
     // Process the submitted username
@@ -267,9 +285,6 @@ public class PasswordResetController implements Serializable {
                 // Redirect to show the ResetPassword page
                 return "";
             }
-
-            //
-            userRole = Constants.USER_ROLES[user.getUserRole()];
 
             // Initialize the session map with Roommate properties of interest
             initializeSessionMap(user);

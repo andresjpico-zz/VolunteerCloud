@@ -37,8 +37,8 @@ Copyright © 2016 Osman Balci. All rights reserved.
                     <!-- The different elements of data are displayed/included under this form -->
                     <h:form id="ViewActivityForm">
 
-                        <!-- The datatable "datalist" displays the beasic information about the movie as requested for the turotial -->
-                        <p:dataTable id="datalist" value="#{UsersController.selectedUser}" var="user"
+                        <!--<p:dataTable id="datalist" value="#{UsersController.selectedUser}" var="user"-->
+                        <p:dataTable id="datalist" value="#{sessionScope.user}" var="user"
                                          paginator="false"
                                          rowKey="#{user.userID}"
                                          rows="1"
@@ -178,18 +178,9 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                             <p:outputLabel value="Zip Code" for="searchZipCode" style="font-size: 15px" />
                                             <p:inputText id="searchZipCode" value="#{OpportunityController.searchZipCodeField}" label="Zip Code" style="font-size: 15px"/>   
                                         </h:panelGrid>
-<!--                                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0" columnClasses="searchZipCodeFieldColumn,searchZipCodeRadiusFieldColumn">  
-                                            <p:outputLabel value="Zip Code" for="searchZipCode" style="font-size: 15px" />
-                                            <p:outputLabel value="Miles" for="searchZipCodeRadius" style="font-size: 15px" />
-                                            <p:inputText id="searchZipCode" value="#{OpportunityController.searchZipCodeField}" label="Zip Code" style="width: 70px; font-size: 15px"/>   
-                                            <p:selectOneMenu id="searchZipCodeRadius" label="Mile Radius"  style="width: 40px; font-size: 15px;"
-                                                             value="#{OpportunityController.searchZipCodeRadiusField}" >
-                                                <f:selectItems value="#{OpportunityController.zipCodeRadiuses}"/>
-                                            </p:selectOneMenu>                            
-                                        </h:panelGrid>-->
                                         
-                                        <p:commandButton value="Filter History" id="searchButton" style="width: 178px; height: 100%" icon="fa fa-search" iconPos="right" styleClass="searchButton"
-                                                         ajax="true" update=":ViewActivityForm" />
+                                        <p:commandButton value="Filter History" id="searchButton" style="width: 178px; height: 100%" icon="fa fa-search" iconPos="right" styleClass="searchButton" 
+                                                         ajax="true" update=":ViewActivityForm" action="#{OpportunityController.searchVolunteeringHistory(user)}" />
                                                          <!-- Interesting note! When updating only 'opportunityHistoryList', the searchVolunteeringHistory function is called twice -->
                                     </h:panelGrid>
                                     </div>
@@ -199,7 +190,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     
                                     <!--<div style="width: 60%">-->
                                     <div onbeforeunload="#{OpportunityController.leaving()}">
-                                        <p:dataTable id="opportunityHistoryList" value="#{OpportunityController.searchVolunteeringHistory(user)}" var="opportunity"
+                                        <p:dataTable id="opportunityHistoryList" value="#{OpportunityController.historyOpportunities}" var="opportunity"
                                                          selectionMode="single" selection="#{OpportunityController.selectedHistoryOpportunity}"
                                                          paginator="false" disabledSelection="false"
                                                          rowKey="#{opportunity.opportunityID}"

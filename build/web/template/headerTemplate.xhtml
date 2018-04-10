@@ -63,10 +63,10 @@
                             </c:if>
                             
                             <c:if test="#{UsersController.isVolunteer() == true}">
-                                <p:menuitem value="Organizations" action="#{UsersController.showSearchOrganization()}" icon="fa fa-users" ajax="false" />
+                                <p:menuitem value="&#160;Organizations" action="#{UsersController.showSearchOrganization()}" icon="fa fa-users" ajax="false" />
                             </c:if>
                             
-                            <p:submenu label="Opportunities" icon="fa fa-hand-paper-o">
+                            <p:submenu label="Opportunities" icon="fa fa-hand-paper-o" styleClass="ui-menu" style="color: white !important;">
                                 <p:menuitem value="View Activity" action="#{UsersController.showVolunteeringActivity()}" ajax="false" styleClass="submenuItem" />
                                 <c:if test="#{UsersController.isOrganization() == true}">
                                     <p:menuitem value="Create Opportunity" action="#{UsersController.showCreateOpportunity()}" ajax="false" styleClass="submenuItem" />
@@ -78,8 +78,8 @@
                             </p:submenu>
                         </p:menubar>
                         <p:menubar id='headerLoggedInMenuItemsTwo' styleClass="menubar">
-                            <p:menuitem id='messagesMenuItem' value="Messages" action="#{WebchatController.showActiveWebchats()}" icon="#{WebchatController.unreadMessages ? 'fa fa-envelope' : 'fa fa-envelope-o'}" 
-                                        styleClass="#{WebchatController.unreadMessages ? 'ui-unread-messages' : ''}" ajax="false" />
+                            <p:menuitem id='messagesMenuItem' value="&#160;Messages" action="#{WebchatController.showActiveWebchats()}" styleClass="messagesMenuItem" ajax="false"
+                                        icon="#{WebchatController.unreadMessages ? 'fa fa-envelope' : 'fa fa-envelope-o'}" />
                             <p:menuitem value="Sign Out" action="#{UsersController.logout()}" icon="fa fa-external-link-square" ajax="false" />
                         </p:menubar>
                         <p:poll interval="5" listener="#{WebchatController.updateUserChannels()}" update=":HeaderForm:headerLoggedInMenuItemsTwo" />

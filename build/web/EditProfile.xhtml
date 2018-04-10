@@ -34,32 +34,32 @@
 
                             <c:if test="#{UsersController.isOrganization() == true}">
                                 <p:outputLabel value="#{bundle.OrganizationName}" for="organizationName" />
-                                <p:inputText id="organizationName" value="#{UsersController.selectedUser.organizationName}" required="true" styleClass="accountInputTextField"
+                                <p:inputText id="organizationName" value="#{sessionScope.editUser.organizationName}" required="true" styleClass="accountInputTextField"
                                              requiredMessage="#{bundle.RequiredMessage_OrganizationName}" label="Organization Name">
                                     <f:validateLength minimum="2" />
                                 </p:inputText> 
                             </c:if>
                             
                             <p:outputLabel value="#{bundle.FirstName}" for="firstName" />
-                            <p:inputText id="firstName" value="#{UsersController.selectedUser.firstName}" required="true" styleClass="accountInputTextField"
+                            <p:inputText id="firstName" value="#{sessionScope.editUser.firstName}" required="true" styleClass="accountInputTextField"
                                          requiredMessage="#{bundle.RequiredMessage_FirstName}" label="First Name">
                                 <f:validateLength minimum="2" />
                             </p:inputText>   
                             
                             <p:outputLabel value="#{bundle.LastName}" for="lastName" />
-                            <p:inputText id="lastName" value="#{UsersController.selectedUser.lastName}" required="true" styleClass="accountInputTextField"
+                            <p:inputText id="lastName" value="#{sessionScope.editUser.lastName}" required="true" styleClass="accountInputTextField"
                                          requiredMessage="#{bundle.RequiredMessage_LastName}" label="Last Name">
                                 <f:validateLength minimum="2" />
                             </p:inputText>  
                                                         
                             <p:outputLabel value="#{bundle.Username}" for="username" />
-                            <p:inputText id="username" value="#{UsersController.selectedUser.username}" required="true" styleClass="accountInputTextField"
+                            <p:inputText id="username" value="#{sessionScope.editUser.username}" required="true" styleClass="accountInputTextField"
                                          requiredMessage="#{bundle.RequiredMessage_Username}" label="Username" disabled="true">
                                 <f:validateLength minimum="2" />
                             </p:inputText>
                             
                             <p:outputLabel value="#{bundle.Email}" for="email" />
-                            <p:inputText id="email" value="#{UsersController.selectedUser.email}" required="true" styleClass="accountInputTextField"
+                            <p:inputText id="email" value="#{sessionScope.editUser.email}" required="true" styleClass="accountInputTextField"
                                          requiredMessage="#{bundle.RequiredMessage_Email}" label="Email">
                                 <f:validateLength minimum="2" />
                                 <!-- Execute the "validate" method in the "EmailValidator.java" class file to validate the email address entered. -->
@@ -67,36 +67,36 @@
                             </p:inputText>
                             
                             <p:outputLabel value="#{bundle.Mission}" for="mission" />
-                            <p:inputText id="mission" value="#{UsersController.selectedUser.mission}" styleClass="accountInputTextField" label="Mission">
+                            <p:inputText id="mission" value="#{sessionScope.editUser.mission}" styleClass="accountInputTextField" label="Mission">
                             </p:inputText>
                             
                             <p:outputLabel value="#{bundle.PhoneNumber}" for="phoneNumber" />
-                            <p:inputText id="phoneNumber" value="#{UsersController.selectedUser.phoneNumber}" styleClass="accountInputTextField"
+                            <p:inputText id="phoneNumber" value="#{sessionScope.editUser.phoneNumber}" styleClass="accountInputTextField"
                                          requiredMessage="#{bundle.RequiredMessage_PhoneNumber}" label="Phone Number">
                                 <!-- Need to implement "PhoneNumberValidator.java" class. -->
                                 <f:validator validatorId="phoneNumberValidator" />  
                             </p:inputText>
                             
                             <p:outputLabel value="#{bundle.Website}" for="website" />
-                            <p:inputText id="website" value="#{UsersController.selectedUser.website}" styleClass="accountInputTextField" label="Website">
+                            <p:inputText id="website" value="#{sessionScope.editUser.website}" styleClass="accountInputTextField" label="Website">
                             </p:inputText>
 
                             <p:outputLabel value="#{bundle.Address}" for="address" />
-                            <p:inputText id="address" value="#{UsersController.selectedUser.address}" styleClass="accountInputTextField" label="Address">
+                            <p:inputText id="address" value="#{sessionScope.editUser.address}" styleClass="accountInputTextField" label="Address">
                             </p:inputText>
                             
                             <p:outputLabel value="#{bundle.City}" for="city" />
-                            <p:inputText id="city" value="#{UsersController.selectedUser.city}" styleClass="accountInputTextField" label="City">
+                            <p:inputText id="city" value="#{sessionScope.editUser.city}" styleClass="accountInputTextField" label="City">
                             </p:inputText>
                                                         
                             <p:outputLabel value="#{bundle.State}" for="state" />
                             <p:selectOneMenu id="state" label="State" style="width: 86%"
-                                             value="#{UsersController.selectedUser.state}" required="true" >
+                                             value="#{sessionScope.editUser.state}" required="true" >
                                 <f:selectItems value="#{UsersController.statesNames}"/>
                             </p:selectOneMenu>
                             
                             <p:outputLabel value="#{bundle.ZipCode}" for="zipCode" />
-                            <p:inputText id="zipCode" value="#{UsersController.selectedUser.zipCode}" required="true" styleClass="accountInputTextField" 
+                            <p:inputText id="zipCode" value="#{sessionScope.editUser.zipCode}" required="true" styleClass="accountInputTextField" 
                                          requiredMessage="#{bundle.RequiredMessage_ZipCode}" label="Zip Code">
                                 <f:validateLength minimum="5" />
                                 <!-- Execute the "validate" method in the "EmailValidator.java" class file to validate the email address entered. -->

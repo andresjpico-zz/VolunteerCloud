@@ -579,8 +579,6 @@ reference <p:confirmDialog id="confirmDialogBox" ...> in Profile.xhtml
     margin-top: 10px !important;
 }
 
-/* Approach 2: Override PrimeFaces p:menubar style */
-
 .menubar {
     background: none;
     border: none;
@@ -588,6 +586,24 @@ reference <p:confirmDialog id="confirmDialogBox" ...> in Profile.xhtml
 
 .submenuItem {
     color: black !important;
+}
+
+.opportunityMenuItem {
+    /*use !important to take effect*/
+    font-weight: bold !important;
+    color: white !important;
+}
+
+.messagesMenuItem {
+    /* use !important for effect */
+    margin-left: -10px;
+}
+
+.messagesIconMenuItem {
+    /*background: fa fa-envelope-o no-repeat;*/
+    /*icon: url(fa fa-envelope-o);*/
+    height: 16px;
+    width: 16px;
 }
 
 /*
@@ -1005,7 +1021,13 @@ font-weight: lighter !important;
 }
 
 .ui-unread-messages {
+    /*use !important to take effect*/
     font-weight: bold;
+}
+
+.ui-menu {
+    /*use !important to take effect*/
+    color: white;
 }
 
 .announcement {

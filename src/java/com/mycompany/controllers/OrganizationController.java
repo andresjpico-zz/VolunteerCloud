@@ -517,12 +517,12 @@ public class OrganizationController implements Serializable {
         statusMessage = "";
         
         // Get list of Zip Codes
-//        List<String> zipCodesList = getZipCodesList();
+        List<String> zipCodesList = getZipCodesList();
         
         //Use when testing
-        List<String> zipCodesList = new ArrayList<String>();
-        zipCodesList.add("24060");
-        zipCodesList.add("24061");
+//        List<String> zipCodesList = new ArrayList<String>();
+//        zipCodesList.add("24060");
+//        zipCodesList.add("24061");
         
         // If no search fields then show all
         if(searchVolunteeringAreaField != null) {
@@ -697,11 +697,8 @@ public class OrganizationController implements Serializable {
     
     public void showOrganizationInfo(Organization organization) {
         try {
-            // CallMethodForVolunteerInfo();
             statusMessage = null;
             selectedOrganization = organization;
-//            backwardsDestination = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("backwardsDestination");
-//            FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().clear();
             FacesContext.getCurrentInstance().getExternalContext().redirect("OrganizationInfo.xhtml?faces-redirect=true");
         } 
         catch(IOException e) { 

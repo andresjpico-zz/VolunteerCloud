@@ -487,6 +487,7 @@ public class UsersController implements Serializable {
     }
     
     public List<String> getUserAreasOfInterest() {
+        Users selectedUser = (Users) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("user");
         userAreasOfInterest = volunteeringInterestFacade.getStringListInterestAreaIDsFromUser(selectedUser.getUserID());
         return userAreasOfInterest;
     }
@@ -765,12 +766,12 @@ public class UsersController implements Serializable {
     }
     
     public boolean isUserSameAsUserLoggedIn(int userID) {
-        return selectedUser.getUserID() == userID;
+        int loggedInUserID = (int) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("userID");
+        return loggedInUserID == userID;
     }
     
     public boolean isLinkedToVM() {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("volunteerMatchID") != null;
-//        return selectedUser.getVolunteerMatchID() != null;
     }
     
     // Initialize the session map for the Roommate object
@@ -794,6 +795,9 @@ public class UsersController implements Serializable {
                 getSessionMap().put("username", user.getUsername());
         
         FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("fullName", user.getFirstName() + " " + user.getLastName());
+        
+        FacesContext.getCurrentInstance().getExternalContext().
                 getSessionMap().put("firstName", user.getFirstName());
 
         FacesContext.getCurrentInstance().getExternalContext().
@@ -803,10 +807,34 @@ public class UsersController implements Serializable {
                 getSessionMap().put("organizationName", user.getOrganizationName());
         
         FacesContext.getCurrentInstance().getExternalContext().
-                getSessionMap().put("userRole", getUserRole());
+                getSessionMap().put("userRole", Constants.USER_ROLES[user.getUserRole()]);
         
         FacesContext.getCurrentInstance().getExternalContext().
-                getSessionMap().put("volunteerMatchID", getVolunteerMatchID());
+                getSessionMap().put("volunteerMatchID", user.getVolunteerMatchID());
+        
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("mission", user.getMission());
+                
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("phoneNumber", user.getPhoneNumber());
+                
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("website", user.getWebsite());
+                                
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("address", user.getAddress());
+
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("city", user.getCity());
+
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("state", user.getState());
+        
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("stateName", user.getStateName());
+                        
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("zipCode", user.getZipCode());
         
     }     
 
@@ -828,6 +856,9 @@ public class UsersController implements Serializable {
                 getSessionMap().put("username", user.getUsername());
         
         FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("fullName", user.getFirstName() + " " + user.getLastName());
+        
+        FacesContext.getCurrentInstance().getExternalContext().
                 getSessionMap().put("firstName", user.getFirstName());
 
         FacesContext.getCurrentInstance().getExternalContext().
@@ -837,10 +868,34 @@ public class UsersController implements Serializable {
                 getSessionMap().put("organizationName", user.getOrganizationName());
         
         FacesContext.getCurrentInstance().getExternalContext().
-                getSessionMap().put("userRole", getUserRole());
-
+                getSessionMap().put("userRole", Constants.USER_ROLES[user.getUserRole()]);
+        
         FacesContext.getCurrentInstance().getExternalContext().
                 getSessionMap().put("volunteerMatchID", user.getVolunteerMatchID());
+        
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("mission", user.getMission());
+                
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("phoneNumber", user.getPhoneNumber());
+                
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("website", user.getWebsite());
+                                
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("address", user.getAddress());
+
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("city", user.getCity());
+
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("state", user.getState());
+        
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("stateName", user.getStateName());
+                        
+        FacesContext.getCurrentInstance().getExternalContext().
+                getSessionMap().put("zipCode", user.getZipCode());
         
     }
     
@@ -943,7 +998,7 @@ public class UsersController implements Serializable {
             }
             
             state = Constants.STATES[stateID];
-            loginUsername = username;
+//            loginUsername = username;
             loginPassword = password;
             selectedUser = user;
             initializeSessionMap(user);
@@ -976,19 +1031,12 @@ public class UsersController implements Serializable {
         if (user == null) {
             statusMessage = "Entered username " + loginUsername + " does not exist!";
             throwFacesMessage("Entered username " + loginUsername + " does not exist!");
+            loginUsername = "";
             return "";
 
         } else {
 
-            String actualUsername = user.getUsername();
-
             String actualPassword = user.getPassword();
-
-            if (!actualUsername.equals(loginUsername)) {
-                statusMessage = "Invalid Username!";
-                throwFacesMessage("Invalid Username!");
-                return "";
-            }
 
             if (!actualPassword.equals(loginPassword)) {
                 statusMessage = "Invalid Password!";
@@ -1040,6 +1088,9 @@ public class UsersController implements Serializable {
             // Authenticates user and gives access to Twilio by sending an access token
 //            generateTwilioAccessToken(user);
 
+            // Resets loginUsername to null
+            loginUsername = "";
+
             // Redirect to show the Profile page
             return showDashboard();
         }
@@ -1060,14 +1111,18 @@ public class UsersController implements Serializable {
         
         if (statusMessage == null || statusMessage.isEmpty()) {
             
+            // Obtain the edited user with changes
+            Users editUser = (Users) FacesContext.getCurrentInstance().
+                    getExternalContext().getSessionMap().get("editUser");
+            
             // Obtain the username of the logged-in User
             String userEmail = (String) FacesContext.getCurrentInstance().
                     getExternalContext().getSessionMap().get("userEmail");
 
             // If changes to the email address have been made
-            if (!userEmail.equals(this.selectedUser.getEmail())) {
+            if (!userEmail.equals(editUser.getEmail())) {
 
-                Users aUser = usersFacade.findByEmail(this.selectedUser.getEmail());
+                Users aUser = usersFacade.findByEmail(editUser.getEmail());
 
                 if (aUser != null) {
                     // A Roommate already exists with the username given
@@ -1082,17 +1137,17 @@ public class UsersController implements Serializable {
             
             try {
                 // Set the logged-in Roommate's properties to the given values
-                user.setEmail(this.selectedUser.getEmail());
-                user.setFirstName(this.selectedUser.getFirstName());
-                user.setLastName(this.selectedUser.getLastName());
-                user.setOrganizationName(this.selectedUser.getOrganizationName());
-                user.setMission(this.selectedUser.getMission());
-                user.setPhoneNumber(this.selectedUser.getPhoneNumber());
-                user.setWebsite(this.selectedUser.getWebsite());
-                user.setAddress(this.selectedUser.getAddress());
-                user.setCity(this.selectedUser.getCity());
-                user.setState(this.selectedUser.getState());
-                user.setZipCode(this.selectedUser.getZipCode());
+                user.setEmail(editUser.getEmail());
+                user.setFirstName(editUser.getFirstName());
+                user.setLastName(editUser.getLastName());
+                user.setOrganizationName(editUser.getOrganizationName());
+                user.setMission(editUser.getMission());
+                user.setPhoneNumber(editUser.getPhoneNumber());
+                user.setWebsite(editUser.getWebsite());
+                user.setAddress(editUser.getAddress());
+                user.setCity(editUser.getCity());
+                user.setState(editUser.getState());
+                user.setZipCode(editUser.getZipCode());
                 
                 // It is optional for the Roommate to change his/her password
                 String new_Password = getNewPassword();
@@ -1111,7 +1166,7 @@ public class UsersController implements Serializable {
                 // If changes to the first name have been made update Twilio
                 updateUsersNameInTwilio();
                 
-                state = Constants.STATES[this.selectedUser.getState()]; 
+                state = Constants.STATES[editUser.getState()]; 
                 initializeSessionMap(user);  
                 
             } catch (EJBException e) {
@@ -1440,6 +1495,7 @@ public class UsersController implements Serializable {
     
     public void updateVolunteeringInterestAreas() {
         try {
+            Users selectedUser = (Users) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("user");
             volunteeringInterestFacade.updateVolunteeringInterestAreas(selectedUser.getUserID(), userAreasOfInterest);
             exitModeEditInterestAreas();
         } catch (EJBException e) {
@@ -1486,6 +1542,8 @@ public class UsersController implements Serializable {
         String oldName;
         String newName;
         String userType;
+        Users selectedUser = (Users) FacesContext.getCurrentInstance().
+                    getExternalContext().getSessionMap().get("editUser");
         
         if(isVolunteer()) {
             oldName = (String) FacesContext.getCurrentInstance().
@@ -1638,15 +1696,19 @@ public class UsersController implements Serializable {
         
         if (statusMessage == null || statusMessage.isEmpty()) {
             try {
-                // Instantiate a new Task object
+                Users selectedUser = (Users) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("user");
                 selectedUser.setVolunteerMatchID(selectedOrganization.getVolunteerMatchID());
                 selectedUser.setOrganizationVmName(selectedOrganization.getOrganizationVmName());
+                
                 usersFacade.edit(selectedUser);
                 selectedOrganization = null;
                 vmOrganizations = null;
                 statusMessage = "Your account has been linked successfully!";
                 throwFacesMessage("Your account has been linked successfully!");
 
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("user", selectedUser);
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("volunteerMatchID", selectedUser.getVolunteerMatchID());
+                
                 showProfileAfterLinkingToVM();
                 
             } catch (Exception e) {
@@ -1735,6 +1797,8 @@ public class UsersController implements Serializable {
 
         statusMessage = null;
         if (isLoggedIn()) {
+            Users user = (Users) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("user");
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("editUser", user);
             return "EditProfile?faces-redirect=true";
         } else {
             return showIndexPage();

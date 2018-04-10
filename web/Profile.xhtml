@@ -37,10 +37,10 @@
                     <c:if test="#{UsersController.isLoggedIn() == true}">
 
                         <c:if test="#{UsersController.isOrganization() == true}">
-                            <h1> #{UsersController.selectedUser.organizationName} </h1>
+                            <h1> #{sessionScope.organizationName} </h1>
                         </c:if>
                         <c:if test="#{UsersController.isVolunteer() == true}">
-                            <h1> #{UsersController.selectedUser.getFirstName()} #{UsersController.selectedUser.getLastName()}'s Account Profile </h1>
+                            <h1> #{sessionScope.fullName}'s Account Profile </h1>
                         </c:if>
                         <h:graphicImage id="profilePic" class="profilePhoto"
                                         value="#{UsersController.photoStorageDirectoryName()}#{UsersController.accountPhoto()}" >
@@ -97,25 +97,25 @@
                                 <h:outputText value="#{sessionScope.userEmail}" />
 
                                 <h:outputText value="#{bundle.Mission}"/>
-                                <h:outputText value="#{UsersController.selectedUser.mission}" />
+                                <h:outputText value="#{sessionScope.mission}" />
                                 
                                 <h:outputText value="#{bundle.PhoneNumber}"/>
-                                <h:outputText value="#{UsersController.selectedUser.phoneNumber}" />
+                                <h:outputText value="#{sessionScope.phoneNumber}" />
                                 
                                 <h:outputText value="#{bundle.Website}"/>
-                                <h:outputText value="#{UsersController.selectedUser.website}" />
+                                <h:outputText value="#{sessionScope.website}" />
                                 
                                 <h:outputText value="#{bundle.Address}"/>
-                                <h:outputText value="#{UsersController.selectedUser.address}" />
+                                <h:outputText value="#{sessionScope.address}" />
 
                                 <h:outputText value="#{bundle.City}"/>
-                                <h:outputText value="#{UsersController.selectedUser.city}" />
+                                <h:outputText value="#{sessionScope.city}" />
 
                                 <h:outputText value="#{bundle.State}"/>
-                                <h:outputText value="#{UsersController.state}" />
+                                <h:outputText value="#{sessionScope.stateName}" />
                                 
                                 <h:outputText value="#{bundle.ZipCode}"/>
-                                <h:outputText value="#{UsersController.selectedUser.zipCode}" />
+                                <h:outputText value="#{sessionScope.zipCode}" />
                                 
                             </p:panelGrid>
                         </h:panelGroup>
