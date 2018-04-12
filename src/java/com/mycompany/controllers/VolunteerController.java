@@ -388,6 +388,7 @@ public class VolunteerController implements Serializable {
 //    }
     
     public List<Integer> getVolunteerAreasOfInterest() {
+        Volunteer selectedVolunteer = (Volunteer) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("selectedVolunteer");
         volunteerAreasOfInterest = volunteeringInterestFacade.getListInterestAreaIDsFromUser(selectedVolunteer.getUserID());
         return volunteerAreasOfInterest;
     }
@@ -761,6 +762,7 @@ public class VolunteerController implements Serializable {
         try {
             statusMessage = null;
             selectedVolunteer = volunteer;
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("selectedVolunteer", volunteer);
             FacesContext.getCurrentInstance().getExternalContext().redirect("VolunteerInfo.xhtml?faces-redirect=true");
         } 
         catch(IOException e) { 

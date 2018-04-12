@@ -82,7 +82,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                         <!-- Results Table -->
                         <div id="divID" style="visibility: #{VolunteerController.getVisible()}" onbeforeunload="#{VolunteerController.leaving()}">
                             <p:dataTable id="datalist" value="#{VolunteerController.volunteers}" var="volunteer"
-                                             selectionMode="single" selection="#{VolunteerController.selectedVolunteer}"
+                                             selectionMode="single" selection="#{sessionScope.selectedVolunteer}"
                                              paginator="false" rowKey="#{volunteer.userID}"
                                              rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight"
                                              >

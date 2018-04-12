@@ -394,6 +394,7 @@ public class OrganizationController implements Serializable {
     }
     
     public List<Integer> getOrganizationAreasOfInterest() {
+        Organization selectedOrganization = (Organization) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("selectedOrganization");
         organizationAreasOfInterest = volunteeringInterestFacade.getListInterestAreaIDsFromUser(selectedOrganization.getUserID());
         return organizationAreasOfInterest;
     }
@@ -699,6 +700,7 @@ public class OrganizationController implements Serializable {
         try {
             statusMessage = null;
             selectedOrganization = organization;
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("selectedOrganization", organization);
             FacesContext.getCurrentInstance().getExternalContext().redirect("OrganizationInfo.xhtml?faces-redirect=true");
         } 
         catch(IOException e) { 

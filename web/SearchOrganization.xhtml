@@ -82,7 +82,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                         <!-- Results Table -->
                         <div id="divID" style="visibility: #{OrganizationController.getVisible()}" onbeforeunload="#{OrganizationController.leaving()}">
                             <p:dataTable id="datalist" value="#{OrganizationController.organizations}" var="organization"
-                                             selectionMode="single" selection="#{OrganizationController.selectedOrganization}"
+                                             selectionMode="single" selection="#{sessionScope.selectedOrganization}"
                                              paginator="false" rowKey="#{organization.userID}"
                                              rowStyleClass="ui-datatable-odd,ui-datatable-even,ui-state-hover,ui-state-highlight"
                                              >

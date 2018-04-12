@@ -37,7 +37,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                     <!-- The different elements of data are displayed/included under this form -->
                     <h:form id="OrganizationInfoForm">
                         <!-- The datatable "datalist" displays the beasic information about the movie as requested for the turotial -->
-                        <p:dataTable id="datalist" value="#{OrganizationController.selectedOrganization}" var="organization"
+                        <p:dataTable id="datalist" value="#{sessionScope.selectedOrganization}" var="organization"
                                          paginator="false"
                                          rowKey="#{organization.userID}"
                                          rows="1"

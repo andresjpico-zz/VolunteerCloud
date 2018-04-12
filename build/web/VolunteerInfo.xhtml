@@ -37,7 +37,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                     <!-- The different elements of data are displayed/included under this form -->
                     <h:form id="VolunteerInfoForm">
                         <!-- The datatable "datalist" displays the beasic information about the movie as requested for the turotial -->
-                        <p:dataTable id="datalist" value="#{VolunteerController.selectedVolunteer}" var="volunteer"
+                        <p:dataTable id="datalist" value="#{sessionScope.selectedVolunteer}" var="volunteer"
                                          paginator="false"
                                          rowKey="#{volunteer.userID}"
                                          rows="1"
