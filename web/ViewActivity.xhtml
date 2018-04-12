@@ -180,7 +180,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                         </h:panelGrid>
                                         
                                         <p:commandButton value="Filter History" id="searchButton" style="width: 178px; height: 100%" icon="fa fa-search" iconPos="right" styleClass="searchButton" 
-                                                         ajax="true" update=":ViewActivityForm" action="#{OpportunityController.searchVolunteeringHistory(user)}" />
+                                                         ajax="true" update=":ViewActivityForm" action="#{OpportunityController.filterOwnVolunteeringHistory(user)}" />
                                                          <!-- Interesting note! When updating only 'opportunityHistoryList', the searchVolunteeringHistory function is called twice -->
                                     </h:panelGrid>
                                     </div>

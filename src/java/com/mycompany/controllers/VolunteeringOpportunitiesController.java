@@ -884,7 +884,7 @@ public class VolunteeringOpportunitiesController implements Serializable {
     }
     
     // Search History with filter
-    public void searchVolunteeringHistory(Users user) {
+    public void filterOwnVolunteeringHistory(Users user) {
 
         if (searchDateStartField == null ^ searchDateEndField == null) { // XOR -> '^'
             throwFacesMessage("Please fill both date fields or leave them empty.");
@@ -906,29 +906,28 @@ public class VolunteeringOpportunitiesController implements Serializable {
         return;  
     }
     
-//    // Search History with filter
-//    public List<VolunteeringOpportunities> searchVolunteeringHistory(Users user) {
-//
-//        if (searchDateStartField == null ^ searchDateEndField == null) { // XOR -> '^'
-//            throwFacesMessage("Please fill both date fields or leave them empty.");
-//            return null;
-//        }
-//        
-////        opportunities = null;
-//        statusMessage = "";
-//        listOpportunityIDsFromUserHistory = getUserVolunteeringHistoryRecords(user.getUserID());
-//        
-//        // If no search fields then show all
-//        if(searchDateStartField == null && searchDateEndField == null) 
-//            opportunities = opportunityFacade.SearchHistoryOpportunities(user.getUserID(), listOpportunityIDsFromUserHistory, searchZipCodeField, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField);
-//        else if(!searchDateStartField.after(searchDateEndField))
-//            opportunities = opportunityFacade.SearchHistoryOpportunitiesWithinDateRange(user.getUserID(), listOpportunityIDsFromUserHistory, searchZipCodeField, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField, searchDateStartField, searchDateEndField);
-//        else
-//            throwFacesMessage("Start Date cannot be later than End Date.");
-//        
-//        return opportunities;
-//        
-//    }
+    // Search History with filter
+    public List<VolunteeringOpportunities> searchVolunteeringHistory(Users user) {
+
+        if (searchDateStartField == null ^ searchDateEndField == null) { // XOR -> '^'
+            throwFacesMessage("Please fill both date fields or leave them empty.");
+            return null;
+        }
+        
+//        opportunities = null;
+        statusMessage = "";
+        listOpportunityIDsFromUserHistory = getUserVolunteeringHistoryRecords(user.getUserID());
+        
+        // If no search fields then show all
+        if(searchDateStartField == null && searchDateEndField == null) 
+            opportunities = opportunityFacade.SearchHistoryOpportunities(user.getUserID(), listOpportunityIDsFromUserHistory, searchZipCodeField, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField);
+        else if(!searchDateStartField.after(searchDateEndField))
+            opportunities = opportunityFacade.SearchHistoryOpportunitiesWithinDateRange(user.getUserID(), listOpportunityIDsFromUserHistory, searchZipCodeField, searchTitleField, searchKeywordField, searchOrganizationNameField, searchVolunteeringAreaField, searchDateStartField, searchDateEndField);
+        else
+            throwFacesMessage("Start Date cannot be later than End Date.");
+        
+        return opportunities;
+    }
     
     public List<VolunteeringOpportunities> DsearchVMOpportunities() throws UnsupportedEncodingException {
         

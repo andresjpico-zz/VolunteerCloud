@@ -89,15 +89,7 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     <p:separator />                                    
                                     <h:outputText style="font-size: 18px; font-weight: bold" value="Areas of Interest" />
                                     <h:panelGrid border="0" columns="1" cellpadding="0" style="width: 100%; background: white">
-                                        <!--<h:outputText style="font-size: 18px" value="To be done.." />-->
-                                        
-<!--                                        <p:selectCheckboxMenu id="areasOfInterest" value="#{VolunteerController.volunteerAreasOfInterest}" label="Areas of Interest" updateLabel="true" disabled="false" 
-                                                filter="true" filterMatchMode="startsWith" panelStyle="width:250px">
-                                            <f:selectItems value="#{VolunteerController.volunteeringAreas}" />
-                                        </p:selectCheckboxMenu>-->
-
                                         <br/>
-                                        <!--  style="#{(true) ? 'pointer-events: none !important' : ''}"  --> 
                                         <p:selectManyCheckbox id="grid" value="#{OrganizationController.organizationAreasOfInterest}" layout="grid" columns="3" 
                                                               disabled="false" style="pointer-events: none" styleClass="ui-chkbox-box, ui-chkbox-icon, ui-chkbox-label">
                                             <f:selectItems value="#{OrganizationController.volunteeringAreas}" var="areaID" itemValue="#{areaID}" />
@@ -109,9 +101,6 @@ Copyright © 2016 Osman Balci. All rights reserved.
                                     <p:separator />
                                     
                                     <h:outputText style="font-size: 18px; font-weight: bold" value="Volunteering Activities" />
-<!--                                    <h:panelGrid border="0" columns="1" cellpadding="0" style="width:100%; background: white">
-                                        <h:outputText style="font-size: 18px" value="To be done with export button and activity search/filter.." />
-                                    </h:panelGrid>-->
                                     <br/>
                                     
                                     <!--<div style="width: 60%">-->
