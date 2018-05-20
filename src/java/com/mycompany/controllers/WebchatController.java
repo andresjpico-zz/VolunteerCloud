@@ -61,12 +61,12 @@ public class WebchatController implements Serializable {
     // API Credentials: https://www.twilio.com/docs/api/rest/request
     // API Keys: https://www.twilio.com/docs/api/rest/keys
     private final String Twilio_API_URL = "https://chat.twilio.com/v2";
-    private final String Twilio_Account_SID = "AC3c09366829bd06a96b2cc607873e9fce";
-    private final String Twilio_Service_SID = "IS4732387b4a864b7481c1722d65941b79";     // Development Service
-//    private final String Twilio_Service_SID = "ISb7b1e3b29acb47a0b78fde42db7dbe60";     // Production Service
-    private final String Twilio_API_Key_SID = "SKc67b29116e35278d4dd6931d529ab6ac";
-    private final String Twilio_API_key_Secret = "UfMOOJpfWKdiMwTYUkrfgUOyAFdu2b5R";
-    private final String Twilio_Auth_Token = "cf1aae22ae5c4a873e06bd34937e794d";
+    private final String Twilio_Account_SID = "";
+    private final String Twilio_Service_SID = "";     // Development Service
+//    private final String Twilio_Service_SID = "";     // Production Service
+    private final String Twilio_API_Key_SID = "";
+    private final String Twilio_API_key_Secret = "";
+    private final String Twilio_Auth_Token = "";
     
     private final AtomicBoolean isChatting = new AtomicBoolean(false);
     private ChatPollingThread chatPollingThread;

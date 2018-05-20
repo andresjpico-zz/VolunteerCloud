@@ -69,18 +69,18 @@ public class UsersController implements Serializable {
      */
     private final String ExampleVolunteerMatchAPI = "https://www.volunteermatch.org/api/call?action=#action&query=#query";
     private final String VolunteerMatchAPI1="https://www.volunteermatch.org/api/call";
-    private final String VM_AccountName = "Virginia_Tech";
-    private final String VM_Key = "b96937968674ff450af8d622d3681197";
+    private final String VM_AccountName = "";
+    private final String VM_Key = "";
     private final String VM_SearchOpportunities = "searchOpportunities";
     private final String VM_SearchOrganizations = "searchOrganizations";
     private final String VM_HelloWorld = "helloWorld";
     
     private final String Twilio_API_URL = "https://chat.twilio.com/v2";
-    private final String Twilio_Account_SID = "AC3c09366829bd06a96b2cc607873e9fce";
-    private final String Twilio_Service_SID = "IS4732387b4a864b7481c1722d65941b79";     // Development Service
-//    private final String Twilio_Service_SID = "ISb7b1e3b29acb47a0b78fde42db7dbe60";     // Production Service
-    private final String Twilio_API_Key_SID = "SKc67b29116e35278d4dd6931d529ab6ac";
-    private final String Twilio_API_key_Secret = "UfMOOJpfWKdiMwTYUkrfgUOyAFdu2b5R";
+    private final String Twilio_Account_SID = "";
+    private final String Twilio_Service_SID = "";     // Development Service
+//    private final String Twilio_Service_SID = "";     // Production Service
+    private final String Twilio_API_Key_SID = "";
+    private final String Twilio_API_key_Secret = "";
 
     private String username;
     private String loginUsername;
