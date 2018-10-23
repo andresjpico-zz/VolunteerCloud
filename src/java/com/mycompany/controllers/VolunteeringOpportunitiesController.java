@@ -61,8 +61,8 @@ public class VolunteeringOpportunitiesController implements Serializable {
      */
     private final String ExampleVolunteerMatchAPI = "https://www.volunteermatch.org/api/call?action=#action&query=#query";
     private final String VolunteerMatchAPI1="https://www.volunteermatch.org/api/call";
-    private final String VM_AccountName = "Virginia_Tech";
-    private final String VM_Key = "b96937968674ff450af8d622d3681197";
+    private final String VM_AccountName = "";
+    private final String VM_Key = "";
     private final String VM_SearchOpportunities = "searchOpportunities";
     private final String VM_SearchOrganizations = "searchOrganizations";
     private final String VM_HelloWorld = "helloWorld";
